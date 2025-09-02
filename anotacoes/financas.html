@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Finanças</title>
+  <style>
+    body {
+      background-color: #ffffff; /* Fundo geral */
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      color: #2c2c54; /* Títulos e textos principais */
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+      background-color: #cfe0f3; /* Fundo dos blocos */
+      border-radius: 10px;
+      box-shadow: 0 0 10px #9db4cc;
+    }
+
+    th, td {
+      border: 1px solid #4a69bd;
+      padding: 12px;
+    }
+
+    th {
+      background-color: #f1f1f1; /* Fundo do topo/títulos */
+    }
+
+    textarea {
+      width: 90%;
+      height: 80px;
+      border-radius: 10px;
+      border: 2px solid #4a69bd;
+      padding: 10px;
+      background-color: #ffffff;
+    }
+
+    .btn {
+      background-color: #4a69bd; /* Botões principais */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      margin: 10px 5px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #2c2c54; /* Hover escuro para destaque */
+    }
+
+    .btn-excluir {
+      background-color: #c0392b; /* Botão de exclusão */
+    }
+
+    .btn-excluir:hover {
+      background-color: #a93226; /* Tom mais escuro no hover */
+    }
+
+    .voltar-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #4a69bd;
+}
+  </style>
+</head>
+<body>
+
+  <h1>Finanças</h1>
+
+  <table id="tabela-financas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Valor (R$)</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Ex: Compra de livro"></td>
+        <td><input type="number" step="0.01"></td>
+        <td>
+          <select>
+            <option>Entrada</option>
+            <option>Saída</option>
+          </select>
+        </td>
+        <td><button class="btn btn-excluir" onclick="removerLinha(this)">⌫</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn" onclick="adicionarLinha()">➕ Adicionar</button>
+  <button class="btn" onclick="salvarTudo()">💾 Salvar</button>
+
+  <h3>Notas sobre gastos</h3>
+  <textarea placeholder="Ex: Gastos do mês, metas de economia..."></textarea>
+
+  <br><br>
+  <a class="btn voltar-btn" href="/anotacoes/index.html">⬅️ Voltar</a>
+
+  <script>
+    function adicionarLinha() {
+      const tabela = document.getElementById('tabela-financas').getElementsByTagName('tbody')[0];
+      const novaLinha = tabela.insertRow();
+
+      novaLinha.innerHTML = `
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Ex: Compra de livro"></td>
+        <td><input type="number" step="0.01"></td>
+        <td>
+          <select>
+            <option>Entrada</option>
+            <option>Saída</option>
+          </select>
+        </td>
+        <td><button class="btn btn-excluir" onclick="removerLinha(this)">⌫</button></td>
+      `;
+    }
+
+    function removerLinha(botao) {
+      const linha = botao.parentNode.parentNode;
+      linha.remove();
+    }
+
+    function salvarTudo() {
+      const linhas = document.querySelectorAll('#tabela-financas tbody tr');
+      const dados = [];
+
+      linhas.forEach(linha => {
+        const inputs = linha.querySelectorAll('input, select');
+        dados.push({
+          data: inputs[0].value,
+          descricao: inputs[1].value,
+          valor: parseFloat(inputs[2].value),
+          tipo: inputs[3].value
+        });
+      });
+
+      console.log("Dados salvos:", dados);
+      alert("Dados salvos no console! (simulação)");
+    }
+  </script>
+
+</body>
+</html>

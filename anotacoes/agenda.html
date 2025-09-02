@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agenda</title>
+  <style>
+    body {
+      background-color: #f9fbfd;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      color: #1f3a60;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #1f3a60;
+    }
+
+    .btn-voltar-topo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #397ecb;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s;
+    }
+
+    .btn-voltar-topo:hover {
+      background-color: #7da7d9;
+      color: #1f3a60;
+    }
+
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 95%;
+      max-width: 800px;
+      background-color: #e3ecf7;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      border: 1px solid #c5d6ec;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    th {
+      background-color: #397ecb;
+      color: #ffffff;
+    }
+
+    input[type="text"],
+    input[type="time"] {
+      width: 90%;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #a1c4e9;
+      background-color: #f1f6fb;
+      color: #1f3a60;
+    }
+
+    textarea {
+      width: 90%;
+      height: 100px;
+      border-radius: 8px;
+      border: 1px solid #a1c4e9;
+      padding: 10px;
+      background-color: #ffffff;
+      resize: none;
+      font-size: 16px;
+      color: #1f3a60;
+      margin-top: 20px;
+    }
+
+    .btn-salvar {
+      margin-top: 25px;
+      background-color: #1f3a60;
+      color: #ffffff;
+      padding: 12px 25px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-salvar:hover {
+      background-color: #397ecb;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="btn-voltar-topo" href="/anotacoes/index.html">⬅️ Voltar</a>
+
+  <h1>Agenda</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Dia</th>
+        <th>Compromisso</th>
+        <th>Horário</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Segunda</td><td><input type="text" id="compromisso-segunda"></td><td><input type="time" id="horario-segunda"></td></tr>
+      <tr><td>Terça</td><td><input type="text" id="compromisso-terca"></td><td><input type="time" id="horario-terca"></td></tr>
+      <tr><td>Quarta</td><td><input type="text" id="compromisso-quarta"></td><td><input type="time" id="horario-quarta"></td></tr>
+      <tr><td>Quinta</td><td><input type="text" id="compromisso-quinta"></td><td><input type="time" id="horario-quinta"></td></tr>
+      <tr><td>Sexta</td><td><input type="text" id="compromisso-sexta"></td><td><input type="time" id="horario-sexta"></td></tr>
+      <tr><td>Sábado</td><td><input type="text" id="compromisso-sabado"></td><td><input type="time" id="horario-sabado"></td></tr>
+      <tr><td>Domingo</td><td><input type="text" id="compromisso-domingo"></td><td><input type="time" id="horario-domingo"></td></tr>
+    </tbody>
+  </table>
+
+  <textarea id="notas" placeholder="Notas gerais..."></textarea><br>
+
+  <button class="btn-salvar" onclick="salvarAgenda()">💾 Salvar Agenda</button>
+
+  <script>
+    function salvarAgenda() {
+      const dias = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+      dias.forEach(dia => {
+        const compromisso = document.getElementById(`compromisso-${dia}`).value;
+        const horario = document.getElementById(`horario-${dia}`).value;
+        localStorage.setItem(`agenda-compromisso-${dia}`, compromisso);
+        localStorage.setItem(`agenda-horario-${dia}`, horario);
+      });
+      const notas = document.getElementById('notas').value;
+      localStorage.setItem('agenda-notas', notas);
+      alert('✔️ Agenda salva com sucesso!');
+    }
+
+    function carregarAgenda() {
+      const dias = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+      dias.forEach(dia => {
+        document.getElementById(`compromisso-${dia}`).value = localStorage.getItem(`agenda-compromisso-${dia}`) || '';
+        document.getElementById(`horario-${dia}`).value = localStorage.getItem(`agenda-horario-${dia}`) || '';
+      });
+      document.getElementById('notas').value = localStorage.getItem('agenda-notas') || '';
+    }
+
+    window.onload = carregarAgenda;
+  </script>
+
+</body>
+</html>

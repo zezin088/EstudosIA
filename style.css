@@ -1,0 +1,279 @@
+@font-face {
+    font-family: raesha;
+    src: url('fonts/Raesha.ttf') format(truetype);
+}
+@font-face {
+    font-family: Karst;
+    src: url('fonts/Karst-Light.otf') format(truetype);
+}
+body{
+    margin: 0;
+    background-color: rgb(243, 228, 201);
+}
+.barra{
+    background-color: rgb(192, 98, 98);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 25px ;
+}
+nav ul{
+    display: flex;
+    list-style: none;
+    gap: 30px;
+    font-family: 'Karst';
+}
+nav ul a{
+    text-decoration:none;
+    color: white;
+}
+.fb {
+    font-family: 'Raesha';
+    font-size: 60px;
+    color: white;
+}
+h1{
+    margin-top: -1px;
+    margin-bottom: 0px;
+}
+.img{
+    width: 300px;
+    display: flex;
+}
+.conteudo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Karst';
+    margin-top: -50px;
+    padding: 15px;
+}
+
+.chat-ia {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+    padding: 40px 60px;
+    box-sizing: border-box;
+}
+
+.img-assistente {
+    text-align: center;
+    position: relative;
+    max-width: 450px;
+}
+
+.img-assistente img {
+    width: 100%;
+}
+
+.fala {
+    margin-top: 10px;
+    background-color: #fff;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-family: 'Karst';
+}
+
+.acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 400px;
+    flex: 1;
+    margin-top: -1px;
+}
+.botoes {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 800px;
+    margin-top: 7.2%;
+    text-decoration: none;
+}
+
+.botoes button {
+    padding: 10px 70px;
+    background-color: rgb(192, 98, 98);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Karst', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: white;
+    text-decoration: none;
+}
+
+.botoes button:hover {
+    background-color: rgb(139, 80, 80);
+}
+
+.sugestoes {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sugestoes button {
+    animation: pulse 3s infinite;
+    padding: 15px 25px;
+    background-color: #ac5e1e94;
+    border: none;
+    border-radius: 10px;
+    font-size: 19px;
+    font-family: 'Karst';
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+
+.sugestoes button:hover {
+    background-color: #8f6a4b;
+}
+.botoes-sugestoes button {
+    background-color: #cda7e0;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Karst';
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.botoes-sugestoes button:hover {
+    background-color: #b788cb;
+}
+.fa-solid{
+    margin-top: 11px;
+    transform: translate(0px);
+    margin-right: 5px;
+}
+button{
+    text-decoration: none;
+    border: none;
+    background-color:transparent;
+    margin-top: -2px;
+    margin-right: -6px;
+}
+.botao-link {
+    display: inline-block;
+    padding: 10px 70px;
+    background-color: rgb(192, 98, 98);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Karst', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    width: fit-content;
+}
+
+.botao-link:hover {
+    background-color: rgb(139, 80, 80);
+}
+.botoes button {
+    padding: 20px 100px;
+    background-color: rgb(192, 98, 98);
+    border: none;
+    border-radius: 12px;
+    font-family: 'Karst', sans-serif;
+    font-size: 22px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: white;
+    text-decoration: none;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.botoes button:hover {
+    background-color: rgb(139, 80, 80);
+}
+.fala-input {
+    margin-top: 10px;
+    background-color: #f5e9e0;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-family: 'Karst', sans-serif;
+    font-size: 18px;
+    color: #5a3e36;
+    border: none;
+    box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.1);
+    width: 101.5%;
+    max-width: 600px;
+    outline: none;
+    cursor: text;
+    transition: background-color 0.3s;
+}
+
+.fala-input::placeholder {
+    color: #a78a7f;
+}
+
+.fala-input:focus {
+    background-color: #e0d0c0;
+}
+.fala-botao {
+    background-color: rgba(192, 98, 98, 0.678);
+    color: rgba(255, 255, 255, 0.973);
+    padding: 16px 24px;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-family: 'Karst', sans-serif;
+    cursor: pointer;
+    max-width: 500px;
+    margin: 0 auto;
+    display: block;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+    }
+    
+    .fala-botao:hover {
+        background-color: rgb(139, 80, 80)
+    }
+    .foto-perfil {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+        margin-left: 5px;
+    }
+    
+    .mensagem-sucesso {
+        background-color: #dff0d8;
+        color: #3c763d;
+        padding: 12px;
+        margin: 20px auto;
+        text-align: center;
+        border-radius: 8px;
+        font-weight: bold;
+        max-width: 600px;
+        opacity: 1;
+        transition: opacity 0.5s ease;
+    }
+    .foto-img {
+        width: 50px; /* Ajuste o tamanho da foto */
+        border-radius: 50%; /* Torna a foto circular */
+        object-fit: cover; /* Garante que a imagem se encaixe corretamente no círculo */
+    }
+    

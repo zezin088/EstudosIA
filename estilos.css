@@ -1,0 +1,173 @@
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
+    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+    @font-face {
+        font-family: raesha;
+        src: url('fonts/Raesha.ttf') format(truetype);
+    }
+    @font-face {
+        font-family: Karst;
+        src: url('fonts/Karst-Light.otf') format(truetype);
+    }
+    body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: rgb(243, 228, 201);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    }
+
+    .container {
+    background-color: white;
+    padding: 40px 30px;
+    border-radius: 25px;
+    box-shadow: 0 0 25px rgba(139, 80, 80, 0.3);
+    width: 350px;
+    max-width: 90%;
+    }
+
+    h2 {
+    font-size: 1.5em;
+    color: rgb(192, 98, 98);
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: 'raesha';
+    }
+
+    input {
+    width: 90%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1.5px solid rgb(192, 98, 98);
+    border-radius: 15px;
+    font-size: 1em;
+    color: rgb(80, 50, 50);
+    outline: none;
+    transition: all 0.3s ease;
+    background-color: #fff;
+    }
+
+    input:focus {
+    border-color: rgb(139, 80, 80);
+    box-shadow: 0 0 8px rgba(139, 80, 80, 0.2);
+    }
+
+    button {
+    background-color: rgb(139, 80, 80);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1.05em;
+    font-weight: bold;
+    width: 100%;
+    }
+
+    button:hover {
+    background-color: rgb(192, 98, 98);
+    }
+
+    button i {
+    margin-right: 10px;
+    }
+
+    ::placeholder {
+    color: rgb(192, 98, 98);
+    opacity: 0.7;
+    font-style: italic;
+    }
+
+    .social-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #db4537ea;
+    color: white;
+    padding: 12px;
+    border-radius: 25px;
+    width: 94%;
+    font-size: 1.1em;
+    cursor: pointer;
+    }
+
+    .social-btn:hover {
+    background-color: #c1351d;
+    }
+
+    .social-btn i {
+    margin-right: 10px;
+    }
+    p{
+        align-items: center;
+        text-align: center;
+        font-family: 'Karst';
+        color: rgb(192, 98, 98);
+        font-size: 15px;
+    }
+    a{
+        text-decoration:underline;
+        color:rgb(192, 98, 98) ;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .container {
+        max-width: 400px;
+        margin: 50px auto;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      
+      h1, h2 {
+        text-align: center;
+      }
+      
+      .input-group {
+        margin: 15px 0;
+      }
+      
+      .input-group input {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      
+      button:hover {
+        background-color: #45a049;
+      }
+      
+      .social-btn {
+        text-align: center;
+        padding: 10px 0;
+      }
+      
+      .social-btn i {
+        font-size: 24px;
+      }
+      
+      a {
+        text-decoration: none;
+        color: #4CAF50;
+      }

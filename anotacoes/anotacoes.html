@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>📘 Anotações</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: 'Comic Sans MS', cursive;
+      color: #1f3a60;
+      padding: 40px;
+      text-align: center;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #1f3a60;
+    }
+
+    .toolbar {
+      margin-bottom: 20px;
+    }
+
+    .toolbar select,
+    .toolbar input[type="color"],
+    .toolbar button {
+      font-family: 'Comic Sans MS', cursive;
+      padding: 6px 10px;
+      border: 1px solid #397ecb;
+      border-radius: 8px;
+      margin: 5px;
+      background-color: #d7e3fb;
+      cursor: pointer;
+      color: #1f3a60;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .toolbar button:hover {
+      background-color: #397ecb;
+      color: #fff;
+    }
+
+    .caderno {
+      background: #fff;
+      border: 2px solid #397ecb;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(57, 126, 203, 0.3);
+      text-align: left;
+      position: relative;
+      z-index: 1;
+    }
+
+    .editor {
+      background-image: repeating-linear-gradient(#e6edfb, #e6edfb 2px, transparent 2px, transparent 32px);
+      min-height: 400px;
+      line-height: 32px;
+      padding: 20px 30px;
+      outline: none;
+      font-size: 16px;
+      color: #1f3a60;
+      font-family: 'Comic Sans MS', cursive;
+      white-space: pre-wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .placeholder-text {
+      position: absolute;
+      left: 50px;
+      top: 60px;
+      color: #5a7db1;
+      opacity: 0.5;
+      font-size: 16px;
+      font-family: 'Comic Sans MS', cursive;
+      pointer-events: none;
+      text-align: left;
+      width: calc(100% - 80px);
+      z-index: 2;
+    }
+
+    /* Botão voltar e salvar com estilo igual */
+    .btn-voltar, .btn-salvar {
+      position: fixed;
+      background-color: #397ecb;
+      color: #fff;
+      padding: 12px 25px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    .btn-voltar {
+      top: 20px;
+      left: 20px;
+    }
+
+    .btn-salvar {
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .btn-voltar:hover, .btn-salvar:hover {
+      background-color: #285a9c;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="btn-voltar" href="/anotacoes/index.html">⬅️ Voltar</a>
+
+  <h1>Caderno de Anotações</h1>
+
+  <!-- TOOLS -->
+  <div class="toolbar">
+    <button onclick="document.execCommand('bold')"><b>Negrito</b></button>
+
+    <select onchange="document.execCommand('fontSize', false, this.value)">
+      <option value="">Tamanho</option>
+      <option value="2">Pequeno</option>
+      <option value="3">Normal</option>
+      <option value="5">Grande</option>
+      <option value="7">Gigante</option>
+    </select>
+
+    <input type="color" onchange="document.execCommand('foreColor', false, this.value)">
+  </div>
+
+  <!-- BLOCO DE ANOTAÇÃO -->
+  <div class="caderno" style="position: relative;">
+    <div id="placeholder" class="placeholder-text">Escreva suas ideias, lembretes, pensamentos fofos aqui...</div>
+    <div class="editor" contenteditable="true" id="editor"></div>
+  </div>
+
+  <button class="btn-salvar" onclick="salvarAnotacoes()">💾 Salvar</button>
+
+  <script>
+    function salvarAnotacoes() {
+      const conteudo = document.getElementById('editor').innerHTML;
+      console.log("Conteúdo salvo:", conteudo);
+      alert("Anotações salvas no console!");
+    }
+  </script>
+
+</body>
+<script>
+  const editor = document.getElementById("editor");
+  const placeholder = document.getElementById("placeholder");
+
+  function atualizarPlaceholder() {
+    if (editor.innerText.trim().length === 0) {
+      placeholder.style.display = "block";
+    } else {
+      placeholder.style.display = "none";
+    }
+  }
+
+  editor.addEventListener("input", atualizarPlaceholder);
+  editor.addEventListener("focus", atualizarPlaceholder);
+  editor.addEventListener("blur", atualizarPlaceholder);
+
+  // Mostrar ou esconder ao carregar a página
+  atualizarPlaceholder();
+</script>
+</html>

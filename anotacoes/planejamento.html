@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Planejamento</title>
+  <style>
+    body {
+      background-color: #ffffff; /* Fundo geral */
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      color: #2c2c54;
+      padding: 40px;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #2c2c54;
+      margin-top: 60px;
+    }
+
+    .btn-voltar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #4a69bd;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-voltar:hover {
+      background-color: #9db4cc;
+      color: #2c2c54;
+    }
+
+    table {
+      margin: 20px auto;
+      width: 90%;
+      max-width: 900px;
+      border-collapse: collapse;
+      background-color: #9db4cc;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #cfe0f3;
+    }
+
+    th, td {
+      border: 1px solid #4a69bd;
+      padding: 12px;
+      font-size: 16px;
+      color: #2c2c54;
+    }
+
+    th {
+      background-color: #4a69bd;
+      color: #ffffff;
+    }
+
+    td:first-child {
+      width: 30%;
+      font-weight: bold;
+    }
+
+    td textarea {
+      width: 95%;
+      height: 60px;
+      border-radius: 8px;
+      padding: 8px;
+      border: 1px solid #4a69bd;
+      background-color: #f1f1f1;
+      resize: vertical;
+      color: #2c2c54;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .btn {
+      background-color: #3c3c74;
+      color: #ffffff;
+      padding: 12px 30px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 30px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      background-color: #4a69bd;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botão Voltar -->
+  <a class="btn-voltar" href="/anotacoes/index.html">⬅️ Voltar</a>
+
+  <h1>Planejamento Semanal</h1>
+
+  <table id="tabela-planejamento">
+    <tr>
+      <th>Dia</th>
+      <th>Planejamento</th>
+    </tr>
+    <tr>
+      <td>Segunda-feira</td>
+      <td><textarea placeholder="O que vou fazer hoje?"></textarea></td>
+    </tr>
+    <tr>
+      <td>Terça-feira</td>
+      <td><textarea></textarea></td>
+    </tr>
+    <tr>
+      <td>Quarta-feira</td>
+      <td><textarea></textarea></td>
+    </tr>
+    <tr>
+      <td>Quinta-feira</td>
+      <td><textarea></textarea></td>
+    </tr>
+    <tr>
+      <td>Sexta-feira</td>
+      <td><textarea></textarea></td>
+    </tr>
+    <tr>
+      <td>Sábado</td>
+      <td><textarea></textarea></td>
+    </tr>
+    <tr>
+      <td>Domingo</td>
+      <td><textarea></textarea></td>
+    </tr>
+  </table>
+
+  <button class="btn" onclick="salvarPlanejamento()">💾 Salvar</button>
+
+  <script>
+    function salvarPlanejamento() {
+      const linhas = document.querySelectorAll('#tabela-planejamento tr');
+      const planejamento = [];
+
+      for (let i = 1; i < linhas.length; i++) {
+        const dia = linhas[i].cells[0].innerText;
+        const texto = linhas[i].cells[1].querySelector('textarea').value;
+        planejamento.push({ dia, planejamento: texto });
+      }
+
+      console.log("Planejamento da semana:", planejamento);
+      alert("Planejamento salvo no console! (simulação)");
+    }
+  </script>
+
+</body>
+</html>

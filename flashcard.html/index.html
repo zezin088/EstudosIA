@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flashcards ✨</title>
+  <style>
+    @keyframes aparecer {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    body {
+      font-family: 'Comic Sans MS', cursive;
+      background-color: rgb(243, 228, 201);
+      color: rgb(192, 98, 98);
+      padding: 20px;
+      margin: 0;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    h1, h2 {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background-color: rgba(172, 94, 30, 0.58);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(172, 94, 30, 0.3);
+    }
+
+    .topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .materias {
+      margin: 20px 0;
+    }
+
+    .materias button,
+    .formulario button,
+    button {
+      background-color: rgb(192, 98, 98);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .materias button:hover,
+    .formulario button:hover,
+    button:hover {
+      background-color: rgb(139, 80, 80);
+      transform: scale(1.05);
+    }
+
+    .formulario {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .formulario input {
+      padding: 12px;
+      border: 2px solid rgb(192, 98, 98);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    #mensagem-sucesso {
+      background-color: rgb(243, 228, 201);
+      color: rgb(192, 98, 98);
+      border: 2px dashed rgb(192, 98, 98);
+      padding: 10px;
+      border-radius: 12px;
+      margin-top: 20px;
+      display: none;
+      font-size: 1rem;
+      animation: aparecer 0.4s ease;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      margin: 20px 0;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .card .front,
+    .card .back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-color: rgb(243, 228, 201);
+      color: rgb(192, 98, 98);
+      border: 2px solid rgb(192, 98, 98);
+      border-radius: 15px;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: transform 0.6s;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .card .back {
+      transform: rotateY(180deg);
+    }
+
+    .card.flipped .front {
+      transform: rotateY(180deg);
+    }
+
+    .card.flipped .back {
+      transform: rotateY(360deg);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topo">
+    <h2 style="margin: 0;">Adicionar Novo Flashcard</h2>
+    <button onclick="goHome()">Página Inicial</button>
+  </div>
+
+  <div class="container">
+    <div class="formulario">
+      <label for="novaMateria">Matéria:</label>
+      <input type="text" id="novaMateria" placeholder="Digite a matéria" />
+
+      <label for="novaPergunta">Pergunta:</label>
+      <input type="text" id="novaPergunta" placeholder="Digite a pergunta" />
+
+      <label for="novaResposta">Resposta:</label>
+      <input type="text" id="novaResposta" placeholder="Digite a resposta" />
+
+      <button id="btnAdicionar" onclick="adicionarFlashcard()">Adicionar Flashcard</button>
+      <button onclick="limparCampos()">Limpar Campos</button>
+    </div>
+  </div>
+
+  <div id="mensagem-sucesso"></div>
+
+  <div class="materias" id="botoes-materias"></div>
+
+  <div class="container">
+    <h1>Flashcards</h1>
+    <div id="flashcard" class="card" onclick="flipCard()">
+      <div class="front" id="card-front"></div>
+      <div class="back" id="card-back"></div>
+    </div>
+
+    <button onclick="previousCard()">Anterior</button>
+    <button onclick="nextCard()">Próximo</button>
+    <button onclick="excluirFlashcardAtual()">Excluir Flashcard</button>
+    <button onclick="excluirMateria()">Excluir Matéria</button>
+  </div>
+
+  <script>
+    let materiaAtual = '';
+    let flashcards = [];
+    let currentCardIndex = 0;
+    const cardFront = document.getElementById("card-front");
+    const cardBack = document.getElementById("card-back");
+    const flashcard = document.getElementById("flashcard");
+
+    function showCard(index) {
+      const card = flashcards[index];
+      cardFront.textContent = card?.pergunta || "Sem pergunta";
+      cardBack.textContent = card?.resposta || "Sem resposta";
+      flashcard.classList.remove("flipped");
+    }
+
+    function flipCard() {
+      flashcard.classList.toggle("flipped");
+    }
+
+    function nextCard() {
+      if (!flashcards.length) return;
+      currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+      showCard(currentCardIndex);
+    }
+
+    function previousCard() {
+      if (!flashcards.length) return;
+      currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+      showCard(currentCardIndex);
+    }
+
+    function goHome() {
+      window.location.href = "/inicio.php"; // Substitua com o caminho correto da página inicial
+    }
+
+    function escolherMateria(materia) {
+  materiaAtual = materia;
+  const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+  flashcards = dados[materiaAtual] || [];
+  currentCardIndex = 0;
+  showCard(currentCardIndex);
+}
+
+    function adicionarFlashcard() {
+  const materiaInput = document.getElementById("novaMateria");
+  const perguntaInput = document.getElementById("novaPergunta");
+  const respostaInput = document.getElementById("novaResposta");
+
+  const materia = materiaInput.value.trim().toLowerCase();
+  const pergunta = perguntaInput.value.trim();
+  const resposta = respostaInput.value.trim();
+
+  if (!materia || !pergunta || !resposta) {
+    mostrarMensagemFofo("Preencha tudo direitinho, por favor! 💡");
+    return;
+  }
+
+  let dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+
+  if (!dados[materia]) {
+    dados[materia] = [];
+  }
+
+  dados[materia].push({ pergunta, resposta });
+
+  localStorage.setItem("flashcards", JSON.stringify(dados));
+
+  adicionarBotaoMateria(materia);
+  escolherMateria(materia);
+  limparCampos();
+  mostrarMensagemFofo("Flashcard adicionado com sucesso! ✨");
+}
+
+function excluirFlashcardAtual() {
+  if (!flashcards.length) return;
+  const card = flashcards[currentCardIndex];
+  if (!card) return;
+
+  if (confirm("Deseja mesmo excluir este flashcard?")) {
+    flashcards.splice(currentCardIndex, 1);
+    const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+    dados[materiaAtual] = flashcards;
+    localStorage.setItem("flashcards", JSON.stringify(dados));
+    currentCardIndex = flashcards.length ? currentCardIndex % flashcards.length : 0;
+    showCard(currentCardIndex);
+    mostrarMensagemFofo("Flashcard excluído com sucesso! ❌");
+  }
+}
+
+function excluirMateria() {
+  if (!materiaAtual) return;
+  if (confirm(`Excluir todos os flashcards da matéria "${materiaAtual}"?`)) {
+    const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+    delete dados[materiaAtual];
+    localStorage.setItem("flashcards", JSON.stringify(dados));
+    document.querySelectorAll('#botoes-materias button').forEach(btn => {
+      if (btn.textContent.toLowerCase() === materiaAtual) btn.remove();
+    });
+    flashcards = [];
+    cardFront.textContent = "";
+    cardBack.textContent = "";
+    mostrarMensagemFofo("Matéria excluída! 🗑️");
+  }
+}
+
+    function limparCampos() {
+      document.getElementById("novaMateria").value = "";
+      document.getElementById("novaPergunta").value = "";
+      document.getElementById("novaResposta").value = "";
+    }
+
+    function mostrarMensagemFofo(texto) {
+      const mensagem = document.getElementById("mensagem-sucesso");
+      mensagem.textContent = texto;
+      mensagem.style.display = "block";
+      setTimeout(() => mensagem.style.display = "none", 3000);
+    }
+
+    function adicionarBotaoMateria(materia) {
+      const existe = [...document.querySelectorAll('#botoes-materias button')].some(b => b.textContent.toLowerCase() === materia);
+      if (!existe) {
+        const btn = document.createElement("button");
+        btn.textContent = materia.charAt(0).toUpperCase() + materia.slice(1);
+        btn.onclick = () => escolherMateria(materia);
+        document.getElementById("botoes-materias").appendChild(btn);
+      }
+    }
+
+    function carregarMaterias() {
+  const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+  Object.keys(dados).forEach(materia => {
+    adicionarBotaoMateria(materia);
+  });
+}
+
+function adicionarExemplo() {
+  const dadosExistentes = JSON.parse(localStorage.getItem("flashcards")) || {};
+
+  if (!dadosExistentes["história"]) {
+    dadosExistentes["história"] = [
+      {
+        pergunta: "Quem descobriu o Brasil?",
+        resposta: "Pedro Álvares Cabral 🌊🌴"
+      }
+    ];
+    localStorage.setItem("flashcards", JSON.stringify(dadosExistentes));
+  }
+}
+
+// Executa ao carregar
+adicionarExemplo();
+    carregarMaterias();
+  </script>
+</body>
+</html>

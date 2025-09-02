@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="calendario.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="left">
+      <div class="calendar">
+        <div class="month">
+          <i class="fas fa-angle-left prev"></i>
+          <div class="date">december 2015</div>
+          <i class="fas fa-angle-right next"></i>
+        </div>
+        <div class="weekdays">
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+        </div>
+        <div class="days"></div>
+        <div class="goto-today">
+          <div class="goto">
+            <input type="text" placeholder="mm/yyyy" class="date-input" />
+            <button class="goto-btn">Go</button>
+          </div>
+          <button class="today-btn">Today</button>
+        </div>
+      </div>
+    </div>
+    <div class="right">
+      <div class="today-date">
+        <div class="event-day">wed</div>
+        <div class="event-date">12th december 2022</div>
+      </div>
+      <div class="events"></div>
+      <div class="add-event-wrapper">
+        <div class="add-event-header">
+          <div class="title">Add Event</div>
+          <i class="fas fa-times close"></i>
+        </div>
+        <div class="add-event-body">
+          <div class="add-event-input">
+            <input type="text" placeholder="Event Name" class="event-name" />
+          </div>
+          <div class="add-event-input">
+            <input
+              type="text"
+              placeholder="Event Time From"
+              class="event-time-from"
+            />
+          </div>
+          <div class="add-event-input">
+            <input
+              type="text"
+              placeholder="Event Time To"
+              class="event-time-to"
+            />
+          </div>
+        </div>
+        <div class="add-event-footer">
+          <button class="add-event-btn">Add Event</button>
+        </div>
+      </div>
+    </div>
+    <button class="add-event" title="Adicionar anotação">
+      <i class="fas fa-plus"></i>
+    </button>
+  </div>
+
+  <div class="credits">
+  </div>
+  <script>
+  const calendar = document.querySelector(".calendar"),
+    date = document.querySelector(".date"),
+    daysContainer = document.querySelector(".days"),
+    prev = document.querySelector(".prev"),
+    next = document.querySelector(".next"),
+    todayBtn = document.querySelector(".today-btn"),
+    gotoBtn = document.querySelector(".goto-btn"),
+    dateInput = document.querySelector(".date-input"),
+    eventDay = document.querySelector(".event-day"),
+    eventDate = document.querySelector(".event-date"),
+    eventsContainer = document.querySelector(".events"),
+    addEventBtn = document.querySelector(".add-event"),
+    addEventWrapper = document.querySelector(".add-event-wrapper"),
+    addEventCloseBtn = document.querySelector(".close"),
+    addEventTitle = document.querySelector(".event-name"),
+    addEventFrom = document.querySelector(".event-time-from"),
+    addEventTo = document.querySelector(".event-time-to"),
+    addEventSubmit = document.querySelector(".add-event-btn");
+
+let today = new Date();
+let activeDay;
+let month = today.getMonth();
+let year = today.getFullYear();
+
+const months = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+let eventsArr = [];
+
+getEvents();
+initCalendar();
+
+function getEvents() {
+  const stored = localStorage.getItem("calendarEvents");
+  if (stored) {
+    eventsArr = JSON.parse(stored);
+  }
+}
+
+function saveEvents() {
+  localStorage.setItem("calendarEvents", JSON.stringify(eventsArr));
+}
+
+function initCalendar() {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const prevLastDay = new Date(year, month, 0);
+  const prevDays = prevLastDay.getDate();
+  const lastDate = lastDay.getDate();
+  const day = firstDay.getDay();
+  const nextDays = 7 - lastDay.getDay() - 1;
+
+  date.innerHTML = months[month] + " " + year;
+  let days = "";
+
+  for (let x = day; x > 0; x--) {
+    days += `<div class="day prev-date">${prevDays - x + 1}</div>`;
+  }
+
+  for (let i = 1; i <= lastDate; i++) {
+    let event = false;
+    eventsArr.forEach((eventObj) => {
+      if (eventObj.day === i && eventObj.month === month + 1 && eventObj.year === year) {
+        event = true;
+      }
+    });
+
+    if (
+      i === new Date().getDate() &&
+      year === new Date().getFullYear() &&
+      month === new Date().getMonth()
+    ) {
+      activeDay = i;
+      getActiveDay(i);
+      updateEvents(i);
+      days += `<div class="day today active${event ? " event" : ""}">${i}</div>`;
+    } else {
+      days += `<div class="day${event ? " event" : ""}">${i}</div>`;
+    }
+  }
+
+  for (let j = 1; j <= nextDays; j++) {
+    days += `<div class="day next-date">${j}</div>`;
+  }
+
+  daysContainer.innerHTML = days;
+  addListner();
+}
+
+function prevMonth() {
+  month--;
+  if (month < 0) {
+    month = 11;
+    year--;
+  }
+  initCalendar();
+}
+
+function nextMonth() {
+  month++;
+  if (month > 11) {
+    month = 0;
+    year++;
+  }
+  initCalendar();
+}
+
+prev.addEventListener("click", prevMonth);
+next.addEventListener("click", nextMonth);
+
+function addListner() {
+  const days = document.querySelectorAll(".day");
+  days.forEach((day) => {
+    day.addEventListener("click", (e) => {
+      const dayNum = Number(e.target.innerHTML);
+      activeDay = dayNum;
+      getActiveDay(dayNum);
+      updateEvents(dayNum);
+      days.forEach((d) => d.classList.remove("active"));
+      e.target.classList.add("active");
+
+      if (e.target.classList.contains("prev-date")) {
+        prevMonth();
+      } else if (e.target.classList.contains("next-date")) {
+        nextMonth();
+      }
+    });
+  });
+}
+
+function getActiveDay(dateNum) {
+  const day = new Date(year, month, dateNum);
+  const dayName = day.toString().split(" ")[0];
+  eventDay.innerHTML = dayName;
+  eventDate.innerHTML = `${dateNum} ${months[month]} ${year}`;
+}
+
+function updateEvents(dateNum) {
+  let events = "";
+  eventsArr.forEach((eventObj) => {
+    if (eventObj.day === dateNum && eventObj.month === month + 1 && eventObj.year === year) {
+      eventObj.events.forEach((ev) => {
+        events += `<div class="event">
+            <div class="title">
+              <i class="fas fa-circle"></i>
+              <h3 class="event-title">${ev.title}</h3>
+            </div>
+            <div class="event-time">
+              <span class="event-time">${ev.time}</span>
+            </div>
+          </div>`;
+      });
+    }
+  });
+  eventsContainer.innerHTML = events || `<div class="no-event"><h3>No Events</h3></div>`;
+}
+
+todayBtn.addEventListener("click", () => {
+  today = new Date();
+  month = today.getMonth();
+  year = today.getFullYear();
+  initCalendar();
+});
+
+gotoBtn.addEventListener("click", () => {
+  const dateArr = dateInput.value.split("/");
+  if (dateArr.length === 2) {
+    if (dateArr[0] > 0 && dateArr[0] < 13 && dateArr[1].length === 4) {
+      month = dateArr[0] - 1;
+      year = +dateArr[1];
+      initCalendar();
+      return;
+    }
+  }
+  alert("Invalid Date");
+});
+
+addEventBtn.addEventListener("click", () => {
+  addEventWrapper.classList.toggle("active");
+});
+
+addEventCloseBtn.addEventListener("click", () => {
+  addEventWrapper.classList.remove("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target !== addEventBtn && !addEventWrapper.contains(e.target)) {
+    addEventWrapper.classList.remove("active");
+  }
+});
+
+addEventTitle.addEventListener("input", () => {
+  addEventTitle.value = addEventTitle.value.slice(0, 60);
+});
+
+addEventFrom.addEventListener("input", formatTimeInput);
+addEventTo.addEventListener("input", formatTimeInput);
+
+function formatTimeInput(e) {
+  e.target.value = e.target.value.replace(/[^0-9:]/g, "");
+  if (e.target.value.length === 2) {
+    e.target.value += ":";
+  }
+  if (e.target.value.length > 5) {
+    e.target.value = e.target.value.slice(0, 5);
+  }
+}
+
+addEventSubmit.addEventListener("click", () => {
+  const eventTitle = addEventTitle.value;
+  const eventTimeFrom = addEventFrom.value;
+  const eventTimeTo = addEventTo.value;
+
+  if (!eventTitle || !eventTimeFrom || !eventTimeTo) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  const [fromH, fromM] = eventTimeFrom.split(":").map(Number);
+  const [toH, toM] = eventTimeTo.split(":").map(Number);
+  if (
+    fromH > 23 || fromM > 59 || toH > 23 || toM > 59 ||
+    isNaN(fromH) || isNaN(fromM) || isNaN(toH) || isNaN(toM)
+  ) {
+    alert("Invalid time format");
+    return;
+  }
+
+  const newEvent = {
+    title: eventTitle,
+    time: `${convertTime(eventTimeFrom)} - ${convertTime(eventTimeTo)}`
+  };
+
+  let added = false;
+  eventsArr.forEach((ev) => {
+    if (ev.day === activeDay && ev.month === month + 1 && ev.year === year) {
+      ev.events.push(newEvent);
+      added = true;
+    }
+  });
+
+  if (!added) {
+    eventsArr.push({
+      day: activeDay,
+      month: month + 1,
+      year,
+      events: [newEvent]
+    });
+  }
+
+  saveEvents();
+  updateEvents(activeDay);
+  addEventWrapper.classList.remove("active");
+  addEventTitle.value = "";
+  addEventFrom.value = "";
+  addEventTo.value = "";
+});
+
+function convertTime(time) {
+  const [h, m] = time.split(":").map(Number);
+  const period = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${m.toString().padStart(2, "0")} ${period}`;
+}
+  </script>
+</body>
+</html>

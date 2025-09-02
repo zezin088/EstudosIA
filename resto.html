@@ -1,0 +1,40 @@
+
+<script>
+    function verificarEnter(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            const inputElem = document.getElementById("perguntaInput");
+            const pergunta = inputElem.value.trim();
+
+            if (pergunta) {
+            inputElem.value = "";
+            const id = Date.now().toString();
+            let conversas = JSON.parse(localStorage.getItem("conversas") || "[]");
+            conversas.push({ id, texto: pergunta });
+            localStorage.setItem("conversas", JSON.stringify(conversas));
+            window.location.href = resposta.html?id=${id};
+            }
+        }
+    }
+
+    function enviarParaChat() {
+    const pergunta = document.getElementById("perguntaInput").value.trim();
+    if (pergunta !== "") {
+        localStorage.setItem("perguntaInicial", pergunta);
+        window.location.href = "resposta.html";
+    }
+    }
+
+    function iniciarConversa() {
+    const pergunta = "Olá! Em que posso te ajudar nos seus estudos hoje?";
+    const chatId = localStorage.getItem("chatAtual") || Date.now().toString();
+    localStorage.setItem("chatAtual", chatId);
+
+    const conversas = JSON.parse(localStorage.getItem("conversas")) || {};
+    if (!conversas[chatId]) conversas[chatId] = [];
+
+    conversas[chatId].push({ tipo: "usuario", texto: pergunta });
+    localStorage.setItem("conversas", JSON.stringify(conversas));
+    window.location.href = "resposta.html";
+    }
+</script>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat IA</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Karst', sans-serif;
+      background-color: rgb(243, 228, 201);
+      display: flex;
+      height: 100vh;
+    }
+    .container-chat {
+      display: flex;
+      width: 100%;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: rgb(192, 98, 98);
+      padding: 20px;
+      color: white;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+    .sidebar ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar li {
+      background-color: rgb(139, 80, 80);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+    }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding-right: 10px;
+    }
+    .mensagem {
+      max-width: 70%;
+      padding: 12px 18px;
+      border-radius: 15px;
+      font-size: 16px;
+    }
+    .mensagem.usuario {
+      align-self: flex-end;
+      background-color: rgb(192, 98, 98);
+      color: white;
+    }
+    .mensagem.ia {
+      align-self: flex-start;
+      background-color: rgb(139, 80, 80);
+      color: white;
+    }
+    .input-area {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    .input-area button {
+      background-color: rgb(192, 98, 98);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .input-area button:hover {
+      background-color: rgb(139, 80, 80);
+    }
+    .botoes-topo {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.botoes-topo button {
+  background-color: rgb(233, 185, 185);
+  color: rgb(80, 45, 45);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 15px;
+  font-size: 16px;
+  font-family: 'Karst', sans-serif;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.botoes-topo button:hover {
+  background-color: rgb(192, 98, 98);
+  color: white;
+}
+  </style>
+</head>
+<body>
+  <div class="container-chat">
+    <div class="sidebar">
+      <h2>Histórico</h2>
+      <ul id="listaPerguntas"></ul>
+      <div class="botoes-topo">
+        <button id="novo-chat">Novo Chat</button>
+        <button onclick="window.location.href='inicio.php'">Voltar ao Início</button>
+      </div>
+      </div>
+    <div class="chat-area">
+      <div class="chat-box" id="chatBox"></div>
+      <div class="input-area">
+        <input type="text" id="perguntaInput" placeholder="Digite sua pergunta..." />
+        <button onclick="enviarPergunta()">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let historico = [];
+
+    // Mostrar pergunta inicial se houver
+    const perguntaInicial = localStorage.getItem("perguntaInicial");
+    if (perguntaInicial) {
+      adicionarMensagem(perguntaInicial, "usuario");
+      gerarResposta(perguntaInicial);
+      localStorage.removeItem("perguntaInicial");
+    }
+
+    function adicionarMensagem(texto, autor) {
+      const div = document.createElement("div");
+      div.className = `mensagem ${autor}`;
+      div.innerText = texto;
+      document.getElementById("chatBox").appendChild(div);
+
+      historico.push({ texto, autor });
+      atualizarLista();
+    }
+
+    function gerarResposta(pergunta) {
+      const resposta = `Simulando resposta para: "${pergunta}"`;
+      setTimeout(() => adicionarMensagem(resposta, "ia"), 500);
+    }
+
+    function enviarPergunta() {
+      const input = document.getElementById("perguntaInput");
+      const pergunta = input.value.trim();
+      if (pergunta !== "") {
+        input.value = "";
+        adicionarMensagem(pergunta, "usuario");
+        gerarResposta(pergunta);
+      }
+    }
+
+    function atualizarLista() {
+      const lista = document.getElementById("listaPerguntas");
+      lista.innerHTML = "";
+      historico
+        .filter(msg => msg.autor === "usuario")
+        .forEach((msg, i) => {
+          const li = document.createElement("li");
+          li.innerText = msg.texto.slice(0, 40);
+          li.onclick = () => alert(msg.texto);
+          lista.appendChild(li);
+        });
+    }
+
+    function criarNovoChat() {
+  const novoId = Date.now().toString();
+  localStorage.setItem("chatAtual", novoId); // apenas cria novo id
+  location.reload(); // recarrega o chat com o novo id
+}
+document.addEventListener("DOMContentLoaded", () => {
+  const chatId = localStorage.getItem("chatAtual");
+  const conversas = JSON.parse(localStorage.getItem("conversas") || "{}");
+  const chatBox = document.querySelector(".chat-box");
+
+  if (chatId && conversas[chatId]) {
+    conversas[chatId].forEach(mensagem => {
+      const div = document.createElement("div");
+      div.classList.add("mensagem", mensagem.tipo);
+      div.textContent = mensagem.texto;
+      chatBox.appendChild(div);
+    });
+  }
+
+  document.getElementById("novo-chat").addEventListener("click", () => {
+    const novoId = Date.now().toString();
+    localStorage.setItem("chatAtual", novoId);
+
+    // Garante que a estrutura de conversas existe
+    const conversas = JSON.parse(localStorage.getItem("conversas") || "{}");
+    conversas[novoId] = [];
+    localStorage.setItem("conversas", JSON.stringify(conversas));
+
+    window.location.reload(); // Recarrega a página limpa
+  });
+});
+  </script>
+</body>
+</html>

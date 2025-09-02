@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadernos Essenciais para Estudantes</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background-color: #f1f1f1;
+      color: #2c2c54;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #3c3c74;
+      font-size: 36px;
+      margin-bottom: 40px;
+    }
+
+    .cadernos-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .caderno {
+      width: 180px;
+      text-decoration: none;
+      color: #2c2c54;
+      transition: transform 0.3s;
+    }
+
+    .caderno img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border: 3px solid #4a69bd;
+    }
+
+    .caderno:hover {
+      transform: scale(1.05);
+    }
+
+    .caderno span {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      margin-top: 50px;
+      padding: 10px 20px;
+      background-color: #2c2c54;
+      color: #ffffff;
+      font-size: 16px;
+      text-decoration: none;
+      border-radius: 10px;
+      border: none;
+      transition: background-color 0.3s;
+    }
+
+    .btn-voltar:hover {
+      background-color: #4a69bd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Armário dos Cadernos </h1>
+
+  <div class="cadernos-container">
+    <a class="caderno" href="agenda.html">
+      <img src="/anotacoes/imagens/309561a566d949a44d7277cd8ffab713.jpg" alt="Caderno Agenda">
+      <span>Agenda</span>
+    </a>
+    <a class="caderno" href="financas.html">
+      <img src="/anotacoes/imagens/882fc562350cf5717e4999b7303e7646.jpg" alt="Caderno Finanças">
+      <span>Finanças</span>
+    </a>
+    <a class="caderno" href="planejamento.html">
+      <img src="/anotacoes/imagens/913353af28362c1811781fca866741f5.jpg" alt="Caderno Planejamento">
+      <span>Planejamento</span>
+    </a>
+    <a class="caderno" href="anotacoes.html">
+      <img src="/anotacoes/imagens/d3d044dd74dcff0d1467b984ac14a9b4.png" alt="Caderno Anotações">
+      <span>Anotações</span>
+    </a>
+    <a class="caderno" href="tarefas.html">
+      <img src="/anotacoes/imagens/imagem caderno.jpg" alt="Caderno Tarefas">
+      <span>Tarefas</span>
+    </a>
+  </div>
+
+  <a class="btn-voltar" href="/inicio.php">⬅️ Voltar para o Início</a>
+
+</body>
+</html>

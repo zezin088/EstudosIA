@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tarefas</title>
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: 'Comic Sans MS', cursive;
+      color: #2c2c54;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #3c3c74;
+    }
+
+    .lista-tarefas {
+      background-color: #ffffff;
+      width: 90%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .tarefa {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .tarefa input[type="checkbox"] {
+      margin-right: 15px;
+      transform: scale(1.4);
+      accent-color: #4a69bd;
+    }
+
+    .tarefa input[type="text"] {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #4a69bd;
+      background-color: #f1f4f9;
+    }
+
+    .btn {
+      cursor: pointer;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      margin: 10px 5px;
+      font-family: 'Comic Sans MS', cursive;
+      font-weight: bold;
+      color: white;
+      background-color: #4a69bd;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #6b88e2;
+    }
+
+    .btn-excluir {
+      background-color: #bd4a69;
+      margin-left: 10px;
+      font-size: 14px;
+      padding: 6px 12px;
+    }
+
+    .btn-excluir:hover {
+      background-color: #e26b88;
+    }
+
+    .btn-adicionar-tarefa {
+      background-color: #4a69bd;
+      margin-left: 10px;
+      font-size: 14px;
+      padding: 6px 12px;
+    }
+
+    .btn-adicionar-tarefa:hover {
+      background-color: #6b88e2;
+    }
+
+    .btn-voltar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #4a69bd;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-voltar:hover {
+      background-color: #6b88e2;
+    }
+
+    .btn-salvar {
+      display: block;
+      margin: 40px auto 0;
+      padding: 12px 30px;
+      font-size: 18px;
+      background-color: #3c3c74;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-salvar:hover {
+      background-color: #4a69bd;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="btn-voltar" href="/anotacoes/index.html">⬅️ Voltar</a>
+
+  <h1>Tarefas do Dia</h1>
+
+  <div class="lista-tarefas" id="lista-tarefas">
+    <!-- Tarefas iniciais -->
+    <div class="tarefa">
+      <input type="checkbox" />
+      <input type="text" placeholder="Ex: Estudar matemática" />
+      <button class="btn-excluir">❌</button>
+      <button class="btn-adicionar-tarefa">➕</button>
+    </div>
+    <div class="tarefa">
+      <input type="checkbox" />
+      <input type="text" placeholder="Ex: Fazer trabalho de história" />
+      <button class="btn-excluir">❌</button>
+      <button class="btn-adicionar-tarefa">➕</button>
+    </div>
+    <div class="tarefa">
+      <input type="checkbox" />
+      <input type="text" placeholder="Ex: Organizar materiais" />
+      <button class="btn-excluir">❌</button>
+      <button class="btn-adicionar-tarefa">➕</button>
+    </div>
+  </div>
+
+  <button class="btn-salvar" id="btn-salvar">💾 Salvar</button>
+
+  <script>
+    const lista = document.getElementById('lista-tarefas');
+    const btnSalvar = document.getElementById('btn-salvar');
+
+    function criarTarefa(text = '', checked = false) {
+      const tarefaDiv = document.createElement('div');
+      tarefaDiv.classList.add('tarefa');
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = checked;
+
+      const inputTexto = document.createElement('input');
+      inputTexto.type = 'text';
+      inputTexto.placeholder = 'Nova tarefa...';
+      inputTexto.value = text;
+
+      const btnExcluir = document.createElement('button');
+      btnExcluir.textContent = '❌';
+      btnExcluir.classList.add('btn-excluir');
+      btnExcluir.onclick = () => tarefaDiv.remove();
+
+      const btnAdicionarTarefa = document.createElement('button');
+      btnAdicionarTarefa.textContent = '➕';
+      btnAdicionarTarefa.classList.add('btn-adicionar-tarefa');
+      btnAdicionarTarefa.onclick = () => {
+        const novaTarefa = criarTarefa();
+        tarefaDiv.insertAdjacentElement('afterend', novaTarefa);
+        novaTarefa.querySelector('input[type="text"]').focus();
+      };
+
+      tarefaDiv.appendChild(checkbox);
+      tarefaDiv.appendChild(inputTexto);
+      tarefaDiv.appendChild(btnExcluir);
+      tarefaDiv.appendChild(btnAdicionarTarefa);
+
+      return tarefaDiv;
+    }
+
+    // Carregar tarefas salvas ao iniciar a página
+    window.addEventListener('load', () => {
+      const tarefasSalvas = JSON.parse(localStorage.getItem('minhasTarefas'));
+      lista.innerHTML = '';
+
+      if (tarefasSalvas && tarefasSalvas.length) {
+        tarefasSalvas.forEach(tarefa => {
+          lista.appendChild(criarTarefa(tarefa.texto, tarefa.marcada));
+        });
+      } else {
+        lista.appendChild(criarTarefa('Estudar matemática'));
+        lista.appendChild(criarTarefa('Fazer trabalho de história'));
+        lista.appendChild(criarTarefa('Organizar materiais'));
+      }
+    });
+
+    // Salvar tarefas no localStorage
+    btnSalvar.addEventListener('click', () => {
+      const tarefas = [];
+      document.querySelectorAll('.lista-tarefas .tarefa').forEach(tarefaDiv => {
+        const texto = tarefaDiv.querySelector('input[type="text"]').value;
+        const marcada = tarefaDiv.querySelector('input[type="checkbox"]').checked;
+        tarefas.push({ texto, marcada });
+      });
+      localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
+      alert('Tarefas salvas com sucesso! 💾');
+    });
+  </script>
+
+</body>
+</html>

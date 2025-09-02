@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    @font-face {
+      font-family: raesha;
+      src: url('fonts/Raesha.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: Karst;
+      src: url('fonts/Karst-Light.otf') format('truetype');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: rgb(243, 228, 201);
+      color: rgb(192, 98, 98);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: white;
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: rgb(139, 80, 80);
+      margin-bottom: 20px;
+      font-size: 2rem;
+      font-family: 'raesha';
+    }
+
+    p {
+      margin-top: 15px;
+    }
+
+    a {
+      text-decoration: none;
+      color: rgb(139, 80, 80);
+    }
+
+    .input-group {
+      position: relative;
+      width: 100%;
+      margin: 0px 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid rgb(192, 98, 98);
+      border-radius: 25px;
+      font-size: 1rem;
+      color: rgb(139, 80, 80);
+      background-color: rgba(243, 228, 201, 0.699);
+      outline: none;
+      margin: 5px 0;
+    }
+
+    input:focus {
+      border-color: rgb(139, 80, 80);
+    }
+
+    input::placeholder {
+      color: rgb(139, 80, 80);
+      opacity: 0.7;
+    }
+
+    /* botão do olho */
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: rgb(139, 80, 80);
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .toggle-password:hover {
+      color: rgb(192, 98, 98);
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background-color: rgb(192, 98, 98);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin: 10px 0;
+    }
+
+    button[type="submit"]:hover {
+      background-color: rgb(139, 80, 80);
+    }
+
+    .mensagem {
+      padding: 10px;
+      margin: 15px 0;
+      border-radius: 5px;
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.5s ease-out, top 0.5s ease-out;
+    }
+
+    .mensagem.show {
+      opacity: 1;
+      top: 50px;
+    }
+
+    .google-btn {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cadastro</h2>
+
+    <form id="cadastroForm" action="cadastro.php" method="POST">
+      <input type="text" name="nome" placeholder="Nome completo" required>
+      <input type="email" name="email" placeholder="E-mail" required>
+    
+      <div class="input-group">
+        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        <button type="button" class="toggle-password" onclick="mostrarSenha()">👁</button>
+      </div>
+    
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <div class="google-btn">
+      <div id="g_id_onload"
+        data-client_id="912161681251-ak3vkdll5oknq0ssd0uv44ikpvq59q27.apps.googleusercontent.com"
+        data-login_uri="#"
+        data-auto_prompt="false">
+      </div>
+
+      <div class="g_id_signin"
+        data-type="standard"
+        data-shape="pill"
+        data-theme="outline"
+        data-text="signup_with"
+        data-size="large"
+        data-logo_alignment="left">
+      </div>
+    </div>
+
+    <p>Já tem uma conta? <a href="login.html">Entrar</a></p>
+  </div>
+
+<script>
+function mostrarSenha() {
+  const input = document.getElementById("senha");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function enviarMensagem(event) {
+  event.preventDefault(); // evita envio automático
+
+  // Aqui você pode enviar via AJAX para cadastro.php se quiser
+  // e depois redirecionar apenas se deu sucesso
+  localStorage.setItem('mensagemLogin', 'Cadastrado com sucesso');
+  window.location.href = 'login.html';
+}
+</script>
+</body>
+</html>
