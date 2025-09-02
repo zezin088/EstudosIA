@@ -12,4 +12,5 @@ if($conteudo){
     } else echo 'erro';
     $stmt->close();
 }
+
 ?>
