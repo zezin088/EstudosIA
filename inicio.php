@@ -173,7 +173,7 @@ $usuario = $result->fetch_assoc();
     <div class="banner-text">
       <h2>Inteligência Artificial</h2>
       <h3>Auxiliando nos seus estudos!</h3>
-      <button onclick="alert('Você será redirecionado para a IA')">Faça sua pergunta!</button>
+      <button onclick="location.href='resposta.html'">Faça sua pergunta!</button>
     </div>
     <img src="/imagens/robolindo-Photoroom.png" class="banner-icon right" alt="Robozinho lindo direito">
   </div>
