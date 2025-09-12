@@ -11,69 +11,77 @@
     }
 
     body {
-      font-family: 'Comic Sans MS', cursive;
-      background-color: rgb(243, 228, 201);
-      color: rgb(192, 98, 98);
-      padding: 20px;
+      font-family: 'Karst', sans-serif;
+      background-color: #f1f1f1;
+      color: #2c2c54;
+      padding: 0;
       margin: 0;
-      text-align: center;
       box-sizing: border-box;
     }
 
     h1, h2 {
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     }
 
-    h1 {
-      font-size: 2.5rem;
-      background-color: rgba(172, 94, 30, 0.58);
-      padding: 15px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(172, 94, 30, 0.3);
+    .topo-nav {
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      padding:18px 40px; 
+      background:#f1f1f1; 
+      box-shadow:0 2px 6px rgba(0,0,0,0.1); 
+      position:sticky; 
+      top:0; 
+      z-index:999;
     }
 
-    .topo {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 600px;
-      margin: 0 auto 20px;
-      flex-wrap: wrap;
-      gap: 10px;
+    .topo-nav h1 {
+      font-family: 'Bungee', cursive; 
+      font-size:28px; 
+      color:#2c2c54; 
+      margin:0; 
+      user-select:none;
+    }
+
+    .topo-nav .user-menu {
+      display:flex; 
+      align-items:center; 
+      gap:15px;
     }
 
     .container {
       max-width: 600px;
-      margin: 0 auto;
-      padding: 30px;
-      background-color: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin: 20px auto;
+      padding: 25px;
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
 
     .materias {
       margin: 20px 0;
+      text-align: center;
     }
 
     .materias button,
     .formulario button,
     button {
-      background-color: rgb(192, 98, 98);
+      background-color: #4a69bd;
       color: white;
       border: none;
       padding: 12px 20px;
-      border-radius: 20px;
+      border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
       margin: 5px;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
     .materias button:hover,
     .formulario button:hover,
     button:hover {
-      background-color: rgb(139, 80, 80);
+      background-color: #3c3c74;
       transform: scale(1.05);
     }
 
@@ -85,21 +93,23 @@
 
     .formulario input {
       padding: 12px;
-      border: 2px solid rgb(192, 98, 98);
+      border: 2px solid #9db4cc;
       border-radius: 10px;
       font-size: 1rem;
+      color: #2c2c54;
     }
 
     #mensagem-sucesso {
-      background-color: rgb(243, 228, 201);
-      color: rgb(192, 98, 98);
-      border: 2px dashed rgb(192, 98, 98);
-      padding: 10px;
-      border-radius: 12px;
+      background-color: #cfe0f3;
+      color: #2c2c54;
+      border: 2px dashed #4a69bd;
+      padding: 12px;
+      border-radius: 10px;
       margin-top: 20px;
       display: none;
       font-size: 1rem;
       animation: aparecer 0.4s ease;
+      text-align: center;
     }
 
     .card {
@@ -116,9 +126,9 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background-color: rgb(243, 228, 201);
-      color: rgb(192, 98, 98);
-      border: 2px solid rgb(192, 98, 98);
+      background-color: #cfe0f3;
+      color: #2c2c54;
+      border: 2px solid #4a69bd;
       border-radius: 15px;
       backface-visibility: hidden;
       display: flex;
@@ -128,6 +138,7 @@
       transition: transform 0.6s;
       padding: 20px;
       box-sizing: border-box;
+      text-align: center;
     }
 
     .card .back {
@@ -141,18 +152,67 @@
     .card.flipped .back {
       transform: rotateY(360deg);
     }
+
+    /* Botão voltar logo abaixo da nav */
+    #btn-voltar {
+      display: inline-block;
+      margin: 15px 20px;
+      background-color: #4a69bd;
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-family: 'Karst', sans-serif;
+      font-weight: 550;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    #btn-voltar:hover {
+      background-color: #3c3c74;
+    }
   </style>
 </head>
 <body>
 
-  <div class="topo">
-    <h2 style="margin: 0;">Adicionar Novo Flashcard</h2>
-    <button onclick="goHome()">Página Inicial</button>
+<!-- Barra de navegação -->
+<nav class="topo-nav" role="navigation" aria-label="Navegação principal">
+  <h1>EstudosIA</h1>
+  <div class="user-menu">
+    <a href="editar_usuario.php" class="user-info" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#4a69bd; font-weight:700; font-size:16px;">
+      <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
+      <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" 
+           alt="Foto do usuário" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4a69bd;" />
+    </a>
+    <a href="logout.php" class="logout" style="font-weight:700; color:#c0392b; text-decoration:none; padding:8px 14px; border-radius:8px;">Sair</a>
+  </div>
+</nav>
+
+<!-- Botão voltar fora da nav -->
+<button id="btn-voltar" onclick="goHome()">Voltar</button>
+
+  <!-- Flashcards -->
+  <div class="container">
+    <h1>Flashcards</h1>
+    <div id="flashcard" class="card" onclick="flipCard()">
+      <div class="front" id="card-front">Clique em uma matéria ou faça uma ✨</div>
+      <div class="back" id="card-back"></div>
+    </div>
+
+    <div class="materias" id="botoes-materias"></div>
+
+    <button onclick="previousCard()">Anterior</button>
+    <button onclick="nextCard()">Próximo</button>
+    <button onclick="excluirFlashcardAtual()">Excluir Flashcard</button>
+    <button onclick="excluirMateria()">Excluir Matéria</button>
   </div>
 
+  <!-- Adicionar Flashcard -->
   <div class="container">
+    <h2 style="margin: 0 0 20px;">Adicionar Novo Flashcard</h2>
     <div class="formulario">
-      <label for="novaMateria">Matéria:</label>
+      <label for="novaMateria">Matéria (deixe vazio para usar a atual):</label>
       <input type="text" id="novaMateria" placeholder="Digite a matéria" />
 
       <label for="novaPergunta">Pergunta:</label>
@@ -162,26 +222,10 @@
       <input type="text" id="novaResposta" placeholder="Digite a resposta" />
 
       <button id="btnAdicionar" onclick="adicionarFlashcard()">Adicionar Flashcard</button>
-      <button onclick="limparCampos()">Limpar Campos</button>
     </div>
   </div>
 
   <div id="mensagem-sucesso"></div>
-
-  <div class="materias" id="botoes-materias"></div>
-
-  <div class="container">
-    <h1>Flashcards</h1>
-    <div id="flashcard" class="card" onclick="flipCard()">
-      <div class="front" id="card-front"></div>
-      <div class="back" id="card-back"></div>
-    </div>
-
-    <button onclick="previousCard()">Anterior</button>
-    <button onclick="nextCard()">Próximo</button>
-    <button onclick="excluirFlashcardAtual()">Excluir Flashcard</button>
-    <button onclick="excluirMateria()">Excluir Matéria</button>
-  </div>
 
   <script>
     let materiaAtual = '';
@@ -192,6 +236,11 @@
     const flashcard = document.getElementById("flashcard");
 
     function showCard(index) {
+      if (!flashcards.length) {
+        cardFront.textContent = "Clique em uma matéria ou faça uma ✨";
+        cardBack.textContent = "";
+        return;
+      }
       const card = flashcards[index];
       cardFront.textContent = card?.pergunta || "Sem pergunta";
       cardBack.textContent = card?.resposta || "Sem resposta";
@@ -199,7 +248,9 @@
     }
 
     function flipCard() {
-      flashcard.classList.toggle("flipped");
+      if (flashcards.length) {
+        flashcard.classList.toggle("flipped");
+      }
     }
 
     function nextCard() {
@@ -214,84 +265,76 @@
       showCard(currentCardIndex);
     }
 
-    function goHome() {
-      window.location.href = "/inicio.php"; // Substitua com o caminho correto da página inicial
+    function escolherMateria(materia) {
+      materiaAtual = materia;
+      const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+      flashcards = dados[materiaAtual] || [];
+      currentCardIndex = 0;
+      showCard(currentCardIndex);
     }
 
-    function escolherMateria(materia) {
-  materiaAtual = materia;
-  const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
-  flashcards = dados[materiaAtual] || [];
-  currentCardIndex = 0;
-  showCard(currentCardIndex);
-}
-
     function adicionarFlashcard() {
-  const materiaInput = document.getElementById("novaMateria");
-  const perguntaInput = document.getElementById("novaPergunta");
-  const respostaInput = document.getElementById("novaResposta");
+      const materiaInput = document.getElementById("novaMateria");
+      const perguntaInput = document.getElementById("novaPergunta");
+      const respostaInput = document.getElementById("novaResposta");
 
-  const materia = materiaInput.value.trim().toLowerCase();
-  const pergunta = perguntaInput.value.trim();
-  const resposta = respostaInput.value.trim();
+      const materiaDigitada = materiaInput.value.trim().toLowerCase();
+      const materia = materiaDigitada || materiaAtual;
 
-  if (!materia || !pergunta || !resposta) {
-    mostrarMensagemFofo("Preencha tudo direitinho, por favor! 💡");
-    return;
-  }
+      const pergunta = perguntaInput.value.trim();
+      const resposta = respostaInput.value.trim();
 
-  let dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+      if (!materia || !pergunta || !resposta) {
+        mostrarMensagemFofo("Preencha tudo direitinho, por favor! 💡");
+        return;
+      }
 
-  if (!dados[materia]) {
-    dados[materia] = [];
-  }
+      let dados = JSON.parse(localStorage.getItem("flashcards")) || {};
 
-  dados[materia].push({ pergunta, resposta });
+      if (!dados[materia]) {
+        dados[materia] = [];
+      }
 
-  localStorage.setItem("flashcards", JSON.stringify(dados));
+      dados[materia].push({ pergunta, resposta });
 
-  adicionarBotaoMateria(materia);
-  escolherMateria(materia);
-  limparCampos();
-  mostrarMensagemFofo("Flashcard adicionado com sucesso! ✨");
-}
+      localStorage.setItem("flashcards", JSON.stringify(dados));
 
-function excluirFlashcardAtual() {
-  if (!flashcards.length) return;
-  const card = flashcards[currentCardIndex];
-  if (!card) return;
+      adicionarBotaoMateria(materia);
+      escolherMateria(materia);
 
-  if (confirm("Deseja mesmo excluir este flashcard?")) {
-    flashcards.splice(currentCardIndex, 1);
-    const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
-    dados[materiaAtual] = flashcards;
-    localStorage.setItem("flashcards", JSON.stringify(dados));
-    currentCardIndex = flashcards.length ? currentCardIndex % flashcards.length : 0;
-    showCard(currentCardIndex);
-    mostrarMensagemFofo("Flashcard excluído com sucesso! ❌");
-  }
-}
+      materiaInput.value = "";
+      perguntaInput.value = "";
+      respostaInput.value = "";
 
-function excluirMateria() {
-  if (!materiaAtual) return;
-  if (confirm(`Excluir todos os flashcards da matéria "${materiaAtual}"?`)) {
-    const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
-    delete dados[materiaAtual];
-    localStorage.setItem("flashcards", JSON.stringify(dados));
-    document.querySelectorAll('#botoes-materias button').forEach(btn => {
-      if (btn.textContent.toLowerCase() === materiaAtual) btn.remove();
-    });
-    flashcards = [];
-    cardFront.textContent = "";
-    cardBack.textContent = "";
-    mostrarMensagemFofo("Matéria excluída! 🗑️");
-  }
-}
+      mostrarMensagemFofo("Flashcard adicionado com sucesso! ✨");
+    }
 
-    function limparCampos() {
-      document.getElementById("novaMateria").value = "";
-      document.getElementById("novaPergunta").value = "";
-      document.getElementById("novaResposta").value = "";
+    function excluirFlashcardAtual() {
+      if (!flashcards.length) return;
+      if (confirm("Deseja mesmo excluir este flashcard?")) {
+        flashcards.splice(currentCardIndex, 1);
+        const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+        dados[materiaAtual] = flashcards;
+        localStorage.setItem("flashcards", JSON.stringify(dados));
+        currentCardIndex = flashcards.length ? currentCardIndex % flashcards.length : 0;
+        showCard(currentCardIndex);
+        mostrarMensagemFofo("Flashcard excluído com sucesso! ❌");
+      }
+    }
+
+    function excluirMateria() {
+      if (!materiaAtual) return;
+      if (confirm(`Excluir todos os flashcards da matéria "${materiaAtual}"?`)) {
+        const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+        delete dados[materiaAtual];
+        localStorage.setItem("flashcards", JSON.stringify(dados));
+        document.querySelectorAll('#botoes-materias button').forEach(btn => {
+          if (btn.textContent.toLowerCase() === materiaAtual) btn.remove();
+        });
+        flashcards = [];
+        showCard(0);
+        mostrarMensagemFofo("Matéria excluída! 🗑️");
+      }
     }
 
     function mostrarMensagemFofo(texto) {
@@ -312,29 +355,19 @@ function excluirMateria() {
     }
 
     function carregarMaterias() {
-  const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
-  Object.keys(dados).forEach(materia => {
-    adicionarBotaoMateria(materia);
-  });
-}
+      const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+      Object.keys(dados).forEach(materia => {
+        adicionarBotaoMateria(materia);
+      });
+    }
 
-function adicionarExemplo() {
-  const dadosExistentes = JSON.parse(localStorage.getItem("flashcards")) || {};
+    function goHome() {
+      window.location.href = "home.php";
+    }
 
-  if (!dadosExistentes["história"]) {
-    dadosExistentes["história"] = [
-      {
-        pergunta: "Quem descobriu o Brasil?",
-        resposta: "Pedro Álvares Cabral 🌊🌴"
-      }
-    ];
-    localStorage.setItem("flashcards", JSON.stringify(dadosExistentes));
-  }
-}
-
-// Executa ao carregar
-adicionarExemplo();
+    // Executa ao carregar
     carregarMaterias();
+    showCard(0);
   </script>
 </body>
 </html>

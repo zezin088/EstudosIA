@@ -40,30 +40,65 @@ $usuario = $result->fetch_assoc();
       background-color: #ffffff;
     }
 
-    .topo {
+    /* Substituído .topo pelo topo-nav */
+    .topo-nav {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 20px 40px;
+      padding: 18px 40px;
       background-color: #f1f1f1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 999;
     }
-
-    .topo h1 { color: #2c2c54; font-size: 24px; }
-    .topo nav { display: flex; align-items: center; gap: 30px; }
-
-    .user-wrapper {
+    .topo-nav h1 {
+      font-family: 'Bungee', cursive;
+      font-size: 28px;
+      color: #2c2c54;
+      margin: 0;
+      user-select: none;
+    }
+    .user-menu {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
-    .user-wrapper img {
-      width: 40px; height: 40px; border-radius: 50%;
-      object-fit: cover; border: 2px solid #4a69bd;
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #4a69bd;
+      font-weight: 700;
+      font-size: 16px;
+      transition: color 0.3s ease;
     }
-    .user-wrapper span { font-weight: bold; color: #4a69bd; }
-    .logout-link { margin-left: 10px; text-decoration: none; color: #c0392b; font-weight: bold; }
+    .user-info img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #4a69bd;
+      box-shadow: 0 2px 6px rgba(74,105,189,0.5);
+    }
+    .logout {
+      font-weight: 700;
+      color: #c0392b;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 15px;
+      user-select: none;
+    }
+    .logout:hover {
+      background-color: #c0392b;
+      color: white;
+    }
 
-    /* Banner */
+    /* Banner e restante do CSS mantidos iguais */
     .banner {
       background-color: #9db4cc;
       text-align: center;
@@ -102,13 +137,13 @@ $usuario = $result->fetch_assoc();
       border-radius: 8px; cursor: pointer;
     }
 
-.conteudo-principal {
-  display: flex;
-  flex-direction: row;   /* agora ficam lado a lado */
-  align-items: flex-start;
-  gap: 60px;             /* espaço entre cronômetro e quadrados */
-  margin: 90px 90px;
-}
+    .conteudo-principal {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 60px;
+      margin: 90px 90px;
+    }
     .botao-cronometro {
       width: 400px; height: 170px;
       background: none; border: none; cursor: pointer;
@@ -155,18 +190,18 @@ $usuario = $result->fetch_assoc();
 </head>
 <body>
 
-  <div class="topo">
+  <!-- Aqui substituí o div topo pela nav topo-nav -->
+  <nav class="topo-nav" role="navigation" aria-label="Navegação principal">
     <h1>EstudosIA</h1>
-    <nav>
-      <div class="user-wrapper">
-        <a href="editar_usuario.php" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-          <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
-          <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" alt="Foto do usuário">
-        </a>
-        <a href="logout.php" class="logout-link">Sair</a>
-      </div>
-    </nav>
-  </div>
+
+    <div class="user-menu">
+      <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>">
+        <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
+        <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" alt="Foto do usuário">
+      </a>
+      <a href="logout.php" class="logout">Sair</a>
+    </div>
+  </nav>
 
   <div class="banner">
     <img src="/imagens/robolindo-Photoroom-fotor-20250818115256.png" class="banner-icon left" alt="Robozinho lindo esquerdo">
