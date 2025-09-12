@@ -119,28 +119,6 @@
       background-color: rgb(139, 80, 80);
     }
 
-    .mensagem {
-      padding: 10px;
-      margin: 15px 0;
-      border-radius: 5px;
-      display: block;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.5s ease-out, top 0.5s ease-out;
-    }
-
-    .mensagem.show {
-      opacity: 1;
-      top: 50px;
-    }
-
     .google-btn {
       margin-top: 15px;
     }
@@ -186,15 +164,6 @@
 function mostrarSenha() {
   const input = document.getElementById("senha");
   input.type = input.type === "password" ? "text" : "password";
-}
-
-function enviarMensagem(event) {
-  event.preventDefault(); // evita envio automático
-
-  // Aqui você pode enviar via AJAX para cadastro.php se quiser
-  // e depois redirecionar apenas se deu sucesso
-  localStorage.setItem('mensagemLogin', 'Cadastrado com sucesso');
-  window.location.href = 'login.html';
 }
 </script>
 </body>

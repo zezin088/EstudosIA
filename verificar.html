@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Verificação de E-mail</title>
+</head>
+<body>
+  <h2>Digite o código enviado para seu e-mail</h2>
+  <form action="verificar.php" method="POST">
+    <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($_GET['user']); ?>">
+    <input type="text" name="codigo" maxlength="6" required placeholder="Código">
+    <button type="submit">Verificar</button>
+  </form>
+</body>
+</html>
