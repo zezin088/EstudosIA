@@ -73,34 +73,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['do_upload'])) {
     if (!move_uploaded_file($f['tmp_name'], $destPath)) {
         flash('Falha ao salvar o arquivo.', 'err');
     } else {
+        // Salva no banco
+        $stmt = $pdo->prepare("INSERT INTO arquivos (nome_original, nome_servidor, tamanho, data_envio) VALUES (?, ?, ?, NOW())");
+        $stmt->execute([$f['name'], $destName, $f['size']]);
         flash('PDF enviado com sucesso!', 'ok');
-        // Aqui você pode salvar info no banco se quiser:
-        // $stmt = $pdo->prepare("INSERT INTO arquivos (nome_arquivo) VALUES (?)");
-        // $stmt->execute([$destName]);
     }
 
     header('Location: '.$_SERVER['REQUEST_URI']); exit;
 }
 
 // ========================= DELETE HANDLER =========================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_file'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     if (!hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'] ?? '')) {
         flash('Sessão expirada. Atualize a página e tente novamente.', 'err');
         header('Location: '.$_SERVER['REQUEST_URI']); exit;
     }
 
-    $filename = basename($_POST['delete_file']);
-    $filepath = $uploadDir . '/' . $filename;
+    $id = (int)$_POST['delete_id'];
 
-    if (is_file($filepath) && strtolower(pathinfo($filepath, PATHINFO_EXTENSION)) === 'pdf') {
-        if (@unlink($filepath)) {
-            flash('Arquivo excluído com sucesso!', 'ok');
-            // Aqui também pode deletar do banco se você usar
-        } else {
-            flash('Não foi possível excluir o arquivo.', 'err');
+    // Busca arquivo no banco
+    $stmt = $pdo->prepare("SELECT nome_servidor FROM arquivos WHERE id = ?");
+    $stmt->execute([$id]);
+    $file = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($file) {
+        $filepath = $uploadDir . '/' . $file['nome_servidor'];
+        if (is_file($filepath)) {
+            @unlink($filepath);
         }
+
+        // Deleta do banco
+        $stmt = $pdo->prepare("DELETE FROM arquivos WHERE id = ?");
+        $stmt->execute([$id]);
+
+        flash('Arquivo excluído com sucesso!', 'ok');
     } else {
-        flash('Arquivo inválido ou inexistente.', 'err');
+        flash('Arquivo não encontrado.', 'err');
     }
 
     header('Location: '.$_SERVER['REQUEST_URI']); exit;
@@ -108,19 +116,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_file'])) {
 
 // ========================= LISTA DE ARQUIVOS =========================
 $files = [];
-if (is_dir($uploadDir)) {
-    foreach (glob($uploadDir.'/*.pdf') as $p) {
-        $files[] = [
-            'name' => basename($p),
-            'size' => filesize($p),
-            'mtime'=> filemtime($p),
-            'url'  => 'uploads/'.rawurlencode(basename($p)),
-        ];
-    }
-    // mais novo primeiro
-    usort($files, fn($a,$b)=> $b['mtime'] <=> $a['mtime']);
+try {
+    $stmt = $pdo->query("SELECT * FROM arquivos ORDER BY data_envio DESC");
+    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    flash("Erro ao buscar arquivos: " . $e->getMessage(), 'err');
 }
 
+// Função para exibir tamanho legível
 function humanSize($bytes){
     $u = ['B','KB','MB','GB','TB'];
     $i = 0;
@@ -397,6 +400,7 @@ table.table-pdf{
 <main class="container">
   <h1>Envie seu arquivo PDF</h1>
 
+  <!-- Formulário de upload -->
   <section class="upload-card">
     <form method="post" enctype="multipart/form-data" class="upload-row">
       <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf, ENT_QUOTES); ?>">
@@ -407,6 +411,7 @@ table.table-pdf{
     </form>
   </section>
 
+  <!-- Flash messages -->
   <?php if (!empty($_SESSION['flash'])): ?>
     <div class="alerts">
       <?php foreach ($_SESSION['flash'] as $f): ?>
@@ -417,6 +422,7 @@ table.table-pdf{
     </div>
   <?php endif; ?>
 
+  <!-- Tabela de arquivos -->
   <section class="table-wrap">
     <table class="table-pdf">
       <thead>
@@ -430,30 +436,29 @@ table.table-pdf{
       <tbody>
         <?php if (!$files): ?>
           <tr><td colspan="4">Nenhum PDF enviado ainda.</td></tr>
-        <?php else: foreach ($files as $it): ?>
+        <?php else: foreach ($files as $it): 
+            $url = 'uploads/' . rawurlencode($it['nome_servidor']);
+        ?>
           <tr>
             <td class="nome">
-              <a href="<?php echo htmlspecialchars($it['url'], ENT_QUOTES); ?>" target="_blank" rel="noopener">
-                <?php echo htmlspecialchars($it['name'], ENT_QUOTES); ?>
+              <a href="<?php echo htmlspecialchars($url, ENT_QUOTES); ?>" target="_blank" rel="noopener">
+                <?php echo htmlspecialchars($it['nome_original'], ENT_QUOTES); ?>
               </a>
             </td>
-            <td><?php echo humanSize($it['size']); ?></td>
-            <td><?php echo date('d/m/Y H:i', $it['mtime']); ?></td>
+            <td><?php echo humanSize($it['tamanho']); ?></td>
+            <td><?php echo date('d/m/Y H:i', strtotime($it['data_envio'])); ?></td>
             <td style="display:flex; gap:10px; align-items:center;">
-
               <!-- Botão Baixar -->
-              <a class="btn-action"
-                 href="<?php echo htmlspecialchars($it['url'], ENT_QUOTES); ?>" download>
-                 Baixar
+              <a class="btn-action" href="<?php echo htmlspecialchars($url, ENT_QUOTES); ?>" download>
+                Baixar
               </a>
 
               <!-- Botão Excluir -->
               <form method="post" style="margin:0" onsubmit="event.preventDefault(); showConfirm(this);">
                 <input type="hidden" name="csrf" value="<?php echo htmlspecialchars($csrf, ENT_QUOTES); ?>">
-                <input type="hidden" name="delete_file" value="<?php echo htmlspecialchars($it['name'], ENT_QUOTES); ?>">
+                <input type="hidden" name="delete_id" value="<?php echo (int)$it['id']; ?>">
                 <button type="submit" class="btn-action">Excluir</button>
               </form>
-
             </td>
           </tr>
         <?php endforeach; endif; ?>
@@ -463,7 +468,7 @@ table.table-pdf{
 </main>
 
 <!-- Modal de confirmação -->
-<div id="confirmModal" class="modal">
+<div id="confirmModal" class="modal" style="display:none">
   <div class="modal-content">
     <p>Tem certeza que deseja excluir este arquivo?</p>
     <div class="modal-buttons">
@@ -473,60 +478,6 @@ table.table-pdf{
   </div>
 </div>
 
-<footer>
-  © <?php echo date('Y'); ?> — Sistema de PDFs
-</footer>
-
-<!-- ========================= ESTILO ADICIONAL ========================= -->
-<style>
-/* Botões Baixar e Excluir */
-.btn-action {
-  background: linear-gradient(180deg, #5c2a2a 0%, #5c2a2a 100%);
-  color: #fff !important;
-  padding: 12px 20px;       
-  font-weight: 700;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  box-shadow: 0 6px 14px rgba(90,59,44,0.3);
-  text-decoration: none;
-  display: inline-block;
-  min-width: 100px;        
-  text-align: center;      
-}
-
-.btn-action:hover {
-  filter: brightness(1.05);
-}
-
-/* Modal */
-.modal {
-  display: none;
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.modal-content {
-  background: #fff8f4;
-  padding: 24px;
-  border-radius: 22px;
-  box-shadow: 0 8px 18px rgba(60,29,29,.25);
-  text-align: center;
-  max-width: 400px;
-  font-family: "Inter", system-ui, sans-serif;
-}
-.modal-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-}
-</style>
-
-<!-- ========================= SCRIPT ========================= -->
 <script>
 function showConfirm(form) {
   const modal = document.getElementById('confirmModal');
@@ -535,18 +486,14 @@ function showConfirm(form) {
   const confirmBtn = document.getElementById('confirmBtn');
   const cancelBtn = document.getElementById('cancelBtn');
 
-  // Remove eventos anteriores
-  confirmBtn.onclick = null;
-  cancelBtn.onclick = null;
-
   confirmBtn.onclick = function() {
+    modal.style.display = 'none';
     form.submit();
-  }
+  };
   cancelBtn.onclick = function() {
     modal.style.display = 'none';
-  }
+  };
 }
 </script>
-
 </body>
 </html>
