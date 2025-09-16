@@ -245,7 +245,7 @@ $usuario = $result->fetch_assoc();
         <div class="icone">
           <img src="/imagens/WhatsApp Image 2025-08-18 at 08.54.17.png" alt="Ícone Planner">
         </div>
-        <button onclick="location.href='plano_estudos.html'">Planner</button>
+        <button onclick="location.href='/Plano_estudos/plano_estudos.php'">Planner</button>
       </div>
 
       <div class="funcao">

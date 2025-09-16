@@ -1,3 +1,14 @@
+<?php
+session_start();
+
+// Simulação de usuário logado
+$usuario = [
+    'nome' => 'Aluno Teste',
+    'foto' => null // coloque link de foto real se tiver
+];
+?>
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -258,7 +269,12 @@
     <div class="user-menu" style="display:flex; align-items:center; gap:15px;">
       <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#4a69bd; font-weight:700; font-size:16px; transition:color 0.3s ease;">
         <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
-        <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" alt="Foto do usuário" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4a69bd; box-shadow:0 2px 6px rgba(74,105,189,0.5);" />
+        <img 
+    src="<?php echo $usuario['foto'] ? htmlspecialchars($usuario['foto']) : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" 
+    alt="Foto do usuário" 
+    style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4a69bd;" 
+/>
+
       </a>
       <a href="logout.php" class="logout" title="Sair da conta" style="font-weight:700; color:#c0392b; text-decoration:none; padding:8px 14px; border-radius:8px; border:2px solid transparent; transition:background-color 0.3s ease, color 0.3s ease; font-size:15px; user-select:none;">Sair</a>
     </div>
