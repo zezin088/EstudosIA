@@ -146,11 +146,11 @@
 
     <div id="mensagem" class="mensagem"></div>
 
-    <!-- <?php
-      if (issset($_GET['msg'])){
-        echo $_GET['msg'];
-      }
-    ?> -->
+    <?php
+if (isset($_GET['msg'])) {
+    echo "<div class='mensagem show'>" . htmlspecialchars($_GET['msg']) . "</div>";
+}
+?>
 
     <form action="processa_login.php" method="POST">
       <input type="email" name="email" placeholder="E-mail" required autofocus>
