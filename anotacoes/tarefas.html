@@ -9,8 +9,94 @@
       font-family: 'Comic Sans MS', cursive;
       color: #2c2c54;
       text-align: center;
-      padding: 40px;
+      margin: 0;
+      padding: 0;
     }
+
+    nav.topo-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 40px;
+      background: #f1f1f1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      user-select: none;
+      height: 70px;
+    }
+
+    nav.topo-nav h1 {
+      font-family: 'Bungee', cursive;
+      font-size: 28px;
+      color: #2c2c54;
+      margin: 0;
+      user-select: none;
+    }
+
+    nav.topo-nav .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    nav.topo-nav .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #4a69bd;
+      font-weight: 700;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    nav.topo-nav .user-info img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #4a69bd;
+      box-shadow: 0 2px 6px rgba(74,105,189,0.5);
+    }
+
+    nav.topo-nav .logout {
+      font-weight: 700;
+      color: #c0392b;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 15px;
+      user-select: none;
+    }
+
+    /* Botão voltar alinhado à esquerda, abaixo da nav */
+    .btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;             /* largura fixa */
+  height: 38px;             /* altura fixa */
+  margin: 16px 0 20px 40px; /* margem alinhada com o layout */
+  background-color: #4a69bd;
+  color: #ffffff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-voltar:hover {
+  background-color: #6b88e2;
+}
+
 
     h1 {
       font-size: 32px;
@@ -89,26 +175,6 @@
       background-color: #6b88e2;
     }
 
-    .btn-voltar {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background-color: #4a69bd;
-      color: #ffffff;
-      padding: 10px 20px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 16px;
-      border: none;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-voltar:hover {
-      background-color: #6b88e2;
-    }
-
     .btn-salvar {
       display: block;
       margin: 40px auto 0;
@@ -128,6 +194,19 @@
 </head>
 <body>
 
+  <nav class="topo-nav" role="navigation" aria-label="Navegação principal">
+    <h1>EstudosIA</h1>
+    
+    <div class="user-menu">
+      <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>">
+        <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
+        <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" alt="Foto do usuário" />
+      </a>
+      <a href="logout.php" class="logout" title="Sair da conta">Sair</a>
+    </div>
+  </nav>
+
+  <!-- Botão Voltar estilizado -->
   <a class="btn-voltar" href="/anotacoes/index.html">⬅️ Voltar</a>
 
   <h1>Tarefas do Dia</h1>

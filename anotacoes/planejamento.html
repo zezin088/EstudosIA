@@ -1,31 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Planejamento</title>
   <style>
-    body {
-      background-color: #ffffff; /* Fundo geral */
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      text-align: center;
+    /* Navegação fixa no topo */
+    nav.topo-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+      background: #f1f1f1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      z-index: 999;
+      user-select: none;
+    }
+
+    nav.topo-nav h1 {
+      font-family: 'Bungee', cursive;
+      font-size: 28px;
       color: #2c2c54;
-      padding: 40px;
       margin: 0;
+      user-select: none;
     }
 
-    h1 {
-      font-size: 32px;
-      color: #2c2c54;
-      margin-top: 60px;
+    nav.topo-nav .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
+    nav.topo-nav .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #4a69bd;
+      font-weight: 700;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+
+    nav.topo-nav .user-info img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #4a69bd;
+      box-shadow: 0 2px 6px rgba(74,105,189,0.5);
+    }
+
+    nav.topo-nav .logout {
+      font-weight: 700;
+      color: #c0392b;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-size: 15px;
+      user-select: none;
+    }
+
+    /* Botão voltar fixado fora da nav no canto superior esquerdo */
     .btn-voltar {
-      position: absolute;
-      top: 20px;
-      left: 20px;
+      position: fixed;
+      top: 80px; /* logo abaixo da nav de 70px + 10px de espaçamento */
+      left: 10px;
       background-color: #4a69bd;
       color: #ffffff;
-      padding: 10px 20px;
+      padding: 8px 20px;
       border-radius: 10px;
       text-decoration: none;
       border: none;
@@ -34,11 +83,31 @@
       font-weight: bold;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
       transition: background-color 0.3s ease;
+      user-select: none;
+      z-index: 1000;
+      display: inline-block;
     }
 
     .btn-voltar:hover {
       background-color: #9db4cc;
       color: #2c2c54;
+    }
+
+    /* Espaço extra para o conteúdo não ficar atrás da nav fixa */
+    body {
+      background-color: #ffffff;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      text-align: center;
+      color: #2c2c54;
+      padding: 40px 40px 40px 40px;
+      margin: 0;
+      padding-top: 110px; /* altura da nav + espaçamento */
+    }
+
+    h1 {
+      font-size: 32px;
+      color: #2c2c54;
+      margin-top: 0;
     }
 
     table {
@@ -101,8 +170,19 @@
 </head>
 <body>
 
-  <!-- Botão Voltar -->
-  <a class="btn-voltar" href="/anotacoes/index.html">⬅️ Voltar</a>
+  <nav class="topo-nav" role="navigation" aria-label="Navegação principal">
+    <h1>EstudosIA</h1>
+    <div class="user-menu">
+      <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>">
+        <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
+        <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" alt="Foto do usuário" />
+      </a>
+      <a href="logout.php" class="logout" title="Sair da conta">Sair</a>
+    </div>
+  </nav>
+
+  <!-- Botão voltar fixado fora da nav -->
+  <a href="/anotacoes/index.html" class="btn-voltar" aria-label="Voltar">⬅️ Voltar</a>
 
   <h1>Planejamento Semanal</h1>
 

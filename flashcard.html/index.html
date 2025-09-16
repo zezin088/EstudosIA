@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Flashcards ✨</title>
+  <title>Flashcards</title>
   <style>
     @keyframes aparecer {
       from { opacity: 0; transform: scale(0.95); }
@@ -58,15 +58,18 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
 
+    /* Nova área para os botões de matérias */
     .materias {
       margin: 20px 0;
       text-align: center;
+      background-color: #3b5998; /* azul diferente */
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .materias button,
-    .formulario button,
-    button {
-      background-color: #4a69bd;
+    .materias button {
+      background-color: #6d84b4; /* azul claro */
       color: white;
       border: none;
       padding: 12px 20px;
@@ -78,8 +81,25 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
-    .materias button:hover,
-    .formulario button:hover,
+    .materias button:hover {
+      background-color: #5a6ea9; /* azul um pouco mais escuro */
+      transform: scale(1.05);
+    }
+
+    /* Botões principais */
+    button {
+      background-color: #4a69bd;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
     button:hover {
       background-color: #3c3c74;
       transform: scale(1.05);
@@ -190,7 +210,7 @@
 </nav>
 
 <!-- Botão voltar fora da nav -->
-<button id="btn-voltar" onclick="goHome()">Voltar</button>
+<button id="btn-voltar" onclick="goHome()">⬅️ Voltar</button>
 
   <!-- Flashcards -->
   <div class="container">
@@ -200,10 +220,10 @@
       <div class="back" id="card-back"></div>
     </div>
 
+    <!-- Botões de matérias -->
     <div class="materias" id="botoes-materias"></div>
 
-    <button onclick="previousCard()">Anterior</button>
-    <button onclick="nextCard()">Próximo</button>
+    <!-- Botões principais (sem anterior e próximo) -->
     <button onclick="excluirFlashcardAtual()">Excluir Flashcard</button>
     <button onclick="excluirMateria()">Excluir Matéria</button>
   </div>
@@ -253,17 +273,7 @@
       }
     }
 
-    function nextCard() {
-      if (!flashcards.length) return;
-      currentCardIndex = (currentCardIndex + 1) % flashcards.length;
-      showCard(currentCardIndex);
-    }
-
-    function previousCard() {
-      if (!flashcards.length) return;
-      currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
-      showCard(currentCardIndex);
-    }
+    // Removidos nextCard e previousCard, não usados mais
 
     function escolherMateria(materia) {
       materiaAtual = materia;
@@ -356,13 +366,26 @@
 
     function carregarMaterias() {
       const dados = JSON.parse(localStorage.getItem("flashcards")) || {};
+      // Se não tiver nenhuma matéria no localStorage, adiciona uma matéria exemplo: História
+      if (Object.keys(dados).length === 0) {
+        dados["história"] = [
+          { pergunta: "Quem descobriu o Brasil?", resposta: "Pedro Álvares Cabral" },
+          { pergunta: "Em que ano foi a Proclamação da República?", resposta: "1889" }
+        ];
+        localStorage.setItem("flashcards", JSON.stringify(dados));
+      }
       Object.keys(dados).forEach(materia => {
         adicionarBotaoMateria(materia);
       });
+      // Definir matéria atual como a primeira do objeto
+      const materias = Object.keys(dados);
+      if (materias.length > 0) {
+        escolherMateria(materias[0]);
+      }
     }
 
     function goHome() {
-      window.location.href = "home.php";
+      window.location.href = "/inicio.php";
     }
 
     // Executa ao carregar
