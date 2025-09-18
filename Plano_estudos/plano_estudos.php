@@ -1,11 +1,26 @@
 <?php
+// Conexão com o banco
+include 'config.php';
 session_start();
 
-// Simulação de usuário logado
-$usuario = [
-    'nome' => 'Aluno Teste',
-    'foto' => null // coloque link de foto real se tiver
-];
+// Exemplo: ID do usuário logado (no futuro você pega do $_SESSION['usuario_id'])
+$usuario_id = 1;
+
+// Verifica qual semana foi selecionada (default = 1)
+$semanaSelecionada = $_GET['semana'] ?? 1;
+
+// Consulta os planos do banco
+$sql = "SELECT * FROM planos WHERE usuario_id = ? AND semana = ? ORDER BY id";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $usuario_id, $semanaSelecionada);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Array com os itens do plano
+$planos = [];
+while ($row = $result->fetch_assoc()) {
+    $planos[] = $row['item'];
+}
 ?>
 
 
