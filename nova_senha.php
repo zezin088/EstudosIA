@@ -40,7 +40,7 @@ if(isset($_POST['nova_senha']) && isset($_POST['confirmar_senha'])){
         // atualiza senha e remove token
         $conn->query("UPDATE usuarios SET senha='$senha_hash', token=NULL WHERE id='$usuarioId'");
 
-        $sucesso = "Senha atualizada com sucesso! <a href='login.html'>Faça login!</a>";
+        $sucesso = "Senha atualizada com sucesso! <a href='login.php'>Faça login!</a>";
     }
 }
 ?>

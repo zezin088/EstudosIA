@@ -1,8 +1,9 @@
 <?php
 include 'conexao.php';
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
+    $email = trim($_POST['email']);
     $senha = $_POST['senha'];
 
     $stmt = $conn->prepare("SELECT id, nome, senha FROM usuarios WHERE email = ?");
@@ -12,31 +13,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-        // se você estiver guardando senha em texto puro
-        if (password_verify($senha, $user['senha'])) {
-            // login OK
-            session_start();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_nome'] = $user['nome'];
 
-            echo "<script>
-                localStorage.setItem('mensagemLogin', 'Login realizado com sucesso!');
-                window.location.href = 'inicio.php';
-            </script>";
+        if (password_verify($senha, $user['senha'])) {
+            $_SESSION['usuario_id']   = $user['id'];
+$_SESSION['usuario_nome'] = $user['nome'];
+
+            // guarda a mensagem na sessão em vez de localStorage
+$_SESSION['mensagemLogin'] = "Login realizado com sucesso!";
+
+// redireciona para inicio.php
+header("Location: inicio.php");
+exit;
+
             exit;
         } else {
-            // senha incorreta
             echo "<script>
                 localStorage.setItem('mensagemLogin', 'Senha incorreta!');
-                window.location.href = 'login.php';
+                window.location.href = 'login.php';   // ✅ corrigido
             </script>";
             exit;
         }
     } else {
-        // email não encontrado
         echo "<script>
             localStorage.setItem('mensagemLogin', 'E-mail não cadastrado!');
-            window.location.href = 'login.php';
+            window.location.href = 'login.php';   // ✅ corrigido
         </script>";
         exit;
     }

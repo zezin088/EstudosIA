@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $user = "root";
-$pass = ""; // sua senha do banco
+$pass = ""; // senha do banco
 $dbname = "bd_usuarios";
 
 $conn = new mysqli($host, $user, $pass, $dbname);

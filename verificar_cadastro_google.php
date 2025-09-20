@@ -59,6 +59,6 @@ $_SESSION["email"] = $email;
 $_SESSION["foto"] = $foto;
 
 // Redirecionar após login
-header("Location: login.html"); // ou a página para onde o usuário deve ir
+header("Location: login.php"); // ou a página para onde o usuário deve ir
 exit();
 ?>

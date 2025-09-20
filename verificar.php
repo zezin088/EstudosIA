@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             echo "<script>
                 alert('Conta verificada com sucesso!');
-                window.location.href = 'login.html';
+                window.location.href = 'login.php';
             </script>";
             exit;
         }

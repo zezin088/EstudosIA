@@ -1,30 +1,42 @@
 <?php
-// Conexão com o banco de dados
-$conn = new mysqli('localhost', 'root', '', 'bd_usuarios');
+include 'conexao.php';
 
-if ($conn->connect_error) {
-    die("Erro na conexão: " . $conn->connect_error);
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome  = trim($_POST['nome']);
+    $email = trim($_POST['email']);
+    $senha = $_POST['senha'];
 
-// Só executa se for método POST
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT); // Encripta a senha
+    // Verifica se o e-mail já existe
+    $check = $conn->prepare("SELECT id FROM usuarios WHERE email = ?");
+    $check->bind_param("s", $email);
+    $check->execute();
+    $result = $check->get_result();
 
-    $sql = "INSERT INTO usuarios (nome, email, senha) VALUES ('$nome', '$email', '$senha')";
-    if ($conn->query($sql) === TRUE) {
-        echo "Cadastro realizado com sucesso!";
-        header("Location: login.html");
-        exit();
-    } else {
-        echo "Erro ao cadastrar: " . $conn->error;
+    if ($result->num_rows > 0) {
+        echo "<script>
+            localStorage.setItem('mensagemLogin', 'Esse e-mail já está cadastrado!');
+            window.location.href = 'login.php';
+        </script>";
+        exit;
     }
-} else {
-    // Aqui sim faz sentido o 405
-    http_response_code(405);
-    echo "Método não permitido.";
-}
 
-$conn->close();
+    // Cria hash da senha
+    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+
+    // Insere no banco
+    $sql = $conn->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
+    $sql->bind_param("sss", $nome, $email, $senha_hash);
+
+    if ($sql->execute()) {
+        echo "<script>
+            localStorage.setItem('mensagemLogin', 'Cadastrado com sucesso! Agora faça login.');
+            window.location.href = 'login.php';
+        </script>";
+    } else {
+        echo "<script>
+            localStorage.setItem('mensagemLogin', 'Erro ao cadastrar!');
+            window.location.href = 'cadastro.html';
+        </script>";
+    }
+}
 ?>
