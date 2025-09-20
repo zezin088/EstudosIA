@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $sql = $conn->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
     $sql->bind_param("sss", $nome, $email, $senha_hash);
-    $sql->execute();
 
     if ($sql->execute()) {
         echo "<script>

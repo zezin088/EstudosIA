@@ -1,18 +1,24 @@
 <?php
 include 'conexao.php';
 
+// Desativa exceptions do MySQLi
+mysqli_report(MYSQLI_REPORT_OFF);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $nome  = trim($_POST['nome']);
-    $email = trim($_POST['email']);
+    $email = trim(strtolower($_POST['email']));
     $senha = $_POST['senha'];
+    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+    $foto = 'imagens/usuarios/default.jpg';
 
     // Verifica se o e-mail já existe
     $check = $conn->prepare("SELECT id FROM usuarios WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();
-    $result = $check->get_result();
+    $check->store_result(); // ESSENCIAL para num_rows funcionar
 
-    if ($result->num_rows > 0) {
+    if ($check->num_rows > 0) {
         echo "<script>
             localStorage.setItem('mensagemLogin', 'Esse e-mail já está cadastrado!');
             window.location.href = 'login.php';
@@ -20,22 +26,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Cria hash da senha
-    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-    $foto = 'imagens/usuarios/user.jpg'; // imagem padrão que você baixou
-$sql = "INSERT INTO usuarios (nome, email, senha, foto) VALUES (?, ?, ?, ?)";
-$sql->bind_param("ssss", $nome, $email, $senha_hash, $foto);
+    // Prepara e executa INSERT
+    $stmt = $conn->prepare("INSERT INTO usuarios (nome, email, senha, foto) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $nome, $email, $senha_hash, $foto);
 
-    if ($sql->execute()) {
+    if ($stmt->execute()) {
         echo "<script>
             localStorage.setItem('mensagemLogin', 'Cadastrado com sucesso! Agora faça login.');
             window.location.href = 'login.php';
         </script>";
     } else {
+        // Qualquer outro erro
         echo "<script>
             localStorage.setItem('mensagemLogin', 'Erro ao cadastrar!');
             window.location.href = 'cadastro.html';
         </script>";
     }
+
+    $stmt->close();
+    $check->close();
+    $conn->close();
 }
 ?>

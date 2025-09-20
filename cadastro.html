@@ -166,5 +166,9 @@ function mostrarSenha() {
   input.type = input.type === "password" ? "text" : "password";
 }
 </script>
+<script>
+    // Limpa qualquer mensagem antiga de login/cadastro
+    localStorage.removeItem('mensagemLogin');
+</script>
 </body>
 </html>
