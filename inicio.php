@@ -202,7 +202,13 @@ $usuario = $result->fetch_assoc();
     <div class="user-menu">
       <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>">
         <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
-        <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" alt="Foto do usuário">
+        <?php
+$foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto']) 
+    ? $usuario['foto'] 
+    : 'imagens/usuarios/default.jpg';
+?>
+<img src="<?php echo $foto_usuario; ?>" alt="Foto do usuário">
+
       </a>
       <a href="logout.php" class="logout">Sair</a>
     </div>

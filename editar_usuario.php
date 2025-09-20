@@ -177,10 +177,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form method="POST" enctype="multipart/form-data">
       <label for="foto">Foto de Perfil</label>
       <input type="file" name="foto" id="foto">
-      <div class="foto-preview">
-        <img src="<?php echo (!empty($foto) ? $foto : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'); ?>" alt="Foto do usuário">
-      </div>
-
+<div class="foto-preview">
+  <?php 
+    $foto_usuario = !empty($foto) && file_exists($foto) 
+        ? $foto 
+        : 'imagens/usuarios/default.jpg';
+  ?>
+  <img src="<?php echo $foto_usuario; ?>" alt="Foto do usuário">
+</div>
       <label for="nome_usuario">Nome de Usuário</label>
       <input type="text" name="nome_usuario" id="nome_usuario" value="<?php echo htmlspecialchars($nome); ?>" required>
 

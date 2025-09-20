@@ -22,10 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Cria hash da senha
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
-
-    // Insere no banco
-    $sql = $conn->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
-    $sql->bind_param("sss", $nome, $email, $senha_hash);
+    $foto = 'imagens/usuarios/user.jpg'; // imagem padrão que você baixou
+$sql = "INSERT INTO usuarios (nome, email, senha, foto) VALUES (?, ?, ?, ?)";
+$sql->bind_param("ssss", $nome, $email, $senha_hash, $foto);
 
     if ($sql->execute()) {
         echo "<script>
