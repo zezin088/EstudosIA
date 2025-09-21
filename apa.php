@@ -39,12 +39,12 @@ if (isset($_SESSION['id'])) {
             <?php } else { ?>
                 <!-- Exibe o botão de login se o usuário não estiver logado -->
                 <button>
-                    <a href="login.php">
+                    <a href="index.php">
                         <i class="fa-solid fa-circle-user fa-2xl" style="color: #ffffff;"></i>
                         <span class="j">Login</span>
                     </a>
                 </button>
-                <li><a href="cadastro.html">Cadastro</a></li>
+                <li><a href="index.php">Cadastro</a></li>
             <?php } ?>
         </ul>
     </nav>

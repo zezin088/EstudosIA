@@ -69,14 +69,72 @@ header input[type="search"] {
   border:1px solid #c7d0d9;
 }
 
+
 /* CONTAINER */
 .container { display:flex; gap:20px; padding:20px 30px; min-height:calc(100vh - 70px); }
-.sidebar { width:260px; background:#fff; border-radius:20px; padding:25px 20px; box-shadow:0 4px 15px rgba(0,0,0,0.1); flex-shrink:0; }
+
+.sidebar {
+  width:260px;
+  background:#fff;
+  border-radius:20px;
+  padding:25px 20px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  flex-shrink:0;
+  position:fixed;
+  left:32px;
+  bottom:0;
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.4s cubic-bezier(.4,1.6,.4,1), opacity 0.3s;
+  z-index: 3000;
+}
+.sidebar.active {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
 .sidebar h3 { font-size:18px; margin-bottom:20px; color:#1a3b5d; }
 .sidebar ul { list-style:none; }
 .sidebar ul li { margin-bottom:15px; display:flex; align-items:center; cursor:pointer; color:#1a3b5d; padding:8px 12px; border-radius:12px; transition:all 0.2s ease; }
 .sidebar ul li:hover { background:#e1efff; }
 .sidebar ul li img { width:35px; height:35px; border-radius:50%; margin-right:12px; }
+
+.sidebar-toggle {
+  position: fixed;
+  left: 32px;
+  bottom: 32px;
+  z-index: 3100;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 12px 12px 0 0;
+  padding: 16px 38px;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(44,44,84,0.10);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.sidebar-toggle:hover {
+  background: #1665c1;
+}
+
+@media (max-width: 600px) {
+  .sidebar, .sidebar.active {
+    left: 0;
+    width: 100vw;
+    border-radius: 20px 20px 0 0;
+    padding: 18px 8px;
+  }
+  .sidebar-toggle {
+    left: 8px;
+    bottom: 8px;
+    width: calc(100vw - 16px);
+    padding: 14px 0;
+    font-size: 18px;
+  }
+}
 
 .feed { flex:1; max-width:800px; }
 .new-post { background:#fff; padding:20px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05); margin-bottom:25px; }
@@ -166,6 +224,31 @@ header input[type="search"] {
 #chatInput { flex:1; padding:5px 10px; border:none; }
 #chatForm button { background:#1a73e8; color:white; border:none; padding:5px 10px; cursor:pointer; }
 </style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebar = document.getElementById('sidebarMenu');
+  const toggle = document.getElementById('sidebarToggle');
+  let sidebarOpen = false;
+
+  function closeSidebar(e) {
+    if (sidebarOpen && !sidebar.contains(e.target) && e.target !== toggle) {
+      sidebar.classList.remove('active');
+      sidebarOpen = false;
+      document.removeEventListener('mousedown', closeSidebar);
+    }
+  }
+
+  toggle.addEventListener('click', function() {
+    sidebarOpen = !sidebarOpen;
+    sidebar.classList.toggle('active', sidebarOpen);
+    if (sidebarOpen) {
+      setTimeout(() => document.addEventListener('mousedown', closeSidebar), 10);
+    } else {
+      document.removeEventListener('mousedown', closeSidebar);
+    }
+  });
+});
+</script>
 </head>
 <body>
 <header>
@@ -174,7 +257,7 @@ header input[type="search"] {
 </header>
 
 <div class="container">
-  <div class="sidebar">
+  <div class="sidebar" id="sidebarMenu">
     <h3>Menu</h3>
     <ul>
       <li><img src="imagens/usuarios/default.png" alt="Perfil">Feed</li>
@@ -185,6 +268,7 @@ header input[type="search"] {
       <li><img src="imagens/usuarios/default.png" alt="Perfil">Configurações</li>
     </ul>
   </div>
+  <button id="sidebarToggle" class="sidebar-toggle">☰ Menu</button>
 
   <div class="feed">
     <div class="new-post">

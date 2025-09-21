@@ -29,14 +29,14 @@ exit;
         } else {
             echo "<script>
                 localStorage.setItem('mensagemLogin', 'Senha incorreta!');
-                window.location.href = 'login.php';   // ✅ corrigido
+                window.location.href = 'index.php';   // ✅ corrigido
             </script>";
             exit;
         }
     } else {
         echo "<script>
             localStorage.setItem('mensagemLogin', 'E-mail não cadastrado!');
-            window.location.href = 'login.php';   // ✅ corrigido
+            window.location.href = 'index.php';   // ✅ corrigido
         </script>";
         exit;
     }

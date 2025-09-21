@@ -1,3 +1,6 @@
+
+</html>
+
 <?php
 session_start();
 
@@ -161,9 +164,12 @@ $usuario = $result->fetch_assoc();
     .funcoes-container {
       display: flex;
       justify-content: center;
+      align-items: center;
+      flex-direction: row;
       flex-wrap: wrap;
       gap: 40px;
       max-width: 800px;
+      margin: 0 auto;
     }
     .funcao {
       display: flex;
@@ -225,48 +231,135 @@ $foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto'])
   </div>
 
   <!-- Cronômetro e quadrados lado a lado -->
-  <div class="conteudo-principal">
-    <a href="cronometro.php" class="botao-cronometro" title="Abrir cronômetro">
-      <img src="/imagens/WhatsApp_Image_2025-08-22_at_09.30.52-removebg-preview.png" alt="Botão Cronômetro">
-    </a>
 
-    <div class="funcoes-container">
-      <div class="funcao">
-        <div class="icone">
-          <img src="/imagens/WhatsApp Image 2025-08-18 at 08.52.56.png" alt="Ícone Anotações">
+  <div class="conteudo-principal" style="display: flex; flex-direction: row; align-items: flex-start; gap: 40px; margin: 90px 90px;">
+    <div style="flex: 1; min-width: 320px;">
+      <!-- Botão flutuante do cronômetro -->
+      <a href="cronometro.php" class="botao-cronometro-float" title="Abrir cronômetro">
+        <span class="cronometro-float-img"></span>
+      </a>
+  <style>
+    .botao-cronometro-float {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 2000;
+      background: none;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(44,44,84,0.18);
+      border-radius: 50%;
+      padding: 0;
+      transition: transform 0.2s;
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    .botao-cronometro-float:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 24px rgba(44,44,84,0.25);
+    }
+    .cronometro-float-img {
+      width: 110px;
+      height: 110px;
+      display: block;
+      border-radius: 50%;
+      background: url('/imagens/relogio.jpg') center center/cover no-repeat;
+      box-shadow: 0 2px 8px rgba(44,44,84,0.10);
+      clip-path: circle(50% at 50% 50%);
+      border: 4px solid #fff;
+    }
+    @media (max-width: 600px) {
+      .botao-cronometro-float {
+        bottom: 16px;
+        right: 16px;
+        width: 70px;
+        height: 70px;
+      }
+      .cronometro-float-img {
+        width: 70px;
+        height: 70px;
+      }
+    }
+  </style>
+      <div class="funcoes-container">
+        <div class="funcao">
+          <div class="icone">
+            <img src="/imagens/WhatsApp Image 2025-08-18 at 08.52.56.png" alt="Ícone Anotações">
+          </div>
+          <button onclick="location.href='/anotacoes/index.html'">Anotações</button>
         </div>
-        <button onclick="location.href='/anotacoes/index.html'">Anotações</button>
-      </div>
-
-      <div class="funcao">
-        <div class="icone">
-          <img src="/imagens/WhatsApp Image 2025-08-18 at 08.51.12.png" alt="Ícone Arquivos">
+        <div class="funcao">
+          <div class="icone">
+            <img src="/imagens/WhatsApp Image 2025-08-18 at 08.51.12.png" alt="Ícone Arquivos">
+          </div>
+          <button onclick="location.href='/arquivos/upload_pdf.php'">Arquivos</button>
         </div>
-        <button onclick="location.href='/arquivos/upload_pdf.php'">Arquivos</button>
-      </div>
-
-      <div class="funcao">
-        <div class="icone">
-          <img src="/imagens/WhatsApp Image 2025-08-18 at 08.53.37.png" alt="Ícone Calendário">
+        <div class="funcao">
+          <div class="icone">
+            <img src="/imagens/WhatsApp Image 2025-08-18 at 08.53.37.png" alt="Ícone Calendário">
+          </div>
+          <button onclick="location.href='calendario.html'">Calendário</button>
         </div>
-        <button onclick="location.href='calendario.html'">Calendário</button>
-      </div>
-
-      <div class="funcao">
-        <div class="icone">
-          <img src="/imagens/WhatsApp Image 2025-08-18 at 08.54.17.png" alt="Ícone Planner">
+        <div class="funcao">
+          <div class="icone">
+            <img src="/imagens/WhatsApp Image 2025-08-18 at 08.54.17.png" alt="Ícone Planner">
+          </div>
+          <button onclick="location.href='/Plano_estudos/plano_estudos.php'">Planner</button>
         </div>
-        <button onclick="location.href='/Plano_estudos/plano_estudos.php'">Planner</button>
-      </div>
-
-      <div class="funcao">
-        <div class="icone">
-          <img src="/imagens/WhatsApp Image 2025-08-18 at 08.59.18.png" alt="Ícone Flash Card">
+        <div class="funcao">
+          <div class="icone">
+            <img src="/imagens/WhatsApp Image 2025-08-18 at 08.59.18.png" alt="Ícone Flash Card">
+          </div>
+          <button onclick="location.href='/flashcard.html/index.html'">Flash Card</button>
         </div>
-        <button onclick="location.href='/flashcard.html/index.html'">Flash Card</button>
       </div>
     </div>
+
   </div>
 
-</body>
-</html>
+
+  <!-- Botão flutuante da rede social (tipo Messenger) -->
+  <div id="social-float-btn" style="position:fixed;bottom:120px;left:32px;width:70px;height:70px;z-index:3200;display:flex;align-items:center;justify-content:center;background:#1a73e8;border-radius:50%;box-shadow:0 4px 16px rgba(44,44,84,0.18);transition:box-shadow 0.2s, top 0.3s, left 0.3s, bottom 0.3s; font-size:38px; color:#fff; font-family:sans-serif;">
+  <span style="user-select:none;pointer-events:none;display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:32px;font-family:'Arial',sans-serif;">:)</span>
+  </div>
+  <div id="social-float-window" style="opacity:0;pointer-events:none;position:fixed;z-index:3100;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(44,44,84,0.25);overflow:hidden;flex-direction:column;transition:opacity 0.35s cubic-bezier(.4,0,.2,1);width:calc(100vw - 150px);height:calc(100vh - 64px);left:120px;bottom:32px;top:auto;right:32px;max-width:1200px;max-height:900px;">
+    <div style="background:#1a73e8;color:#fff;padding:10px 18px;display:flex;align-items:center;">
+      <span style="font-weight:bold;">Rede Social</span>
+    </div>
+    <iframe src="redesocial.php" width="100%" height="100%" style="border:none;flex:1;"></iframe>
+  </div>
+
+  <script>
+  // Botão flutuante fixo no canto inferior esquerdo
+  const socialBtn = document.getElementById('social-float-btn');
+  const socialWin = document.getElementById('social-float-window');
+  // Variável já declarada abaixo, não repetir
+  // Mantém a bolinha fixa no canto inferior esquerdo e abre a janela ao lado
+  let chatAberto = false;
+  socialBtn.addEventListener('click', function(e) {
+    chatAberto = !chatAberto;
+    if (chatAberto) {
+      socialWin.style.display = 'flex';
+      socialWin.style.opacity = '0';
+      socialWin.style.pointerEvents = 'none';
+      setTimeout(() => {
+        socialWin.style.opacity = '1';
+        socialWin.style.pointerEvents = 'auto';
+      }, 10);
+    } else {
+      socialWin.style.opacity = '0';
+      socialWin.style.pointerEvents = 'none';
+      setTimeout(() => {
+        socialWin.style.display = 'none';
+      }, 350);
+    }
+  });
+  </script>
+
+
+    </body>
+    </html>
