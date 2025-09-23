@@ -296,6 +296,10 @@ $foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto'])
     @media (max-width:600px){
       .social-panel { height: 84vh; }
     }
+    .sidebar {
+  margin-top: 0 !important;
+  padding-top: 8px !important;
+}
   </style>
 </head>
 <body>
@@ -435,32 +439,12 @@ $foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto'])
         <button id="socialClose" aria-label="Fechar rede social">Fechar ✕</button>
       </header>
 
-      <div class="content">
-        <aside class="sidebar" aria-hidden="false">
-          <div style="font-weight:700;color:#3f7c72">Sua rede</div>
+<aside class="sidebar" aria-hidden="false" style="margin-top:0;padding-top:8px">
+</aside>
 
-          <div class="small-card" style="margin-top:8px">
-            <div style="width:44px;height:44px;border-radius:8px;overflow:hidden">
-              <img src="<?php echo $foto_usuario; ?>" alt="Avatar" style="width:100%;height:100%;object-fit:cover">
-            </div>
-            <div style="display:flex;flex-direction:column">
-              <div style="font-weight:700"><?php echo htmlspecialchars($nomeUsuario); ?></div>
-              <div style="font-size:13px;color:#6b7280">Ver perfil</div>
-            </div>
-          </div>
-
-          <div style="margin-top:12px;font-size:14px;color:#6b7280">Atividades recentes</div>
-
-          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-            <div class="small-card"><div style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:#f3f7f6"></div><div style="margin-left:8px">Nova postagem</div></div>
-            <div class="small-card"><div style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:#f3f7f6"></div><div style="margin-left:8px">Comentário</div></div>
-          </div>
-        </aside>
-
-        <div class="iframe-wrap" style="flex:1;">
-          <iframe src="redesocial.php" title="Rede Social" aria-label="Conteúdo da rede social"></iframe>
-        </div>
-      </div>
+<div class="iframe-wrap" style="flex:1;">
+  <iframe src="redesocial.php?embed=1" title="Rede Social" aria-label="Conteúdo da rede social"></iframe>
+</div>
     </div>
   </div>
 
