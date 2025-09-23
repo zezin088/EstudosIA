@@ -1,6 +1,3 @@
-
-</html>
-
 <?php
 session_start();
 
@@ -23,6 +20,11 @@ $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
 $result = $stmt->get_result();
 $usuario = $result->fetch_assoc();
+
+$nomeUsuario = isset($usuario['nome']) ? $usuario['nome'] : 'Usuário';
+$foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto']) 
+    ? $usuario['foto'] 
+    : 'imagens/usuarios/default.jpg';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -197,6 +199,103 @@ $usuario = $result->fetch_assoc();
       .banner h3 { font-size: 18px; }
       .botao-cronometro { width: 200px; height: 200px; }
     }
+
+    /* ===== Social float & panel (integrated) ===== */
+    .social-float {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      z-index: 1500;
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .social-mini {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(180deg, #fff, #f7fffb);
+      border-radius: 14px;
+      padding: 8px 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      border: 1px solid rgba(63,124,114,0.06);
+      transition: transform .16s ease, box-shadow .16s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .social-mini:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.16); }
+
+    .social-mini .mini-avatar {
+      width: 56px; height:56px; border-radius:10px; overflow:hidden; flex:0 0 56px; display:block;
+      border: 2px solid rgba(63,124,114,0.08);
+    }
+    .social-mini .mini-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .social-mini .mini-info { display:flex; flex-direction:column; gap:4px; }
+    .social-mini .mini-info .title { font-weight:700; color:#3f7c72; font-size:14px; }
+    .social-mini .mini-info .sub { font-size:13px; color:#6b7280; }
+
+    .social-panel-backdrop {
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.28);
+      z-index: 1490;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .social-panel {
+      width: min(1100px, 94vw);
+      height: min(760px, 86vh);
+      border-radius: 14px;
+      background: linear-gradient(180deg, #fff, #fbfffe);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.26);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(12px) scale(.98);
+      opacity: 0;
+      transition: transform .28s cubic-bezier(.2,.9,.28,1), opacity .28s;
+    }
+
+    .social-panel.show {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .social-panel header {
+      display:flex; align-items:center; gap:12px; padding:12px 16px;
+      background: linear-gradient(90deg,#3f7c72,#bdebe3);
+      color: white; font-weight:700;
+    }
+    .social-panel header .title { font-size:16px; }
+    .social-panel header .spacer { flex:1; }
+    .social-panel header button { background: transparent; border: none; color: white; font-weight:700; cursor:pointer; font-size:14px; }
+
+    .social-panel .content {
+      flex:1; display:flex; gap:12px; align-items:stretch;
+    }
+    .social-panel .sidebar {
+      width:260px; border-right:1px solid rgba(0,0,0,0.06); padding:12px; background: linear-gradient(180deg,#f8fffb,#fff);
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .social-panel .sidebar .small-card {
+      display:flex; gap:10px; align-items:center; background: #fff; padding:8px; border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    }
+    .social-panel .iframe-wrap { flex:1; background: #fff; }
+    .social-panel iframe { width:100%; height:100%; border:0; display:block; }
+
+    @media (max-width:900px){
+      .social-mini .mini-avatar{ width:48px; height:48px; }
+    }
+    @media (max-width:600px){
+      .social-panel { height: 84vh; }
+    }
   </style>
 </head>
 <body>
@@ -208,13 +307,7 @@ $usuario = $result->fetch_assoc();
     <div class="user-menu">
       <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>">
         <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
-        <?php
-$foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto']) 
-    ? $usuario['foto'] 
-    : 'imagens/usuarios/default.jpg';
-?>
-<img src="<?php echo $foto_usuario; ?>" alt="Foto do usuário">
-
+        <img src="<?php echo $foto_usuario; ?>" alt="Foto do usuário">
       </a>
       <a href="logout.php" class="logout">Sair</a>
     </div>
@@ -321,45 +414,110 @@ $foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto'])
 
   </div>
 
-
-  <!-- Botão flutuante da rede social (tipo Messenger) -->
-  <div id="social-float-btn" style="position:fixed;bottom:120px;left:32px;width:70px;height:70px;z-index:3200;display:flex;align-items:center;justify-content:center;background:#1a73e8;border-radius:50%;box-shadow:0 4px 16px rgba(44,44,84,0.18);transition:box-shadow 0.2s, top 0.3s, left 0.3s, bottom 0.3s; font-size:38px; color:#fff; font-family:sans-serif;">
-  <span style="user-select:none;pointer-events:none;display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:32px;font-family:'Arial',sans-serif;">:)</span>
-  </div>
-  <div id="social-float-window" style="opacity:0;pointer-events:none;position:fixed;z-index:3100;background:#fff;border-radius:18px;box-shadow:0 8px 32px rgba(44,44,84,0.25);overflow:hidden;flex-direction:column;transition:opacity 0.35s cubic-bezier(.4,0,.2,1);width:calc(100vw - 150px);height:calc(100vh - 64px);left:120px;bottom:32px;top:auto;right:32px;max-width:1200px;max-height:900px;">
-    <div style="background:#1a73e8;color:#fff;padding:10px 18px;display:flex;align-items:center;">
-      <span style="font-weight:bold;">Rede Social</span>
+  <!-- ===== New Social Mini + Panel (replaces previous float) ===== -->
+  <div class="social-float">
+    <div class="social-mini" id="socialMini" role="button" aria-haspopup="dialog" aria-controls="socialPanel" tabindex="0" title="Abrir Rede Social">
+      <div class="mini-avatar" aria-hidden="true">
+        <img src="<?php echo $foto_usuario; ?>" alt="Preview usuário">
+      </div>
+      <div class="mini-info">
+        <div class="title">Rede Social</div>
+        <div class="sub">Ver publicações e interagir</div>
+      </div>
     </div>
-    <iframe src="redesocial.php" width="100%" height="100%" style="border:none;flex:1;"></iframe>
   </div>
+
+  <div class="social-panel-backdrop" id="socialBackdrop" aria-hidden="true">
+    <div class="social-panel" role="dialog" aria-modal="true" aria-label="Rede Social" id="socialPanel">
+      <header>
+        <div class="title">Rede Social</div>
+        <div class="spacer" aria-hidden="true"></div>
+        <button id="socialClose" aria-label="Fechar rede social">Fechar ✕</button>
+      </header>
+
+      <div class="content">
+        <aside class="sidebar" aria-hidden="false">
+          <div style="font-weight:700;color:#3f7c72">Sua rede</div>
+
+          <div class="small-card" style="margin-top:8px">
+            <div style="width:44px;height:44px;border-radius:8px;overflow:hidden">
+              <img src="<?php echo $foto_usuario; ?>" alt="Avatar" style="width:100%;height:100%;object-fit:cover">
+            </div>
+            <div style="display:flex;flex-direction:column">
+              <div style="font-weight:700"><?php echo htmlspecialchars($nomeUsuario); ?></div>
+              <div style="font-size:13px;color:#6b7280">Ver perfil</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;font-size:14px;color:#6b7280">Atividades recentes</div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <div class="small-card"><div style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:#f3f7f6"></div><div style="margin-left:8px">Nova postagem</div></div>
+            <div class="small-card"><div style="width:38px;height:38px;border-radius:8px;overflow:hidden;background:#f3f7f6"></div><div style="margin-left:8px">Comentário</div></div>
+          </div>
+        </aside>
+
+        <div class="iframe-wrap" style="flex:1;">
+          <iframe src="redesocial.php" title="Rede Social" aria-label="Conteúdo da rede social"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botão flutuante do cronômetro (mantive o CSS acima) -->
 
   <script>
-  // Botão flutuante fixo no canto inferior esquerdo
-  const socialBtn = document.getElementById('social-float-btn');
-  const socialWin = document.getElementById('social-float-window');
-  // Variável já declarada abaixo, não repetir
-  // Mantém a bolinha fixa no canto inferior esquerdo e abre a janela ao lado
-  let chatAberto = false;
-  socialBtn.addEventListener('click', function(e) {
-    chatAberto = !chatAberto;
-    if (chatAberto) {
-      socialWin.style.display = 'flex';
-      socialWin.style.opacity = '0';
-      socialWin.style.pointerEvents = 'none';
-      setTimeout(() => {
-        socialWin.style.opacity = '1';
-        socialWin.style.pointerEvents = 'auto';
-      }, 10);
-    } else {
-      socialWin.style.opacity = '0';
-      socialWin.style.pointerEvents = 'none';
-      setTimeout(() => {
-        socialWin.style.display = 'none';
-      }, 350);
-    }
-  });
+  // Relógio simples (se quiser reativar, adicione um elemento)
+  (function(){
+    // placeholder - você já tinha um botão cronômetro flutuante
+  })();
   </script>
 
+  <!-- Social JS (open/close, accessibility) -->
+  <script>
+  (function(){
+    const mini = document.getElementById('socialMini');
+    const backdrop = document.getElementById('socialBackdrop');
+    const panel = document.getElementById('socialPanel');
+    const closeBtn = document.getElementById('socialClose');
+
+    function openPanel(){
+      backdrop.style.display = 'flex';
+      requestAnimationFrame(() => {
+        panel.classList.add('show');
+        backdrop.setAttribute('aria-hidden', 'false');
+      });
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closePanel(){
+      panel.classList.remove('show');
+      backdrop.setAttribute('aria-hidden', 'true');
+      setTimeout(() => { backdrop.style.display = 'none'; }, 300);
+      if (mini) mini.focus();
+    }
+
+    if (mini) {
+      mini.addEventListener('click', openPanel);
+      mini.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPanel(); } });
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closePanel);
+
+    if (backdrop) {
+      backdrop.addEventListener('click', (e) => {
+        if (e.target === backdrop) closePanel();
+      });
+      backdrop.style.display = 'none';
+      backdrop.style.alignItems = 'center';
+      backdrop.style.justifyContent = 'center';
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && backdrop.style.display === 'flex') closePanel();
+    });
+  })();
+  </script>
 
     </body>
     </html>

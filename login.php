@@ -1,224 +1,288 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login | EstudosIA</title>
   <style>
-    @font-face { font-family: raesha; src: url('fonts/Raesha.ttf') format('truetype'); }
-    @font-face { font-family: Karst; src: url('fonts/Karst-Light.otf') format('truetype'); }
+    @font-face { font-family: 'SimpleHandmade'; src: url(/fonts/SimpleHandmade.ttf); }
+    :root{
+      --accent:#3f7c72ff;
+      --accent-2:#bdebe3ff;
+      --bg:#fff;
+      --muted:#666;
+      --radius:18px;
+      --dur:650ms;
+      --easing:cubic-bezier(.22,.9,.13,1);
+      --input-gap:16px; /* ajuste aqui o espaçamento entre inputs */
+    }
+    *{ box-sizing:border-box; margin:0; padding:0; font-family:"Segoe UI", Arial, sans-serif; }
+    html,body{ height:100%; background:var(--bg); color:#000; }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+    /* header parecido com o seu */
+    header{
+      position:fixed; top:0; left:0; width:100%; height:70px;
+      background:#ffffff85; display:flex; align-items:center; justify-content:space-between;
+      padding:0 24px; box-shadow:0 2px 5px rgba(0,0,0,.08); z-index:999;
+    }
+    header .logo img{ max-height:100%; display:block; margin-left:-90px; }
+    nav ul{ list-style:none; display:flex; gap:30px; margin-right:40px; }
+    nav ul li a{ text-decoration:none; color:#000; transition:color .2s; }
+    nav ul li a:hover{ color:var(--accent); }
 
-    body {
-      font-family: Arial, sans-serif;
-      background-color: rgb(243, 228, 201);
-      color: rgb(192, 98, 98);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    /* área central */
+    .wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:100px 20px 60px; }
+    .box{
+      width:920px; height:540px; border-radius:var(--radius); background:#fff;
+      box-shadow:0 20px 50px rgba(0,0,0,0.12); position:relative; overflow:hidden;
     }
 
-    .container {
-      background-color: white;
-      border-radius: 15px;
-      padding: 40px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
+    /* painéis (login + register) - cada um ocupa 50% */
+    .panel{
+      position:absolute; top:0; height:100%; width:50%;
+      padding:44px; display:flex; flex-direction:column; justify-content:center; gap:10px;
+      transition: transform var(--dur) var(--easing), opacity var(--dur) var(--easing);
+      will-change: transform;
+    }
+    .panel h2{ font-family:'SimpleHandmade'; color:var(--accent); font-size:2.1rem; text-align:center; }
+    .panel p.small{ text-align:center; color:var(--muted); margin-bottom:8px; }
+
+    /* FORM - agora com gap controlado por --input-gap */
+    .panel form{
+      display:flex;
+      flex-direction:column;
+      gap: var(--input-gap);
+      margin-top: 6px;
     }
 
-    h2 { color: rgb(139,80,80); margin-bottom:15px; font-size:2rem; font-family:'raesha'; }
-    p { margin-top:5px; }
-    a { text-decoration:none; color: rgb(139,80,80); cursor:pointer; }
+    .panel input{
+      width:100%; padding:12px 14px; border-radius:10px; border:1px solid #ddd; font-size:1rem;
+    }
+    .panel input:focus{ box-shadow:0 6px 18px rgba(63,124,114,0.08); border-color:var(--accent); outline:none; }
 
-    .g_id_signin { width:100%; display:flex; justify-content:center; margin-top:10px; }
+    .btn{
+      width:100%; padding:12px; border-radius:28px; border:0; background:var(--accent); color:#fff; font-weight:700; cursor:pointer;
+    }
+    .btn:hover{ transform:translateY(-3px); background:#1e3834ff; }
 
-    .mensagem {
-      padding:10px;
-      margin:15px 0;
-      border-radius:5px;
-      display:block;
-      width:100%;
-      max-width:400px;
-      text-align:center;
-      position:fixed;
-      top:20px;
-      left:50%;
-      transform:translateX(-50%);
-      z-index:1000;
-      opacity:0;
-      transition: opacity 0.5s ease-out, top 0.5s ease-out;
-      background-color:#d4edda;
-      color:#155724;
-      border:1px solid #c3e6cb;
+    .aux{ text-align:center; margin-top:10px; color:var(--muted); }
+    .aux a{ color:var(--accent); text-decoration:none; cursor:pointer; font-weight:600; }
+
+    /* POSIÇÕES INICIAIS */
+    .login { left:0; transform:translateX(0); opacity:1; }
+    /* register começa "fora" à direita (invisível) */
+    .register { left:50%; transform:translateX(100%); opacity:0; }
+
+    /* OVERLAY: ocupa a metade direita inicialmente (left:50%) */
+    .overlay{
+      position:absolute; top:0; left:50%; width:50%; height:100%;
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex; align-items:center; justify-content:center; flex-direction:column;
+      color:#fff; text-align:center; padding:40px;
+      transition: transform var(--dur) var(--easing);
+      pointer-events:none; /* não bloquear cliques nos forms */
+      will-change: transform;
+    }
+    .overlay h3{ font-family:'SimpleHandmade'; font-size:1.9rem; margin-bottom:8px; }
+    .overlay p{ max-width:280px; color:rgba(255,255,255,.95); }
+
+    /* ESTADO ATIVO: quando o usuário clicou em "Cadastre-se" */
+    .box.active .login { transform:translateX(-100%); opacity:0; }
+    .box.active .overlay { transform: translateX(-100%); } /* overlay vai para a esquerda */
+    .box.active .register { transform:translateX(0); opacity:1; }
+
+    /* pequenas responsividades */
+    @media (max-width:980px){
+      .box{ width:92%; height:760px; border-radius:14px; }
+      .panel{ position:relative; width:100%; left:0; transform:none; padding:28px; }
+      .login, .register { left:0; transform:none; opacity:1; }
+      .overlay{ position:relative; left:0; width:100%; height:200px; margin-top:18px; transform:none; pointer-events:none; }
+      .box.active .overlay { transform:none; }
     }
 
-    .mensagem.show { opacity:1; top:50px; }
-
-    .input-group {
-      position: relative;
-      width: 100%;
-      margin: 5px 0;
+    /* preferência de movimento reduzido */
+    @media (prefers-reduced-motion: reduce){
+      .panel, .overlay { transition: none; }
     }
+.mensagem-sucesso {
+  position: absolute; /* fica sobre o box */
+  top: 20%;           /* ajusta a altura da mensagem, mais pra cima */
+  left: 50%;
+  transform: translate(-50%, -20px);
+  background: #4CAF50;
+  color: white;
+  padding: 18px 28px;
+  border-radius: 10px;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: all 0.5s ease;
+  z-index: 9999;
+}
 
-    input {
-      width: 100%;
-      padding: 12px;
-      padding-right: 40px; /* espaço pro botão do olho */
-      border: 2px solid rgb(192, 98, 98);
-      border-radius: 25px;
-      font-size: 1rem;
-      color: rgb(139, 80, 80);
-      background-color: rgba(243, 228, 201, 0.699);
-      outline: none;
-      margin: 3px 0;
-    }
-
-    input:focus { border-color: rgb(139, 80, 80); }
-    input::placeholder { color: rgb(139, 80, 80); opacity: 0.7; }
-
-    /* botão do olho */
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1.1rem;
-      color: rgb(139, 80, 80);
-      background: none;
-      border: none;
-      padding: 0;
-      line-height: 1;
-    }
-    
-    .toggle-password:hover { color: rgb(192, 98, 98); }
-
-    /* botão principal */
-    button[type="submit"], .btn-recuperar {
-      width:100%;
-      padding:12px;
-      background-color: rgb(192,98,98);
-      color:white;
-      border:none;
-      border-radius:25px;
-      font-size:1.2rem;
-      cursor:pointer;
-      transition: background-color 0.3s ease;
-      margin:10px 0;
-    }
-    button[type="submit"]:hover, .btn-recuperar:hover { background-color: rgb(139,80,80); }
-
-    /* modal de recuperação */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 15px;
-      text-align: center;
-      width: 90%;
-      max-width: 350px;
-    }
-
-    .close {
-      float: right;
-      font-size: 20px;
-      cursor: pointer;
-      color: rgb(192,98,98);
-    }
+.mensagem-sucesso.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Login</h2>
+  <header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="EstudosIA"></div>
+    <nav>
+      <ul>
+        <li><a href="/index.php">Voltar a página de abertura</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <div id="mensagem" class="mensagem"></div>
+  <main class="wrap">
+    <?php $startInRegister = isset($_GET['fromCadastro']) ? 'active' : ''; ?>
+<div id="box" class="box <?php echo $startInRegister; ?>">
+      <!-- LOGIN (esquerda inicialmente) -->
+      <section class="panel login" aria-label="Login">
+        <h2>Entrar</h2>
+        <p class="small">Use seu e-mail e senha para acessar</p>
+<form action="processa_login.php" method="POST">
+    <input type="email" name="email" placeholder="Email" required />
+    <div class="input-group">
+      <input type="password" id="senha" name="senha" placeholder="Senha" required />
+    </div>
+    <button class="btn" type="submit">Entrar</button>
+</form>
 
-    <?php
-if (isset($_GET['msg'])) {
-    echo "<div class='mensagem show'>" . htmlspecialchars($_GET['msg']) . "</div>";
-}
-?>
+        <div class="aux">Esqueceu a senha? <a href="#">Recuperar</a></div>
+        <div class="aux">Não tem conta? <a id="toRegister">Cadastre-se</a></div>
+      </section>
 
-    <form action="processa_login.php" method="POST">
-      <input type="email" name="email" placeholder="E-mail" required autofocus>
+      <!-- REGISTER (chega pela direita quando ativado) -->
+      <section class="panel register" aria-label="Cadastro">
+        <h2>Cadastrar</h2>
+        <p class="small">Crie sua conta e comece a estudar com IA</p>
+<form action="processa_cadastro.php" method="POST">
+    <input type="text" name="nome" placeholder="Nome completo" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="senha" placeholder="Senha" required />
+    <input type="password" name="senha2" placeholder="Confirmar senha" required />
+    <button class="btn" type="submit">Registrar</button>
+</form>
+        <div class="aux">Já tem conta? <a id="toLogin">Entrar</a></div>
+      </section>
 
-      <div class="input-group">
-        <input type="password" id="senha" name="senha" placeholder="Senha" required>
-        <button type="button" class="toggle-password" onclick="mostrarSenha()">👁</button>
+      <!-- OVERLAY (parte azul) — inicia à direita, ao ativar move-se para a esquerda -->
+      <div class="overlay" aria-hidden="true">
+        <h3 id="overlayTitle">Bem-vindo de volta!</h3>
+        <p id="overlayText">Se já é nosso aluno, faça login para continuar seus estudos com ferramentas inteligentes.</p>
       </div>
-
-      <button type="submit">Entrar</button>
-    </form>
-
-    <p><a id="linkRecuperar">Esqueceu a senha?</a></p>
-    <p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
-
-    <!-- Login com Google -->
-    <div id="g_id_onload"
-         data-client_id="912161681251-ak3vkdll5oknq0ssd0uv44ikpvq59q27.apps.googleusercontent.com"
-         data-auto_prompt="false">
     </div>
-    
-    <div class="g_id_signin"
-         data-type="standard"
-         data-shape="pill"
-         data-theme="filled_blue"
-         data-text="signin_with"
-         data-size="large"></div>
-  </div>
-
-  <!-- Modal de recuperação -->
-  <div id="modalRecuperar" class="modal">
-    <div class="modal-content">
-      <span class="close" id="fecharModal">&times;</span>
-      <h3>Recuperar Senha</h3>
-      <p>Digite seu e-mail ou telefone:</p>
-      <form action="recuperar.php" method="POST">
-        <input type="text" name="contato" placeholder="E-mail ou Telefone" required>
-        <button type="submit" class="btn-recuperar">Enviar código</button>
-      </form>
-    </div>
-  </div>
+  </main>
 
   <script>
-    // mensagens
-    window.onload = function() {
-      const mensagemTexto = localStorage.getItem('mensagemLogin');
-      if(mensagemTexto){
-        const div = document.getElementById('mensagem');
-        div.innerText = mensagemTexto;
-        div.classList.add('show');
-        setTimeout(() => { div.classList.remove('show'); }, 5000);
-        localStorage.removeItem('mensagemLogin');
+    (function(){
+      const box = document.getElementById('box');
+      const toRegister = document.getElementById('toRegister');
+      const toLogin = document.getElementById('toLogin');
+      const overlayTitle = document.getElementById('overlayTitle');
+      const overlayText = document.getElementById('overlayText');
+
+      function setOverlayText(showingRegister){
+        if(showingRegister){
+          overlayTitle.textContent = 'Olá, novo amigo!';
+          overlayText.textContent = 'Cadastre-se e comece a organizar seus estudos com o poder da IA.';
+        } else {
+          overlayTitle.textContent = 'Bem-vindo de volta!';
+          overlayText.textContent = 'Se já é nosso aluno, faça login para continuar seus estudos com ferramentas inteligentes.';
+        }
       }
-    }
 
-    function mostrarSenha() {
-      const input = document.getElementById("senha");
-      input.type = input.type === "password" ? "text" : "password";
-    }
+      toRegister.addEventListener('click', () => {
+        box.classList.add('active');
+        setOverlayText(true);
+      });
+      toLogin.addEventListener('click', () => {
+        box.classList.remove('active');
+        setOverlayText(false);
+      });
 
-    // modal recuperação
-    const modal = document.getElementById("modalRecuperar");
-    const link = document.getElementById("linkRecuperar");
-    const fechar = document.getElementById("fecharModal");
-
-    link.onclick = () => modal.style.display = "flex";
-    fechar.onclick = () => modal.style.display = "none";
-    window.onclick = (e) => { if (e.target == modal) modal.style.display = "none"; }
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') {
+          box.classList.remove('active');
+          setOverlayText(false);
+        }
+      });
+    })();
   </script>
+<script>
+(function(){
+  const box = document.getElementById('box');
+  const toRegister = document.getElementById('toRegister');
+  const toLogin = document.getElementById('toLogin');
+  const overlayTitle = document.getElementById('overlayTitle');
+  const overlayText = document.getElementById('overlayText');
+
+  function setOverlayText(showingRegister){
+    if(showingRegister){
+      overlayTitle.textContent = 'Olá, novo amigo!';
+      overlayText.textContent = 'Cadastre-se e comece a organizar seus estudos com o poder da IA.';
+    } else {
+      overlayTitle.textContent = 'Bem-vindo de volta!';
+      overlayText.textContent = 'Se já é nosso aluno, faça login para continuar seus estudos com ferramentas inteligentes.';
+    }
+  }
+
+  toRegister.addEventListener('click', () => {
+    box.classList.add('active');
+    setOverlayText(true);
+  });
+  toLogin.addEventListener('click', () => {
+    box.classList.remove('active');
+    setOverlayText(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') {
+      box.classList.remove('active');
+      setOverlayText(false);
+    }
+  });
+
+window.addEventListener('load', () => {
+  const box = document.getElementById('box');
+
+  // mensagem de sucesso
+  const sucesso = localStorage.getItem('mensagemSucesso');
+  if (sucesso) {
+    const msgDiv = document.getElementById('mensagemSucesso');
+    msgDiv.textContent = sucesso;
+    msgDiv.classList.add('show');
+    setTimeout(() => msgDiv.classList.remove('show'), 4000);
+    localStorage.removeItem('mensagemSucesso');
+  }
+
+  // só anima de volta para login se veio do cadastro
+  if (box.classList.contains('active')) {
+    setTimeout(() => {
+      box.classList.remove('active');
+      setOverlayText(false);
+    }, 200); // anima suavemente
+  }
+});
+window.addEventListener('load', () => {
+  const sucesso = localStorage.getItem('mensagemSucesso');
+  if (sucesso) {
+    const msgDiv = document.getElementById('mensagemSucesso');
+    msgDiv.textContent = sucesso;
+    msgDiv.classList.add('show');
+
+    setTimeout(() => {
+      msgDiv.classList.remove('show');
+    }, 4000); // desaparece após 4s
+
+    localStorage.removeItem('mensagemSucesso');
+  }
+});
+})();
+</script>
+<div id="mensagemSucesso" class="mensagem-sucesso"></div>
 </body>
 </html>

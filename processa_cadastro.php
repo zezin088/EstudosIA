@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($check->num_rows > 0) {
         echo "<script>
             localStorage.setItem('mensagemLogin', 'Esse e-mail já está cadastrado!');
-            window.location.href = 'index.php';
+            window.location.href = 'login.php';
         </script>";
         exit;
     }
@@ -32,14 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($stmt->execute()) {
         echo "<script>
-            localStorage.setItem('mensagemLogin', 'Cadastrado com sucesso! Agora faça login.');
-            window.location.href = 'index.php';
-        </script>";
+    localStorage.setItem('mensagemSucesso', 'Cadastro concluído com sucesso! Agora faça login.');
+    window.location.href = 'login.php?fromCadastro=1';
+</script>";
     } else {
         // Qualquer outro erro
         echo "<script>
             localStorage.setItem('mensagemLogin', 'Erro ao cadastrar!');
-            window.location.href = 'index.php';
+            window.location.href = 'login.php';
         </script>";
     }
 
