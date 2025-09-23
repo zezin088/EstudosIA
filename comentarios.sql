@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 18/08/2025 às 15:52
--- Versão do servidor: 10.4.28-MariaDB
--- Versão do PHP: 8.2.4
+-- Tempo de geração: 23/09/2025 às 05:00
+-- Versão do servidor: 10.4.32-MariaDB
+-- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,15 +32,8 @@ CREATE TABLE `comentarios` (
   `id_post` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `conteudo` text NOT NULL,
-  `data_comentario` datetime DEFAULT current_timestamp()
+  `data_comentario` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `comentarios`
---
-
-INSERT INTO `comentarios` (`id`, `id_post`, `id_usuario`, `conteudo`, `data_comentario`) VALUES
-(1, 6, 13, 'oiiiiii', '2025-08-18 09:15:12');
 
 --
 -- Índices para tabelas despejadas
@@ -62,7 +55,7 @@ ALTER TABLE `comentarios`
 -- AUTO_INCREMENT de tabela `comentarios`
 --
 ALTER TABLE `comentarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restrições para tabelas despejadas

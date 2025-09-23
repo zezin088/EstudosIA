@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 18/08/2025 às 15:51
--- Versão do servidor: 10.4.28-MariaDB
--- Versão do PHP: 8.2.4
+-- Tempo de geração: 23/09/2025 às 05:00
+-- Versão do servidor: 10.4.32-MariaDB
+-- Versão do PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,7 +32,7 @@ CREATE TABLE `posts` (
   `usuario_id` int(11) NOT NULL,
   `conteudo` text NOT NULL,
   `imagem` varchar(255) DEFAULT NULL,
-  `data_postagem` timestamp NOT NULL DEFAULT current_timestamp()
+  `data_postagem` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -40,13 +40,14 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `data_postagem`) VALUES
-(5, 13, 'oi', NULL, '2025-08-18 12:03:53'),
-(6, 13, 'oii', NULL, '2025-08-18 12:09:34'),
-(7, 13, 'Babado', NULL, '2025-08-18 12:17:17'),
-(8, 13, 'ois', NULL, '2025-08-18 12:25:32'),
-(9, 13, 'ois', NULL, '2025-08-18 12:25:48'),
-(10, 13, 'oiiiisss', NULL, '2025-08-18 12:27:43'),
-(11, 13, 'lalala', NULL, '2025-08-18 12:28:18');
+(1, 13, 'ad', NULL, '2025-09-22 23:12:16'),
+(2, 13, 'ada', NULL, '2025-09-22 23:18:51'),
+(3, 13, 'asasa', NULL, '2025-09-22 23:35:49'),
+(4, 13, 'sasa', NULL, '2025-09-22 23:51:10'),
+(5, 13, 'sasa', NULL, '2025-09-22 23:51:22'),
+(6, 13, 'sasa', NULL, '2025-09-22 23:51:29'),
+(7, 13, '', '1758596155_download4.jpg', '2025-09-22 23:55:55'),
+(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', '2025-09-22 23:56:58');
 
 --
 -- Índices para tabelas despejadas
@@ -67,7 +68,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT de tabela `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restrições para tabelas despejadas
@@ -77,7 +78,7 @@ ALTER TABLE `posts`
 -- Restrições para tabelas `posts`
 --
 ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
