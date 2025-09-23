@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 23/09/2025 às 05:00
--- Versão do servidor: 10.4.32-MariaDB
--- Versão do PHP: 8.2.12
+-- Tempo de geração: 23/09/2025 às 17:03
+-- Versão do servidor: 10.4.28-MariaDB
+-- Versão do PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -47,7 +47,9 @@ INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `data_postagem`) 
 (5, 13, 'sasa', NULL, '2025-09-22 23:51:22'),
 (6, 13, 'sasa', NULL, '2025-09-22 23:51:29'),
 (7, 13, '', '1758596155_download4.jpg', '2025-09-22 23:55:55'),
-(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', '2025-09-22 23:56:58');
+(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', '2025-09-22 23:56:58'),
+(9, 14, 'oi', NULL, '2025-09-23 11:11:59'),
+(10, 14, '', '1758637630_images.jpg', '2025-09-23 11:27:10');
 
 --
 -- Índices para tabelas despejadas
@@ -68,7 +70,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT de tabela `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Restrições para tabelas despejadas
