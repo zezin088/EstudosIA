@@ -1,4 +1,4 @@
-CREATE TABLE planos (
+CREATE TABLE estudos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     semana INT NOT NULL,
