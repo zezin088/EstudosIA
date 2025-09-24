@@ -25,12 +25,12 @@ const planos = {
     "📝 Simulado - domingo"
   ],
   4: [
-    "📘 Biologia - 1h/dia",
-    "📗 Português - 1h/dia",
-    "✍️ Redação - 3 textos",
-    "📕 Filosofia - 1h/dia",
-    "🔁 Revisão geral",
-    "📝 Simulado final"
+    " Biologia - 1h/dia",
+    " Português - 1h/dia",
+    " Redação - 3 textos",
+    "Filosofia - 1h/dia",
+    " Revisão geral",
+    "Simulado final"
   ]
 };
 
@@ -77,17 +77,29 @@ function mostrarSemana(semana) {
     });
   };
   // Botão Excluir
-  const botaoExcluir = document.createElement("button");
-  botaoExcluir.type = "button";
-  botaoExcluir.textContent = "Excluir";
-  botaoExcluir.classList.add("botao-acao");
-  botaoExcluir.onclick = () => {
-    container.innerHTML = "";
-    const mensagem = document.createElement("p");
-    mensagem.classList.add("mensagem-plano");
-    mensagem.textContent = "Plano apagado. Selecione novamente uma semana.";
-    container.appendChild(mensagem);
-  };
+  const excluir = document.createElement('button');
+excluir.textContent = 'Excluir';
+excluir.className = 'botao-acao';
+excluir.onclick = () => {
+    if(!semanaAtual) return alert('Selecione uma semana.');
+
+    if(confirm('Deseja realmente excluir todos os itens da semana?')){
+        // Remove do front-end
+        const container = document.getElementById('conteudo-semanal');
+        container.innerHTML = '';
+        planos[semanaAtual] = [];
+
+        // Envia para o backend
+        fetch('plano_estudos.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({excluir: true, semana: semanaAtual})
+        })
+        .then(res => res.text())
+        .then(msg => alert(msg))
+        .catch(err => alert('Erro ao excluir plano: ' + err));
+    }
+};
 
   // Botão Adicionar
   const botaoAdicionar = document.createElement("button");
@@ -110,4 +122,24 @@ function adicionarItem(semana) {
     planos[semana].push(novoItem.trim());
     mostrarSemana(semana); // Recarrega a lista com o novo item
   }
+}
+
+function salvarPlano(){
+  if(!semanaAtual) return alert('Selecione uma semana.');
+
+  const container = document.getElementById('conteudo-semanal');
+  const textareas = container.querySelectorAll('textarea.item-plano');
+  const itens = Array.from(textareas).map(t => t.value);
+
+  fetch('plano_estudos.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({semana: semanaAtual, itens: itens})
+  })
+  .then(res => res.text())
+  .then(msg => {
+      alert(msg);
+      planos[semanaAtual] = itens; // atualiza o JS
+  })
+  .catch(err => alert('Erro ao salvar plano: ' + err));
 }

@@ -2,63 +2,102 @@
 session_start();
 include 'config.php';
 
-// Definindo um usuário de teste (até ter login real)
+// Simulação de usuário logado
+$usuario_id = 1;
 $usuario = [
-    'nome' => 'Usuário de Teste',
+    'nome' => 'Aluno Teste',
     'foto' => 'avatar_padrao.png'
 ];
-$usuario_id = 1;
 
-// ----------------------------
-// BUSCAR PLANOS DO BANCO
-// ----------------------------
-$sql = "SELECT * FROM plano_estudos WHERE usuario_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $usuario_id);
-$stmt->execute();
-$result = $stmt->get_result();
+// Recebe POST JSON do JS
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+    $data = json_decode(file_get_contents('php://input'), true);
 
-// Criar array PHP para cada semana
-$planos_php = [1=>[], 2=>[], 3=>[], 4=>[]];
-while($row = $result->fetch_assoc()){
-    $planos_php[$row['semana']][] = $row['conteudo'];
-}
+    // --- EXCLUIR ITEM INDIVIDUAL ---
+    if (isset($data['excluir_item'], $data['semana'], $data['indice'])) {
+        $semana = intval($data['semana']);
+        $indice = intval($data['indice']);
 
-// Transformar em JSON para o JS
-$planos_json = json_encode($planos_php);
+        // Busca o plano atual
+        $res = $conn->prepare("SELECT id, conteudo FROM plano_estudos WHERE usuario_id=? AND semana=?");
+        $res->bind_param("ii", $usuario_id, $semana);
+        $res->execute();
+        $result = $res->get_result();
+        
+        if ($result->num_rows === 0) {
+            echo "Nenhum plano encontrado para excluir item.";
+            exit;
+        }
 
-// ----------------------------
-// SALVAR PLANOS (AJAX)
-// ----------------------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
-    $acao = $_POST['acao'];
-    $semana = (int)$_POST['semana'];
-    $conteudo = trim($_POST['conteudo']);
+        $row = $result->fetch_assoc();
+        $itens = explode("\n", $row['conteudo']);
 
-    if ($acao === 'adicionar' && $conteudo !== '') {
-        $sql_insert = "INSERT INTO plano_estudos (usuario_id, semana, conteudo) VALUES (?, ?, ?)";
-        $stmt_insert = $conn->prepare($sql_insert);
-        $stmt_insert->bind_param("iis", $usuario_id, $semana, $conteudo);
-        $stmt_insert->execute();
-        echo "ok";
-        exit;
-    } elseif ($acao === 'atualizar' && $conteudo !== '') {
-        $id = (int)$_POST['id'];
-        $sql_update = "UPDATE plano_estudos SET conteudo = ? WHERE id = ? AND usuario_id = ?";
-        $stmt_update = $conn->prepare($sql_update);
-        $stmt_update->bind_param("sii", $conteudo, $id, $usuario_id);
-        $stmt_update->execute();
-        echo "ok";
-        exit;
-    } elseif ($acao === 'excluir') {
-        $id = (int)$_POST['id'];
-        $sql_delete = "DELETE FROM plano_estudos WHERE id = ? AND usuario_id = ?";
-        $stmt_delete = $conn->prepare($sql_delete);
-        $stmt_delete->bind_param("ii", $id, $usuario_id);
-        $stmt_delete->execute();
-        echo "ok";
+        if (!isset($itens[$indice])) {
+            echo "Item não encontrado.";
+            exit;
+        }
+
+        array_splice($itens, $indice, 1); // remove item
+        $novo_conteudo = implode("\n", $itens);
+
+        $upd = $conn->prepare("UPDATE plano_estudos SET conteudo=? WHERE id=?");
+        $upd->bind_param("si", $novo_conteudo, $row['id']);
+        
+        if ($upd->execute()) {
+            echo "Item excluído com sucesso!";
+        } else {
+            echo "Erro ao atualizar plano: " . $upd->error;
+        }
         exit;
     }
+
+    // --- EXCLUIR TODA A SEMANA ---
+    if (isset($data['excluir_tudo'], $data['semana']) && $data['excluir_tudo'] === true) {
+        $semana = intval($data['semana']);
+        $sql = $conn->prepare("DELETE FROM plano_estudos WHERE usuario_id=? AND semana=?");
+        $sql->bind_param("ii", $usuario_id, $semana);
+        
+        if ($sql->execute()) {
+            echo "Plano da semana $semana excluído com sucesso!";
+        } else {
+            echo "Erro ao excluir plano: " . $sql->error;
+        }
+        exit;
+    }
+
+    // --- SALVAR PLANO ---
+    if (isset($data['semana'], $data['itens'])) {
+        $semana = intval($data['semana']);
+        $conteudo = implode("\n", $data['itens']);
+
+        $check = $conn->prepare("SELECT id FROM plano_estudos WHERE usuario_id=? AND semana=?");
+        $check->bind_param("ii", $usuario_id, $semana);
+        $check->execute();
+        $resCheck = $check->get_result();
+
+        if ($resCheck->num_rows > 0) {
+            $row = $resCheck->fetch_assoc();
+            $sql = $conn->prepare("UPDATE plano_estudos SET conteudo=? WHERE id=?");
+            $sql->bind_param("si", $conteudo, $row['id']);
+        } else {
+            $sql = $conn->prepare("INSERT INTO plano_estudos (usuario_id, semana, conteudo) VALUES (?,?,?)");
+            $sql->bind_param("iis", $usuario_id, $semana, $conteudo);
+        }
+
+        if ($sql->execute()) {
+            echo "Plano da semana $semana salvo com sucesso!";
+        } else {
+            echo "Erro ao salvar plano: " . $sql->error;
+        }
+        exit;
+    }
+}
+
+// Carrega planos existentes do usuário
+$planos_usuario = [];
+$result = $conn->query("SELECT * FROM plano_estudos WHERE usuario_id=$usuario_id");
+while ($row = $result->fetch_assoc()) {
+    $planos_usuario[$row['semana']] = explode("\n", $row['conteudo']);
 }
 ?>
 
@@ -69,274 +108,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Plano de Estudos - Estudos IA</title>
   <style>
-    @font-face {
-      font-family: 'Raesha';
-      src: url('fonts/Raesha.ttf') format('truetype');
-    }
-
-    @font-face {
-      font-family: 'Karst';
-      src: url('fonts/Karst-Light.otf') format('opentype');
-    }
-
-    @font-face {
-      font-family: 'fontsla';
-      src: url('fonts/TheStudentsTeacher-Regular.ttf');
-    }
-
-    body {
-      margin: 0;
-      background-color: #ffffff;
-      font-family: 'Karst', sans-serif;
-      color: #2c2c54;
-      line-height: 1.6;
-    }
-
-    .barra {
-      background: #4a69bd;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      color: white;
-      font-family: 'Raesha';
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .fb {
-      font-family: 'Raesha', cursive;
-      font-size: 44px;
-      margin: 0;
-      color: white;
-    }
-
-    nav ul {
-      display: flex;
-      list-style: none;
-      gap: 30px;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav ul a {
-      text-decoration: none;
-      color: #f1f1f1;
-      font-weight: 600;
-      font-size: 18px;
-      transition: color 0.3s ease, border-bottom 0.3s;
-      border-bottom: 2px solid transparent;
-    }
-
-    nav ul a:hover {
-      color: #cfe0f3;
-      border-bottom: 2px solid #cfe0f3;
-    }
-
-    /* NOVO NAVBAR SUPERIOR CLEAN */
-    .navbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #ffffff;
-      padding: 20px 30px;
-      border-bottom: 1px solid #e0e0e0;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      position: sticky;
-      top: 0;
-      z-index: 999;
-    }
-
-    .btn-voltar {
-  background-color: #4a69bd;
-  color: #ffffff;
-  padding: 10px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-family: 'Karst', sans-serif;
-  font-weight: 550;
-  transition: background-color 0.3s ease;
-  font-size: 15px;
-  border: none;
-  display: inline-block;
-}
-.btn-voltar:hover {
-  background-color: #3c3c74;
-}
-
-    .conteudo {
-      background-color: #f1f1f1;
-      padding: 50px 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-      max-width: 900px;
-      margin: 30px auto;
-      color: #2c2c54;
-      text-align: center;
-    }
-
-    h2 {
-      font-family: 'fontsla';
-      font-size: 36px;
-      margin-bottom: 25px;
-      color: #4a69bd;
-    }
-
-    .botoes-sugestoes {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 35px;
-    }
-
-    .botoes-sugestoes button {
-      padding: 16px 28px;
-      background-color: #3c3c74;
-      border: none;
-      border-radius: 12px;
-      font-size: 20px;
-      font-family: 'Karst';
-      color: white;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .botoes-sugestoes button:hover {
-      background-color: #2c2c54;
-      transform: translateY(-2px);
-    }
-
-    .item-plano {
-      background-color: #9db4cc;
-      color: #2c2c54;
-      border: none;
-      border-radius: 12px;
-      font-size: 18px;
-      font-family: 'fontsla';
-      padding: 16px 22px;
-      width: 100%;
-      max-width: 450px;
-      margin-bottom: 18px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
-    }
-
-    .item-plano:focus {
-      background-color: #cfe0f3;
-      outline: none;
-      transform: scale(1.03);
-      box-shadow: 0 0 0 4px rgba(0,0,0,0.1);
-    }
-
-    .acoes-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 18px;
-      margin-top: 25px;
-    }
-
-    .botao-acao {
-      background-color: #3c3c74;
-      color: #f1f1f1;
-      font-family: 'Karst';
-      font-size: 17px;
-      padding: 14px 26px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .botao-acao:hover {
-      background-color: #2c2c54;
-      transform: translateY(-2px);
-    }
-
-    #adicionarItemDiv {
-      margin-top: 25px;
-      display: none;
-      gap: 12px;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    #novoItemInput {
-      flex: 1;
-      max-width: 450px;
-      padding: 16px 22px;
-      font-size: 18px;
-      font-family: 'fontsla';
-      border-radius: 12px;
-      border: 1px solid #9db4cc;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      color: #2c2c54;
-      transition: border-color 0.3s ease;
-    }
-
-    #novoItemInput:focus {
-      outline: none;
-      border-color: #4a69bd;
-      box-shadow: 0 0 6px #4a69bd;
-    }
-
-    #adicionarItemDiv button {
-      background-color: #4a69bd;
-      border: none;
-      border-radius: 12px;
-      padding: 13px 26px;
-      font-weight: 600;
-      cursor: pointer;
-      color: #ffffff;
-      font-family: 'Karst';
-      font-size: 16px;
-      transition: all 0.3s ease;
-    }
-
-    #adicionarItemDiv button:hover {
-      background-color: #3c3c74;
-      transform: translateY(-2px);
-    }
-
-    .mensagem-plano {
-      font-family: 'Karst';
-      font-size: 18px;
-      color: #c0392b;
-    }
-
-    li {
-      font-family: 'Karst';
-    }
+    @font-face { font-family: 'Raesha'; src: url('fonts/Raesha.ttf') format('truetype'); } @font-face { font-family: 'Karst'; src: url('fonts/Karst-Light.otf') format('opentype'); } @font-face { font-family: 'fontsla'; src: url('fonts/TheStudentsTeacher-Regular.ttf'); } body { margin: 0; background-color: #ffffff; font-family: 'Karst', sans-serif; color: #2c2c54; line-height: 1.6; } .barra { background: #4a69bd; display: flex; justify-content: space-between; align-items: center; padding: 14px 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); color: white; font-family: 'Raesha'; position: sticky; top: 0; z-index: 100; } .fb { font-family: 'Raesha', cursive; font-size: 44px; margin: 0; color: white; } nav ul { display: flex; list-style: none; gap: 30px; margin: 0; padding: 0; } nav ul a { text-decoration: none; color: #f1f1f1; font-weight: 600; font-size: 18px; transition: color 0.3s ease, border-bottom 0.3s; border-bottom: 2px solid transparent; } nav ul a:hover { color: #cfe0f3; border-bottom: 2px solid #cfe0f3; } /* NOVO NAVBAR SUPERIOR CLEAN */ .navbar { display: flex; align-items: center; justify-content: space-between; background-color: #ffffff; padding: 20px 30px; border-bottom: 1px solid #e0e0e0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 999; } .btn-voltar { background-color: #4a69bd; color: #ffffff; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-family: 'Karst', sans-serif; font-weight: 550; transition: background-color 0.3s ease; font-size: 15px; border: none; display: inline-block; } .btn-voltar:hover { background-color: #3c3c74; } .conteudo { background-color: #f1f1f1; padding: 50px 30px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); max-width: 900px; margin: 30px auto; color: #2c2c54; text-align: center; } h2 { font-family: 'fontsla'; font-size: 36px; margin-bottom: 25px; color: #4a69bd; } .botoes-sugestoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 35px; } .botoes-sugestoes button { padding: 16px 28px; background-color: #3c3c74; border: none; border-radius: 12px; font-size: 20px; font-family: 'Karst'; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .botoes-sugestoes button:hover { background-color: #2c2c54; transform: translateY(-2px); } .item-plano { background-color: #9db4cc; color: #2c2c54; border: none; border-radius: 12px; font-size: 18px; font-family: 'fontsla'; padding: 16px 22px; width: 100%; max-width: 450px; margin-bottom: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; } .item-plano:focus { background-color: #cfe0f3; outline: none; transform: scale(1.03); box-shadow: 0 0 0 4px rgba(0,0,0,0.1); } .acoes-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; margin-top: 25px; } .botao-acao { background-color: #3c3c74; color: #f1f1f1; font-family: 'Karst'; font-size: 17px; padding: 14px 26px; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .botao-acao:hover { background-color: #2c2c54; transform: translateY(-2px); } #adicionarItemDiv { margin-top: 25px; display: none; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; } #novoItemInput { flex: 1; max-width: 450px; padding: 16px 22px; font-size: 18px; font-family: 'fontsla'; border-radius: 12px; border: 1px solid #9db4cc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: #2c2c54; transition: border-color 0.3s ease; } #novoItemInput:focus { outline: none; border-color: #4a69bd; box-shadow: 0 0 6px #4a69bd; } #adicionarItemDiv button { background-color: #4a69bd; border: none; border-radius: 12px; padding: 13px 26px; font-weight: 600; cursor: pointer; color: #ffffff; font-family: 'Karst'; font-size: 16px; transition: all 0.3s ease; } #adicionarItemDiv button:hover { background-color: #3c3c74; transform: translateY(-2px); } .mensagem-plano { font-family: 'Karst'; font-size: 18px; color: #c0392b; } li { font-family: 'Karst'; }
   </style>
 </head>
 <body>
-  <nav class="topo-nav" role="navigation" aria-label="Navegação principal" style="display:flex; justify-content:space-between; align-items:center; padding:18px 40px; background:#f1f1f1; box-shadow:0 2px 6px rgba(0,0,0,0.1); position:sticky; top:0; z-index:999;">
-    <h1 style="font-family: 'Bungee', cursive; font-size:28px; color:#2c2c54; margin:0; user-select:none;">EstudosIA</h1>
-    
-    <div class="user-menu" style="display:flex; align-items:center; gap:15px;">
-      <a href="editar_usuario.php" class="user-info" title="Perfil do usuário <?php echo htmlspecialchars($usuario['nome']); ?>" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#4a69bd; font-weight:700; font-size:16px; transition:color 0.3s ease;">
-        <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
-        <img 
-    src="<?php echo $usuario['foto'] ? htmlspecialchars($usuario['foto']) : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" 
-    alt="Foto do usuário" 
-    style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4a69bd;" 
-/>
-
-      </a>
-      <a href="logout.php" class="logout" title="Sair da conta" style="font-weight:700; color:#c0392b; text-decoration:none; padding:8px 14px; border-radius:8px; border:2px solid transparent; transition:background-color 0.3s ease, color 0.3s ease; font-size:15px; user-select:none;">Sair</a>
+  <nav>
+    <h1>EstudosIA</h1>
+    <div class="user-info">
+      <a href="editar_usuario.php"><?php echo htmlspecialchars($usuario['nome']); ?></a>
+      <img src="<?php echo htmlspecialchars($usuario['foto']); ?>" alt="Foto do usuário" />
+      <a href="logout.php" style="color: #c0392b;">Sair</a>
     </div>
   </nav>
 
-  
-    <a class="btn-voltar" href="/inicio.php" style="margin-left: 30px; margin-right: auto;">⬅️ Voltar</a>
-</nav>
-
+  <a class="btn-voltar" href="/inicio.php">⬅️ Voltar</a>
 
   <div class="conteudo" id="conteudo">
     <h2>Plano de Estudos - Selecione uma Semana</h2>
@@ -348,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
     </div>
 
     <div id="conteudo-semanal">
-      <p style="font-family: 'Karst'; color: #2c2c54;">Selecione uma semana para ver o plano de estudos.</p>
+      <p>Selecione uma semana para ver o plano de estudos.</p>
     </div>
 
     <div id="adicionarItemDiv">
@@ -360,12 +145,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
 
   <script>
     const planos = {
-      1: ["📘 Matemática - 1h/dia", "📗 Português - 45min/dia", "✍️ Redação - 3x por semana", "📕 História - 1h/dia", "🔁 Revisão - sábado", "📝 Simulado - domingo"],
-      2: ["📘 Física - 1h/dia", "📗 Gramática - 45min/dia", "✍️ Redação - tema novo", "📕 Geografia - 1h/dia", "🔁 Revisão - sábado", "📝 Simulado - domingo"],
-      3: ["📘 Química - 1h/dia", "📗 Literatura - 1h/dia", "✍️ Redação - correção", "📕 Sociologia - 1h/dia", "🔁 Revisão - sábado", "📝 Simulado - domingo"],
-      4: ["📘 Biologia - 1h/dia", "📗 Português - 1h/dia", "✍️ Redação - 3 textos", "📕 Filosofia - 1h/dia", "🔁 Revisão geral", "📝 Simulado final"]
+      1: ["📘 Matemática - 1h/dia", "📗 Português - 45min/dia", "✍️ Redação - 3x por semana"],
+      2: ["📘 Física - 1h/dia", "📗 Gramática - 45min/dia", "✍️ Redação - tema novo"],
+      3: ["📘 Química - 1h/dia", "📗 Literatura - 1h/dia", "✍️ Redação - correção"],
+      4: ["📘 Biologia - 1h/dia", "📗 Português - 1h/dia", "✍️ Redação - 3 textos"]
     };
-
     let semanaAtual = null;
 
     function mostrarSemana(semana) {
@@ -373,78 +157,85 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
       const container = document.getElementById("conteudo-semanal");
       container.innerHTML = "";
 
-      planos[semana].forEach(item => {
+      planos[semana].forEach((item, index) => {
         const textarea = document.createElement("textarea");
         textarea.value = item;
         textarea.rows = 2;
         textarea.classList.add("item-plano");
+        textarea.setAttribute('data-indice', index); // adicionar índice
         container.appendChild(textarea);
       });
 
-      const botoesContainer = document.createElement("div");
-      botoesContainer.classList.add("acoes-container");
+      // Botões de ação
+      const divBotoes = document.createElement('div');
+      divBotoes.className = 'acoes-container';
 
-      const botaoSalvar = document.createElement("button");
-      botaoSalvar.textContent = "Salvar";
-      botaoSalvar.classList.add("botao-acao");
-      botaoSalvar.type = "button";
-      botaoSalvar.onclick = () => {
-        const caixas = container.querySelectorAll("textarea");
-        const dados = Array.from(caixas).map(caixa => caixa.value);
-        alert("Plano salvo:\n" + dados.join("\n"));
+      const salvar = document.createElement('button');
+      salvar.textContent = 'Salvar';
+      salvar.className = 'botao-acao';
+      salvar.onclick = salvarPlano;
+
+      const excluir = document.createElement('button');
+      excluir.textContent = 'Excluir Todos';
+      excluir.className = 'botao-acao';
+      excluir.onclick = () => {
+        if (confirm('Deseja realmente excluir todos os itens da semana?')) {
+          fetch('plano_estudos.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ excluir_tudo: true, semana: semanaAtual })
+          }).then(res => res.text()).then(alert).catch(console.error);
+          container.innerHTML = ''; // Limpar o container
+        }
       };
 
-      const botaoExcluir = document.createElement("button");
-      botaoExcluir.textContent = "Excluir";
-      botaoExcluir.classList.add("botao-acao");
-      botaoExcluir.type = "button";
-      botaoExcluir.onclick = () => {
-        container.innerHTML = "";
-        const mensagem = document.createElement("p");
-        mensagem.classList.add("mensagem-plano");
-        mensagem.textContent = "Plano apagado. Selecione novamente uma semana.";
-        container.appendChild(mensagem);
+      const adicionar = document.createElement('button');
+      adicionar.textContent = '➕ Adicionar Item';
+      adicionar.className = 'botao-acao';
+      adicionar.onclick = () => {
+        document.getElementById('adicionarItemDiv').style.display = 'flex';
+        document.getElementById('novoItemInput').value = '';
+        document.getElementById('novoItemInput').focus();
       };
 
-      const botaoAdicionar = document.createElement("button");
-      botaoAdicionar.textContent = "➕ Adicionar Item";
-      botaoAdicionar.classList.add("botao-acao");
-      botaoAdicionar.type = "button";
-      botaoAdicionar.onclick = mostrarInputAdicionar;
-
-      botoesContainer.appendChild(botaoSalvar);
-      botoesContainer.appendChild(botaoExcluir);
-      botoesContainer.appendChild(botaoAdicionar);
-
-      container.appendChild(botoesContainer);
-      cancelarNovoItem();
-    }
-
-    function mostrarInputAdicionar() {
-      document.getElementById("adicionarItemDiv").style.display = "flex";
-      document.getElementById("novoItemInput").value = "";
-      document.getElementById("novoItemInput").focus();
+      divBotoes.appendChild(salvar);
+      divBotoes.appendChild(excluir);
+      divBotoes.appendChild(adicionar);
+      container.appendChild(divBotoes);
     }
 
     function confirmarNovoItem() {
-      const input = document.getElementById("novoItemInput");
-      const novoItem = input.value.trim();
-      if (!novoItem) {
-        alert("Por favor, digite algum texto.");
-        return;
-      }
-      if (semanaAtual === null) {
-        alert("Selecione uma semana antes de adicionar itens.");
-        return;
-      }
-      planos[semanaAtual].push(novoItem);
-      mostrarSemana(semanaAtual);
-      cancelarNovoItem();
+      const input = document.getElementById('novoItemInput');
+      if (!input.value.trim()) return alert('Digite algum texto.');
+      const container = document.getElementById('conteudo-semanal');
+      const ta = document.createElement('textarea');
+      ta.value = input.value.trim();
+      ta.className = 'item-plano';
+      container.insertBefore(ta, container.querySelector('.acoes-container')); // Inserir antes dos botões
+      document.getElementById('adicionarItemDiv').style.display = 'none';
     }
 
     function cancelarNovoItem() {
-      document.getElementById("adicionarItemDiv").style.display = "none";
-      document.getElementById("novoItemInput").value = "";
+      document.getElementById('adicionarItemDiv').style.display = 'none';
+    }
+
+    function salvarPlano() {
+      if (!semanaAtual) return alert('Selecione uma semana.');
+      const container = document.getElementById('conteudo-semanal');
+      const textareas = container.querySelectorAll('textarea.item-plano');
+      const itens = Array.from(textareas).map(t => t.value);
+
+      fetch('plano_estudos.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ semana: semanaAtual, itens: itens })
+      })
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);
+        planos[semanaAtual] = itens; // Atualiza o JS
+      })
+      .catch(err => alert('Erro ao salvar plano: ' + err));
     }
   </script>
 </body>
