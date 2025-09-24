@@ -1,8 +1,6 @@
-CREATE TABLE estudos (
+CREATE TABLE IF NOT EXISTS plano_estudos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     semana INT NOT NULL,
-    item TEXT NOT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+    conteudo VARCHAR(255) NOT NULL
 );

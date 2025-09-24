@@ -53,16 +53,29 @@ function mostrarSemana(semana) {
   botoesContainer.classList.add("acoes-container");
 
   // Botão Salvar
-  const botaoSalvar = document.createElement("button");
-  botaoSalvar.type = "button";
-  botaoSalvar.textContent = "Salvar";
-  botaoSalvar.classList.add("botao-acao");
   botaoSalvar.onclick = () => {
     const caixas = container.querySelectorAll("textarea");
     const dados = Array.from(caixas).map(caixa => caixa.value);
-    alert("Plano salvo:\n" + dados.join("\n"));
+  
+    fetch('salvar_plano.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        usuario_id: 1, // aqui coloque a variável PHP do usuário logado
+        semana: semanaAtual,
+        itens: JSON.stringify(dados)
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert("Plano " + data.status + " com sucesso!");
+    })
+    .catch(error => {
+      console.error("Erro ao salvar plano:", error);
+    });
   };
-
   // Botão Excluir
   const botaoExcluir = document.createElement("button");
   botaoExcluir.type = "button";
