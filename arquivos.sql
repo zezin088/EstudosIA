@@ -24,14 +24,15 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `amizades`
+-- Estrutura para tabela `arquivos`
 --
 
-CREATE TABLE `amizades` (
+CREATE TABLE `arquivos` (
   `id` int(11) NOT NULL,
-  `id_usuario1` int(11) NOT NULL,
-  `id_usuario2` int(11) NOT NULL,
-  `status` enum('pendente','aceito') DEFAULT 'pendente'
+  `nome_original` varchar(255) NOT NULL,
+  `nome_servidor` varchar(255) NOT NULL,
+  `tamanho` int(11) NOT NULL,
+  `data_envio` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -39,22 +40,20 @@ CREATE TABLE `amizades` (
 --
 
 --
--- Índices de tabela `amizades`
+-- Índices de tabela `arquivos`
 --
-ALTER TABLE `amizades`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_usuario1` (`id_usuario1`),
-  ADD KEY `id_usuario2` (`id_usuario2`);
+ALTER TABLE `arquivos`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT de tabela `amizades`
+-- AUTO_INCREMENT de tabela `arquivos`
 --
-ALTER TABLE `amizades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `arquivos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

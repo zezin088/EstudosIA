@@ -24,14 +24,14 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `amizades`
+-- Estrutura para tabela `estudo`
 --
 
-CREATE TABLE `amizades` (
+CREATE TABLE `estudo` (
   `id` int(11) NOT NULL,
-  `id_usuario1` int(11) NOT NULL,
-  `id_usuario2` int(11) NOT NULL,
-  `status` enum('pendente','aceito') DEFAULT 'pendente'
+  `usuario_id` int(11) NOT NULL,
+  `tempo_estudado` int(11) NOT NULL DEFAULT 0,
+  `criado_em` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -39,22 +39,31 @@ CREATE TABLE `amizades` (
 --
 
 --
--- Índices de tabela `amizades`
+-- Índices de tabela `estudo`
 --
-ALTER TABLE `amizades`
+ALTER TABLE `estudo`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_usuario1` (`id_usuario1`),
-  ADD KEY `id_usuario2` (`id_usuario2`);
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT de tabela `amizades`
+-- AUTO_INCREMENT de tabela `estudo`
 --
-ALTER TABLE `amizades`
+ALTER TABLE `estudo`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabelas `estudo`
+--
+ALTER TABLE `estudo`
+  ADD CONSTRAINT `estudo_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 23/09/2025 às 17:03
+-- Tempo de geração: 24/09/2025 às 17:32
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -32,6 +32,8 @@ CREATE TABLE `posts` (
   `usuario_id` int(11) NOT NULL,
   `conteudo` text NOT NULL,
   `imagem` varchar(255) DEFAULT NULL,
+  `legenda` text DEFAULT NULL,
+  `criado_em` datetime DEFAULT current_timestamp(),
   `data_postagem` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -39,17 +41,10 @@ CREATE TABLE `posts` (
 -- Despejando dados para a tabela `posts`
 --
 
-INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `data_postagem`) VALUES
-(1, 13, 'ad', NULL, '2025-09-22 23:12:16'),
-(2, 13, 'ada', NULL, '2025-09-22 23:18:51'),
-(3, 13, 'asasa', NULL, '2025-09-22 23:35:49'),
-(4, 13, 'sasa', NULL, '2025-09-22 23:51:10'),
-(5, 13, 'sasa', NULL, '2025-09-22 23:51:22'),
-(6, 13, 'sasa', NULL, '2025-09-22 23:51:29'),
-(7, 13, '', '1758596155_download4.jpg', '2025-09-22 23:55:55'),
-(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', '2025-09-22 23:56:58'),
-(9, 14, 'oi', NULL, '2025-09-23 11:11:59'),
-(10, 14, '', '1758637630_images.jpg', '2025-09-23 11:27:10');
+INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `legenda`, `criado_em`, `data_postagem`) VALUES
+(7, 13, '', '1758596155_download4.jpg', NULL, '2025-09-24 11:35:11', '2025-09-22 23:55:55'),
+(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', NULL, '2025-09-24 11:35:11', '2025-09-22 23:56:58'),
+(11, 4, 'Capivaras são tudo de bom!!', NULL, NULL, '2025-09-24 11:35:11', '2025-09-24 09:29:03');
 
 --
 -- Índices para tabelas despejadas
@@ -70,17 +65,7 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT de tabela `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- Restrições para tabelas despejadas
---
-
---
--- Restrições para tabelas `posts`
---
-ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

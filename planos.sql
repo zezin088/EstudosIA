@@ -24,14 +24,15 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `amizades`
+-- Estrutura para tabela `planos`
 --
 
-CREATE TABLE `amizades` (
+CREATE TABLE `planos` (
   `id` int(11) NOT NULL,
-  `id_usuario1` int(11) NOT NULL,
-  `id_usuario2` int(11) NOT NULL,
-  `status` enum('pendente','aceito') DEFAULT 'pendente'
+  `usuario_id` int(11) NOT NULL,
+  `semana` int(11) NOT NULL,
+  `item` text NOT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -39,22 +40,31 @@ CREATE TABLE `amizades` (
 --
 
 --
--- Índices de tabela `amizades`
+-- Índices de tabela `planos`
 --
-ALTER TABLE `amizades`
+ALTER TABLE `planos`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_usuario1` (`id_usuario1`),
-  ADD KEY `id_usuario2` (`id_usuario2`);
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT de tabela `amizades`
+-- AUTO_INCREMENT de tabela `planos`
 --
-ALTER TABLE `amizades`
+ALTER TABLE `planos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabelas `planos`
+--
+ALTER TABLE `planos`
+  ADD CONSTRAINT `planos_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
