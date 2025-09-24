@@ -1,28 +1,66 @@
 <?php
-// Conexão com o banco
-include 'config.php';
 session_start();
+include 'config.php';
 
-// Exemplo: ID do usuário logado (no futuro você pega do $_SESSION['usuario_id'])
+// Definindo um usuário de teste (até ter login real)
+$usuario = [
+    'nome' => 'Usuário de Teste',
+    'foto' => 'avatar_padrao.png'
+];
 $usuario_id = 1;
 
-// Verifica qual semana foi selecionada (default = 1)
-$semanaSelecionada = $_GET['semana'] ?? 1;
-
-// Consulta os planos do banco
-$sql = "SELECT * FROM planos WHERE usuario_id = ? AND semana = ? ORDER BY id";
+// ----------------------------
+// BUSCAR PLANOS DO BANCO
+// ----------------------------
+$sql = "SELECT * FROM plano_estudos WHERE usuario_id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ii", $usuario_id, $semanaSelecionada);
+$stmt->bind_param("i", $usuario_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Array com os itens do plano
-$planos = [];
-while ($row = $result->fetch_assoc()) {
-    $planos[] = $row['item'];
+// Criar array PHP para cada semana
+$planos_php = [1=>[], 2=>[], 3=>[], 4=>[]];
+while($row = $result->fetch_assoc()){
+    $planos_php[$row['semana']][] = $row['conteudo'];
+}
+
+// Transformar em JSON para o JS
+$planos_json = json_encode($planos_php);
+
+// ----------------------------
+// SALVAR PLANOS (AJAX)
+// ----------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
+    $acao = $_POST['acao'];
+    $semana = (int)$_POST['semana'];
+    $conteudo = trim($_POST['conteudo']);
+
+    if ($acao === 'adicionar' && $conteudo !== '') {
+        $sql_insert = "INSERT INTO plano_estudos (usuario_id, semana, conteudo) VALUES (?, ?, ?)";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("iis", $usuario_id, $semana, $conteudo);
+        $stmt_insert->execute();
+        echo "ok";
+        exit;
+    } elseif ($acao === 'atualizar' && $conteudo !== '') {
+        $id = (int)$_POST['id'];
+        $sql_update = "UPDATE plano_estudos SET conteudo = ? WHERE id = ? AND usuario_id = ?";
+        $stmt_update = $conn->prepare($sql_update);
+        $stmt_update->bind_param("sii", $conteudo, $id, $usuario_id);
+        $stmt_update->execute();
+        echo "ok";
+        exit;
+    } elseif ($acao === 'excluir') {
+        $id = (int)$_POST['id'];
+        $sql_delete = "DELETE FROM plano_estudos WHERE id = ? AND usuario_id = ?";
+        $stmt_delete = $conn->prepare($sql_delete);
+        $stmt_delete->bind_param("ii", $id, $usuario_id);
+        $stmt_delete->execute();
+        echo "ok";
+        exit;
+    }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="pt-BR">
