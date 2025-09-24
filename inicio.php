@@ -229,7 +229,7 @@ $foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto'])
     .social-mini:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.16); }
 
     .social-mini .mini-avatar {
-      width: 56px; height:56px; border-radius:10px; overflow:hidden; flex:0 0 56px; display:block;
+      width: 76px; height:76px; border-radius:10px; overflow:hidden; flex:0 0 56px; display:block;
       border: 2px solid rgba(63,124,114,0.08);
     }
     .social-mini .mini-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -420,16 +420,16 @@ $foto_usuario = !empty($usuario['foto']) && file_exists($usuario['foto'])
 
   <!-- ===== New Social Mini + Panel (replaces previous float) ===== -->
   <div class="social-float">
-    <div class="social-mini" id="socialMini" role="button" aria-haspopup="dialog" aria-controls="socialPanel" tabindex="0" title="Abrir Rede Social">
-      <div class="mini-avatar" aria-hidden="true">
-        <img src="<?php echo $foto_usuario; ?>" alt="Preview usuário">
-      </div>
-      <div class="mini-info">
-        <div class="title">Rede Social</div>
-        <div class="sub">Ver publicações e interagir</div>
-      </div>
+  <div class="social-mini" id="socialMini" role="button" aria-haspopup="dialog" aria-controls="socialPanel" tabindex="0" title="Abrir Rede Social">
+    <div class="mini-avatar" aria-hidden="true">
+      <img src="https://i.pinimg.com/originals/21/be/b2/21beb251c3ffb1f9b4834f109eaba96a.gif" alt="Avatar GIF">
+    </div>
+    <div class="mini-info">
+      <div class="title">Rede Social</div>
+      <div class="sub">Ver publicações e interagir</div>
     </div>
   </div>
+</div>
 
   <div class="social-panel-backdrop" id="socialBackdrop" aria-hidden="true">
     <div class="social-panel" role="dialog" aria-modal="true" aria-label="Rede Social" id="socialPanel">
