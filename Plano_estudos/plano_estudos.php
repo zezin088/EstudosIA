@@ -114,10 +114,6 @@ while ($row = $result->fetch_assoc()) {
 <body>
   <nav>
     <h1>EstudosIA</h1>
-    <div class="user-info">
-      <a href="editar_usuario.php"><?php echo htmlspecialchars($usuario['nome']); ?></a>
-      <img src="<?php echo htmlspecialchars($usuario['foto']); ?>" alt="Foto do usuário" />
-      <a href="logout.php" style="color: #c0392b;">Sair</a>
     </div>
   </nav>
 
