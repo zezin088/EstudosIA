@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('ssssi', $nome_usuario, $email, $biografia, $foto, $usuario_id);
     }
-
+    $_SESSION['usuario_nome'] = $nome_usuario;
     $stmt->execute();
     $stmt->close();
 
