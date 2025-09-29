@@ -24,48 +24,45 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `posts`
+-- Estrutura para tabela `conteudos`
 --
 
-CREATE TABLE `posts` (
+CREATE TABLE `conteudos` (
   `id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `conteudo` text NOT NULL,
-  `imagem` varchar(255) DEFAULT NULL,
-  `legenda` text DEFAULT NULL,
-  `criado_em` datetime DEFAULT current_timestamp(),
-  `data_postagem` datetime DEFAULT current_timestamp()
+  `titulo` varchar(255) NOT NULL,
+  `descricao` text DEFAULT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `posts`
+-- Despejando dados para a tabela `conteudos`
 --
 
-INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `legenda`, `criado_em`, `data_postagem`) VALUES
-(7, 13, '', '1758596155_download4.jpg', NULL, '2025-09-24 11:35:11', '2025-09-22 23:55:55'),
-(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', NULL, '2025-09-24 11:35:11', '2025-09-22 23:56:58'),
-(11, 4, 'Capivaras são tudo de bom!!', NULL, NULL, '2025-09-24 11:35:11', '2025-09-24 09:29:03');
+INSERT INTO `conteudos` (`id`, `titulo`, `descricao`, `link`, `criado_em`) VALUES
+(1, 'Anotações', 'Crie e organize suas anotações.', 'anotacoes.php', '2025-09-28 00:35:28'),
+(2, 'Flashcards', 'Revise conteúdos com cartões interativos.', 'flashcards.php', '2025-09-28 00:35:28'),
+(3, 'Plano de Estudos', 'Monte seu cronograma personalizado.', 'plano_estudos.php', '2025-09-28 00:35:28');
 
 --
 -- Índices para tabelas despejadas
 --
 
 --
--- Índices de tabela `posts`
+-- Índices de tabela `conteudos`
 --
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`);
+ALTER TABLE `conteudos`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
 --
 
 --
--- AUTO_INCREMENT de tabela `posts`
+-- AUTO_INCREMENT de tabela `conteudos`
 --
-ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+ALTER TABLE `conteudos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

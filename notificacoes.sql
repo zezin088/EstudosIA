@@ -24,36 +24,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `posts`
+-- Estrutura para tabela `notificacoes`
 --
 
-CREATE TABLE `posts` (
+CREATE TABLE `notificacoes` (
   `id` int(11) NOT NULL,
   `usuario_id` int(11) NOT NULL,
-  `conteudo` text NOT NULL,
-  `imagem` varchar(255) DEFAULT NULL,
-  `legenda` text DEFAULT NULL,
-  `criado_em` datetime DEFAULT current_timestamp(),
-  `data_postagem` datetime DEFAULT current_timestamp()
+  `mensagem` varchar(255) NOT NULL,
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `lida` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `posts`
---
-
-INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `legenda`, `criado_em`, `data_postagem`) VALUES
-(7, 13, '', '1758596155_download4.jpg', NULL, '2025-09-24 11:35:11', '2025-09-22 23:55:55'),
-(8, 13, '', '1758596218_d43c989f-5988-40fe-a97c-abd641010fc8.jpg', NULL, '2025-09-24 11:35:11', '2025-09-22 23:56:58'),
-(11, 4, 'Capivaras são tudo de bom!!', NULL, NULL, '2025-09-24 11:35:11', '2025-09-24 09:29:03');
 
 --
 -- Índices para tabelas despejadas
 --
 
 --
--- Índices de tabela `posts`
+-- Índices de tabela `notificacoes`
 --
-ALTER TABLE `posts`
+ALTER TABLE `notificacoes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `usuario_id` (`usuario_id`);
 
@@ -62,10 +51,20 @@ ALTER TABLE `posts`
 --
 
 --
--- AUTO_INCREMENT de tabela `posts`
+-- AUTO_INCREMENT de tabela `notificacoes`
 --
-ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+ALTER TABLE `notificacoes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- Restrições para tabelas despejadas
+--
+
+--
+-- Restrições para tabelas `notificacoes`
+--
+ALTER TABLE `notificacoes`
+  ADD CONSTRAINT `notificacoes_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
