@@ -8,6 +8,10 @@
     *, *::before, *::after {
     box-sizing: border-box;
 }
+@font-face {
+      font-family: 'SimpleHandmade';
+      src: url(/fonts/SimpleHandmade.ttf);
+    }
     @keyframes aparecer {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
@@ -17,12 +21,13 @@
       src: url(/fonts/SimpleHandmade.ttf);
     }
 body {
-    font-family: 'Karst', sans-serif;
+  font-family:'Roboto',sans-serif;
     background-color: #2a5c55;
     color: #000000;
     padding: 0;
     margin: 0;
     box-sizing: border-box; /* só para body */
+    display: flex;
 }
 header {
   position: fixed; top:0; left:0; width:100%; height:70px;
@@ -37,12 +42,16 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
 
 .avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #3f7c72;}
     h1, h2 {
+      font-family: 'SimpleHandmade';
+      font-size: 35px;
+      text-align: center;
+      color: #3f7c72ff;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     }
     .container {
       max-width: 600px;
-      margin: 70px auto;
-      padding: 25px;
+      margin: 75px auto;
+      padding: 55px 99px;
       background-color: #ffffff;
       border-radius: 16px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -52,15 +61,15 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
     .materias {
       margin: 20px 0;
       text-align: center;
-      background-color: #3b5998; /* azul diferente */
+      background-color: #3f7c72ff; /* azul diferente */
       padding: 15px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .materias button {
-      background-color: #6d84b4; /* azul claro */
-      color: white;
+      background-color: #bdebe3ff; /* azul claro */
+      color: #3f7c72ff;
       border: none;
       padding: 12px 20px;
       border-radius: 10px;
@@ -72,13 +81,16 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
     }
 
     .materias button:hover {
-      background-color: #5a6ea9; /* azul um pouco mais escuro */
+      background-color: rgb(151, 190, 184); /* azul um pouco mais escuro */
       transform: scale(1.05);
     }
-
+    .botoesp{
+      text-align: center;
+      justify-content: center;
+    }
     /* Botões principais */
     button {
-      background-color: #4a69bd;
+      background-color: #3f7c72ff;
       color: white;
       border: none;
       padding: 12px 20px;
@@ -91,7 +103,7 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
     }
 
     button:hover {
-      background-color: #3c3c74;
+      background-color: #1e3834ff;
       transform: scale(1.05);
     }
 
@@ -103,10 +115,10 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
 
     .formulario input {
       padding: 12px;
-      border: 2px solid #9db4cc;
+      border: 2px solid #3f7c72ff;
       border-radius: 10px;
       font-size: 1rem;
-      color: #2c2c54;
+      color: #000;
     }
 
     #mensagem-sucesso {
@@ -136,9 +148,9 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
       position: absolute;
       width: 100%;
       height: 100%;
-      background-color: #cfe0f3;
-      color: #2c2c54;
-      border: 2px solid #4a69bd;
+      background-color: #bdebe3ff;
+      color: #3f7c72ff;
+      border: 2px solid #3f7c72ff;
       border-radius: 15px;
       backface-visibility: hidden;
       display: flex;
@@ -185,10 +197,11 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
 
     <!-- Botões de matérias -->
     <div class="materias" id="botoes-materias"></div>
-
+    <div class="botoesp">
+      <button onclick="excluirFlashcardAtual()">Excluir Flashcard</button>
+      <button onclick="excluirMateria()">Excluir Matéria</button>
+    </div>
     <!-- Botões principais (sem anterior e próximo) -->
-    <button onclick="excluirFlashcardAtual()">Excluir Flashcard</button>
-    <button onclick="excluirMateria()">Excluir Matéria</button>
   </div>
 
   <!-- Adicionar Flashcard -->
