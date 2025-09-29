@@ -141,143 +141,71 @@ function humanSize($bytes){
 
 <!-- ========================= ESTILO COMPLETO ========================= -->
 <style>
-  /* ========= PALETA & BASE ========= */
-:root{
-  --bg: #ffe3d9;          /* pêssego claro */
-  --paper: #f7d9d4;       /* papel rosado */
-  --terracotta: #7a3a3a;  /* marrom avermelhado */
-  --terracotta-700:#5c2a2a;
-  --terracotta-900:#3c1d1d;
-  --chip: #ead6cf;
-  --ink: #2a1a1a;
-  --white: #fff;
-  --shadow: 0 8px 18px rgba(60,29,29,.25);
-  --radius: 22px;
-}
+          @font-face {
+      font-family: 'SimpleHandmade';
+      src: url(/fonts/SimpleHandmade.ttf);
+    }
 *{box-sizing:border-box}
+   /* Header */
+   header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+
+    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
 body{
-  margin:0;
-  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
+  font-family:'Roboto',sans-serif;
+  background-color: #3f7c72ff;
+  color: #3f7c72ff;
 }
 
-/* ========= HOTBAR ========= */
-header{
-  position: sticky; top:0; z-index:10;
-  border-bottom: 1px solid #edd0c9;
-  box-shadow: 0 2px 8px rgba(0,0,0,.05);
-}
-.navbar{
-  max-width: 1100px; margin: 0 auto;
-  height: 72px; padding: 0 20px;
-  display:flex; align-items:center; justify-content:space-between;
-  gap:16px;
-}
 .brand{
   display:flex; align-items:center; gap:12px;
 }
 .brand img{ height:44px; display:block }
-.nav-links{
-  display:flex; align-items:center; gap:22px; font-weight:600;
-}
-.nav-links a{
-  color: var(--terracotta-700); text-decoration:none;
-  padding:8px 12px; border-radius:14px;
-}
-.nav-links a:hover{ background: var(--chip); }
-.user-chip{
-  display:flex; align-items:center; gap:10px;
-  background: var(--chip); border:1px solid #e4c7bf;
-  padding:8px 12px; border-radius:999px; font-weight:600;
-  color: var(--terracotta-900);
-}
-.avatar{
-  width:30px; height:30px; border-radius:50%;
-  background: linear-gradient(180deg,#ffe9e1,#f4cbc0);
-  border:1px solid #e6bdb3;
-  display:grid; place-items:center; font-size:12px; color:var(--terracotta-900);
-}
-
-/* Barra atualizada para marrom */
-.barra {
-  background: #5c3a2a; /* marrom sólido */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 30px;
-  box-shadow: 0 4px 8px rgba(90,59,44,0.3);
-  color: white;
-  font-family: 'Raesha';
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.barra h1 {
-  font-family: 'Raesha', cursive;
-  font-size: 36px;
-  margin: 0;
-  color: floralwhite;
-}
-
-nav ul {
-  display: flex;
-  list-style: none;
-  gap: 25px;
-  margin: 0;
-  padding: 0;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #fff5f5;
-  font-weight: 600;
-  font-size: 18px;
-  transition: color 0.3s ease, border-bottom 0.3s;
-  border-bottom: 2px solid transparent;
-}
-
-nav ul li a:hover {
-  color:rgba(176, 106, 106, 0.3);
-  border-bottom: 2px solid rgba(176, 106, 106, 0.3);
-}
 
 /* ========= CONTEÚDO ========= */
 .container{
   max-width: 1100px; margin: 24px auto 80px; padding: 0 24px;
 }
 h1{
-  color: var(--terracotta-700);
-  font-size: 28px;
-  margin: 24px 0 14px;
+  margin-top: 95px;
+  font-family: 'SimpleHandmade';
+  font-size: 50px;
   text-align:center;
+  color: #ffffff;
 }
 
 /* Bloco de envio */
 .upload-card{
-  background:#fff8f4;
-  border:1px solid #edd0c9;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background-color: #bdebe3ff;
+  border: 1px solid #1e3834ff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 22px;
   margin-bottom: 18px;
 }
 .upload-row{
   display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap;
 }
-input[type=file]{
-  font-size:16px; background:#fff; border:1px solid #d9b8b8; border-radius:10px; padding:8px;
-}
-
 /* Botões */
 .btn{
-  background: linear-gradient(180deg, var(--terracotta) 0%, var(--terracotta-700) 100%);
-  color:#fff; border:none; padding:12px 20px; cursor:pointer;
+  background-color: #2a5c55;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.3s;
+  padding: 12px 25px;
+  border: none;
   font-weight:800; border-radius:999px;
-  box-shadow: 0 8px 16px rgba(122,58,58,.25);
+  font-family: 'SimpleHandmade';
+  font-size: 22px;
 }
-.btn:hover{ filter:brightness(1.05) }
+.btn:hover{ background-color: #1e3834ff; }
 .btn:active{ transform: translateY(1px) }
 
 .btn.danger {
@@ -296,19 +224,19 @@ input[type=file]{
 
 /* Botão Baixar atualizado */
 .btn-download {
-  background: linear-gradient(180deg, #5c2a2a 0%, #5c2a2a 100%);
-  color: #fff !important; /* forçar branco */
-  padding: 8px 14px;
-  font-weight:700;
-  border: none;
-  border-radius: 999px;
+  background-color: #2a5c55;
+  color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(90,59,44,0.3);
-  text-decoration: none; /* remove sublinhado se houver */
+  transition: background 0.3s;
+  padding: 12px 25px;
+  border: none;
+  font-weight:800; border-radius:999px;
+  font-family: 'SimpleHandmade';
+  font-size: 22px;
 }
 
 .btn-download:hover {
-  filter: brightness(1.05);
+  background-color: #1e3834ff;
 }
 
 /* Alerts */
@@ -321,37 +249,35 @@ input[type=file]{
 
 /* Tabela */
 .table-wrap{
-  background:#fff8f4; border:1px solid #edd0c9; border-radius:16px; overflow:hidden;
+  background-color: #bdebe3ff; border: 2px solid #2a5c55; border-radius:16px; overflow:hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,.06);
 }
 table.table-pdf{
   width:100%; border-collapse:collapse; color: var(--terracotta-700);
 }
-.table-pdf thead{ background: var(--terracotta-700); color:#fff }
+.table-pdf thead{ background-color: #1e3834ff; color:#fff; font-family: 'SimpleHandmade'; font-size: 20px; }
 .table-pdf th, .table-pdf td{ padding:12px 14px }
 .table-pdf thead th{ font-weight:700 }
-.table-pdf tbody tr{ border-bottom:1px solid  #e9c9c2 ; }
-.table-pdf tbody tr:hover{ background: var(--paper) }
+.table-pdf tbody tr{ border: 1px solid #1e3834ff; }
+.table-pdf tbody tr:hover{ border: 1px solid #1e3834ff; }
 .table-pdf td.nome{ font-weight:700; color:#a94545 }
 .table-pdf a{ color:inherit; text-decoration:none }
 .table-pdf a:hover{ text-decoration:underline }
 
 /* Upload wrapper */
 .file-upload-wrapper {
-  position: relative;
-  overflow: hidden;
-  display: inline-block;
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--terracotta) 0%, var(--terracotta-700) 100%);
-  color: #fff;
-  font-weight: 800;
-  padding: 12px 20px;
-  cursor: pointer;
-  box-shadow: 0 8px 16px rgba(122,58,58,.25);
-  transition: filter 0.2s ease;
+  background-color: #2a5c55;
+  color: #ffffff;
+  transition: background 0.3s;
+  padding: 12px 25px;
+  border: none;
+  border: 1px solid #1e3834ff;
+  font-weight:800; border-radius:999px;
+  font-family: 'SimpleHandmade';
+  font-size: 22px;
 }
 .file-upload-wrapper:hover {
-  filter: brightness(1.05);
+  background-color: #1e3834ff;
 }
 .file-upload-wrapper input[type="file"] {
   font-size: 100px;
@@ -385,18 +311,14 @@ table.table-pdf{
 </style>
 </head>
 <body>
-
-<!-- ========================= HOTBAR ========================= -->
-<header class="barra">
-  <h1>Estudos IA</h1>
-  <nav>
-    <ul>
-      <li><a href="../inicio.php">Início</a></li>
-      <li><a href="../sobre_nos.html">Sobre</a></li>
-    </ul>
-  </nav>
-</header>
-
+<header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+    <nav>
+      <ul>
+          <li><a href="/inicio.php">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
 <main class="container">
   <h1>Envie seu arquivo PDF</h1>
 
