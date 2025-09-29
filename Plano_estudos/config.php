@@ -1,12 +1,12 @@
 <?php
 $host = "localhost";
+$dbname = "bd_usuarios"; 
 $user = "root";
-$senha = "";
-$banco = "bd_usuarios"; // seu banco
+$pass = "";
 
-$conn = new mysqli($host, $user, $senha, $banco);
-
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erro ao conectar ao banco de dados: " . $e->getMessage());
 }
-?>
