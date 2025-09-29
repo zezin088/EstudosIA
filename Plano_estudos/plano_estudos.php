@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'a
         $indice = intval($data['indice']);
 
         // Busca o plano atual
-        $res = $conn->prepare("SELECT id, conteudo FROM plano_estudos WHERE usuario_id=? AND semana=?");
+        $res = $conn->prepare("SELECT id, conteudo FROM estudo WHERE usuario_id=? AND semana=?");
         $res->bind_param("ii", $usuario_id, $semana);
         $res->execute();
         $result = $res->get_result();
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'a
         array_splice($itens, $indice, 1); // remove item
         $novo_conteudo = implode("\n", $itens);
 
-        $upd = $conn->prepare("UPDATE plano_estudos SET conteudo=? WHERE id=?");
+        $upd = $conn->prepare("UPDATE estudo SET conteudo=? WHERE id=?");
         $upd->bind_param("si", $novo_conteudo, $row['id']);
         
         if ($upd->execute()) {
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'a
     // --- EXCLUIR TODA A SEMANA ---
     if (isset($data['excluir_tudo'], $data['semana']) && $data['excluir_tudo'] === true) {
         $semana = intval($data['semana']);
-        $sql = $conn->prepare("DELETE FROM plano_estudos WHERE usuario_id=? AND semana=?");
+        $sql = $conn->prepare("DELETE FROM estudo WHERE usuario_id=? AND semana=?");
         $sql->bind_param("ii", $usuario_id, $semana);
         
         if ($sql->execute()) {
@@ -70,17 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'a
         $semana = intval($data['semana']);
         $conteudo = implode("\n", $data['itens']);
 
-        $check = $conn->prepare("SELECT id FROM plano_estudos WHERE usuario_id=? AND semana=?");
+        $check = $conn->prepare("SELECT id FROM estudo WHERE usuario_id=? AND semana=?");
         $check->bind_param("ii", $usuario_id, $semana);
         $check->execute();
         $resCheck = $check->get_result();
 
         if ($resCheck->num_rows > 0) {
             $row = $resCheck->fetch_assoc();
-            $sql = $conn->prepare("UPDATE plano_estudos SET conteudo=? WHERE id=?");
+            $sql = $conn->prepare("UPDATE estudo SET conteudo=? WHERE id=?");
             $sql->bind_param("si", $conteudo, $row['id']);
         } else {
-            $sql = $conn->prepare("INSERT INTO plano_estudos (usuario_id, semana, conteudo) VALUES (?,?,?)");
+            $sql = $conn->prepare("INSERT INTO estudo (usuario_id, semana, conteudo) VALUES (?,?,?)");
             $sql->bind_param("iis", $usuario_id, $semana, $conteudo);
         }
 
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && strpos($_SERVER['CONTENT_TYPE'], 'a
 
 // Carrega planos existentes do usuário
 $planos_usuario = [];
-$result = $conn->query("SELECT * FROM plano_estudos WHERE usuario_id=$usuario_id");
+$result = $conn->query("SELECT * FROM estudo WHERE usuario_id=$usuario_id");
 while ($row = $result->fetch_assoc()) {
     $planos_usuario[$row['semana']] = explode("\n", $row['conteudo']);
 }
@@ -109,6 +109,19 @@ while ($row = $result->fetch_assoc()) {
   <title>Plano de Estudos - Estudos IA</title>
   <style>
     @font-face { font-family: 'Raesha'; src: url('fonts/Raesha.ttf') format('truetype'); } @font-face { font-family: 'Karst'; src: url('fonts/Karst-Light.otf') format('opentype'); } @font-face { font-family: 'fontsla'; src: url('fonts/TheStudentsTeacher-Regular.ttf'); } body { margin: 0; background-color: #ffffff; font-family: 'Karst', sans-serif; color: #2c2c54; line-height: 1.6; } .barra { background: #4a69bd; display: flex; justify-content: space-between; align-items: center; padding: 14px 30px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); color: white; font-family: 'Raesha'; position: sticky; top: 0; z-index: 100; } .fb { font-family: 'Raesha', cursive; font-size: 44px; margin: 0; color: white; } nav ul { display: flex; list-style: none; gap: 30px; margin: 0; padding: 0; } nav ul a { text-decoration: none; color: #f1f1f1; font-weight: 600; font-size: 18px; transition: color 0.3s ease, border-bottom 0.3s; border-bottom: 2px solid transparent; } nav ul a:hover { color: #cfe0f3; border-bottom: 2px solid #cfe0f3; } /* NOVO NAVBAR SUPERIOR CLEAN */ .navbar { display: flex; align-items: center; justify-content: space-between; background-color: #ffffff; padding: 20px 30px; border-bottom: 1px solid #e0e0e0; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 999; } .btn-voltar { background-color: #4a69bd; color: #ffffff; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-family: 'Karst', sans-serif; font-weight: 550; transition: background-color 0.3s ease; font-size: 15px; border: none; display: inline-block; } .btn-voltar:hover { background-color: #3c3c74; } .conteudo { background-color: #f1f1f1; padding: 50px 30px; border-radius: 12px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); max-width: 900px; margin: 30px auto; color: #2c2c54; text-align: center; } h2 { font-family: 'fontsla'; font-size: 36px; margin-bottom: 25px; color: #4a69bd; } .botoes-sugestoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 35px; } .botoes-sugestoes button { padding: 16px 28px; background-color: #3c3c74; border: none; border-radius: 12px; font-size: 20px; font-family: 'Karst'; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .botoes-sugestoes button:hover { background-color: #2c2c54; transform: translateY(-2px); } .item-plano { background-color: #9db4cc; color: #2c2c54; border: none; border-radius: 12px; font-size: 18px; font-family: 'fontsla'; padding: 16px 22px; width: 100%; max-width: 450px; margin-bottom: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; } .item-plano:focus { background-color: #cfe0f3; outline: none; transform: scale(1.03); box-shadow: 0 0 0 4px rgba(0,0,0,0.1); } .acoes-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; margin-top: 25px; } .botao-acao { background-color: #3c3c74; color: #f1f1f1; font-family: 'Karst'; font-size: 17px; padding: 14px 26px; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .botao-acao:hover { background-color: #2c2c54; transform: translateY(-2px); } #adicionarItemDiv { margin-top: 25px; display: none; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; } #novoItemInput { flex: 1; max-width: 450px; padding: 16px 22px; font-size: 18px; font-family: 'fontsla'; border-radius: 12px; border: 1px solid #9db4cc; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: #2c2c54; transition: border-color 0.3s ease; } #novoItemInput:focus { outline: none; border-color: #4a69bd; box-shadow: 0 0 6px #4a69bd; } #adicionarItemDiv button { background-color: #4a69bd; border: none; border-radius: 12px; padding: 13px 26px; font-weight: 600; cursor: pointer; color: #ffffff; font-family: 'Karst'; font-size: 16px; transition: all 0.3s ease; } #adicionarItemDiv button:hover { background-color: #3c3c74; transform: translateY(-2px); } .mensagem-plano { font-family: 'Karst'; font-size: 18px; color: #c0392b; } li { font-family: 'Karst'; }
+    header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+
+nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #3f7c72;}
+
   </style>
 </head>
 <body>
@@ -116,9 +129,6 @@ while ($row = $result->fetch_assoc()) {
     <h1>EstudosIA</h1>
     </div>
   </nav>
-
-  <a class="btn-voltar" href="/inicio.php">⬅️ Voltar</a>
-
   <div class="conteudo" id="conteudo">
     <h2>Plano de Estudos - Selecione uma Semana</h2>
     <div class="botoes-sugestoes">
@@ -176,7 +186,7 @@ while ($row = $result->fetch_assoc()) {
       excluir.className = 'botao-acao';
       excluir.onclick = () => {
         if (confirm('Deseja realmente excluir todos os itens da semana?')) {
-          fetch('plano_estudos.php', {
+          fetch('estudo.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ excluir_tudo: true, semana: semanaAtual })
@@ -221,7 +231,7 @@ while ($row = $result->fetch_assoc()) {
       const textareas = container.querySelectorAll('textarea.item-plano');
       const itens = Array.from(textareas).map(t => t.value);
 
-      fetch('plano_estudos.php', {
+      fetch('estudo.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ semana: semanaAtual, itens: itens })
