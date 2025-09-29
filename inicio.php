@@ -27,6 +27,30 @@ if (isset($_SESSION['usuario_id'])) {
   <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+        @font-face {
+      font-family: 'HelloMorgan';
+      src: url(/fonts/HelloMorgan.ttf);
+    }
+    @font-face {
+      font-family: 'Jojoba';
+      src: url(/fonts/Jojoba.otf);
+    }
+    @font-face {
+      font-family: 'KGMissKindergarten';
+      src: url(/fonts/KGMissKindergarten.ttf);
+    }
+    @font-face {
+      font-family: 'Papernotes';
+      src: url(/fonts/Papernotes.otf);
+    }
+    @font-face {
+      font-family: 'RougeVintage';
+      src: url(/fonts/RougeVintage.ttf);
+    }
+    @font-face {
+      font-family: 'SimpleHandmade';
+      src: url(/fonts/SimpleHandmade.ttf);
+    }
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Roboto',sans-serif;background:white;color:#333;line-height:1.6;}
 
@@ -127,15 +151,63 @@ nav .search-bar button:hover {
     .avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #3f7c72;}
 
     /* Banner */
-    .banner{margin-top:5%;width:100%;min-height:30vh;background:#3f7c72;display:flex;justify-content:center;align-items:center;padding:2rem 0;}
-    .banner-conteudo{display:flex;justify-content:space-between;align-items:center;width:90%;max-width:1200px;gap:2rem;flex-wrap:wrap;}
-    .banner-texto{color:white;max-width:600px;}
-    .banner-texto h1{font-family:'Pacifico',cursive;font-size:3rem;margin-bottom:1rem;}
-    .banner-texto p{font-size:1.2rem;margin-bottom:1.5rem;}
-    .banner .btn{background:white;color:#3f7c72;font-weight:bold;padding:0.8rem 1.5rem;border-radius:25px;text-decoration:none;transition:.3s;}
-    .banner .btn:hover{background:#bdebe3;color:#2a5c55;}
-    .banner-img img{width:300px;max-width:100%;border-radius:15px;}
+    /* Banner */
+.banner {
+  margin-top: 5%;
+  width: 100%;
+  height: 50vh; /* altura fixa */
+  background: #3f7c72;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 2rem; /* tirei o padding vertical */
+  overflow: hidden; /* corta excesso caso a imagem/texto passe do limite */
+}
+    .banner-conteudo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1200px;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+    .banner-texto {
+  color: white;
+  max-width: 800px;
+  text-align: center;
+}
+    .banner-texto h1 {
+  font-family: 'SimpleHandmade';
+  font-size: 4.5rem;
+  margin-bottom: 1rem;
+}
+.banner-texto p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
 
+.banner .btn {
+  background: white;
+  color: #3f7c72;
+  font-weight: bold;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  text-decoration: none;
+  transition: .3s;
+}
+
+.banner .btn:hover {
+  background: #bdebe3;
+  color: #2a5c55;
+}
+
+.banner-img img {
+  width: 500px;
+  max-width: 100%;
+  border-radius: 15px;
+  object-fit: cover; /* garante que a imagem não "empurre" o banner */
+}
     /* Cards */
     section{padding:4rem 2rem;margin:0 auto;}
     section h2{text-align:center;color:#3f7c72;margin-bottom:2rem;font-size:2rem;}
@@ -182,11 +254,11 @@ nav .search-bar button:hover {
   z-index: 1000;
 }
 
-    .social-mini{background:#fff;border-radius:12px;padding:10px 15px;display:flex;align-items:center;
+    .social-mini{background:#fff;border-radius:12px;padding:20px 30px;display:flex;align-items:center;
       box-shadow:0 2px 6px rgba(0,0,0,0.2);cursor:pointer;}
     .social-mini .mini-avatar img{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-right:10px;}
-    .social-mini .title{font-weight:bold;color:#333;}
-    .social-mini .sub{font-size:12px;color:#666;}
+    .social-mini .title{font-weight:bold;color:#333;font-size:18px;}
+    .social-mini .sub{font-size:15px;color:#666;}
 
     .social-panel-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
       background:rgba(0,0,0,0.6);z-index:2000;}
@@ -275,9 +347,10 @@ nav .search-bar button:hover {
 <section class="banner">
   <div class="banner-conteudo">
     <div class="banner-texto">
-      <h1>Bem-vindo ao Estudos IA</h1>
-      <p>Seu espaço inteligente para aprender, se organizar e evoluir</p>
-      <a href="#funcoes" class="btn">Explorar Funções</a>
+      <h1>Conheça nossa IA!</h1>
+      <p>Feita para estudantes como você.<br>
+        Aqui, cada pergunta vira uma oportunidade de aprendizado.</p>
+      <a href="/resposta.html" class="btn">Conferir</a>
     </div>
     <div class="banner-img">
       <img src="https://i.pinimg.com/originals/a0/ce/6b/a0ce6ba41bf31c32fbced60d9070b0fe.gif" alt="Robôzinho IA">
@@ -289,11 +362,11 @@ nav .search-bar button:hover {
 <section id="funcoes">
   <h2>Funções Principais</h2>
   <div class="cards">
-    <a href="anotacoes.php" class="card"><i class="fa-solid fa-pen-to-square"></i><h3>Anotações</h3><p>Crie e organize suas anotações.</p></a>
-    <a href="flashcards.php" class="card"><i class="fa-solid fa-clone"></i><h3>Flashcards</h3><p>Revise conteúdos com cartões interativos.</p></a>
-    <a href="plano_estudos.php" class="card"><i class="fa-solid fa-calendar-days"></i><h3>Plano de Estudos</h3><p>Monte seu cronograma personalizado.</p></a>
-    <a href="arquivos.php" class="card"><i class="fa-solid fa-folder"></i><h3>Arquivos</h3><p>Organize e acesse seus arquivos de estudo.</p></a>
-    <a href="calendario.php" class="card"><i class="fa-solid fa-calendar"></i><h3>Calendário</h3><p>Acompanhe compromissos e provas.</p></a>
+    <a href="/anotacoes/index.html" class="card"><i class="fa-solid fa-pen-to-square"></i><h3>Anotações</h3><p>Crie e organize suas anotações.</p></a>
+    <a href="flashcard.html/index.html" class="card"><i class="fa-solid fa-clone"></i><h3>Flashcards</h3><p>Revise conteúdos com cartões interativos.</p></a>
+    <a href="/Plano_estudos/plano_estudos.php" class="card"><i class="fa-solid fa-calendar-days"></i><h3>Plano de Estudos</h3><p>Monte seu cronograma personalizado.</p></a>
+    <a href="/arquivos/upload_pdf.php" class="card"><i class="fa-solid fa-folder"></i><h3>Arquivos</h3><p>Organize e acesse seus arquivos de estudo.</p></a>
+    <a href="calendario.html" class="card"><i class="fa-solid fa-calendar"></i><h3>Calendário</h3><p>Acompanhe compromissos e provas.</p></a>
     <a href="questoes.php" class="card"><i class="fa-solid fa-question-circle"></i><h3>Questões Diárias</h3><p>Pratique com desafios novos todos os dias.</p></a>
   </div>
 </section>

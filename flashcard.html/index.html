@@ -5,53 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flashcards</title>
   <style>
+    *, *::before, *::after {
+    box-sizing: border-box;
+}
     @keyframes aparecer {
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
-
-    body {
-      font-family: 'Karst', sans-serif;
-      background-color: #f1f1f1;
-      color: #2c2c54;
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
+    @font-face {
+      font-family: 'SimpleHandmade';
+      src: url(/fonts/SimpleHandmade.ttf);
     }
+body {
+    font-family: 'Karst', sans-serif;
+    background-color: #2a5c55;
+    color: #000000;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; /* só para body */
+}
+header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
 
+
+nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
+.avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #3f7c72;}
     h1, h2 {
       text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
     }
-
-    .topo-nav {
-      display:flex; 
-      justify-content:space-between; 
-      align-items:center; 
-      padding:18px 40px; 
-      background:#f1f1f1; 
-      box-shadow:0 2px 6px rgba(0,0,0,0.1); 
-      position:sticky; 
-      top:0; 
-      z-index:999;
-    }
-
-    .topo-nav h1 {
-      font-family: 'Bungee', cursive; 
-      font-size:28px; 
-      color:#2c2c54; 
-      margin:0; 
-      user-select:none;
-    }
-
-    .topo-nav .user-menu {
-      display:flex; 
-      align-items:center; 
-      gap:15px;
-    }
-
     .container {
       max-width: 600px;
-      margin: 20px auto;
+      margin: 70px auto;
       padding: 25px;
       background-color: #ffffff;
       border-radius: 16px;
@@ -173,45 +163,18 @@
       transform: rotateY(360deg);
     }
 
-    /* Botão voltar logo abaixo da nav */
-    #btn-voltar {
-      display: inline-block;
-      margin: 15px 20px;
-      background-color: #4a69bd;
-      color: #ffffff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-family: 'Karst', sans-serif;
-      font-weight: 550;
-      font-size: 15px;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    #btn-voltar:hover {
-      background-color: #3c3c74;
-    }
   </style>
 </head>
 <body>
 
-<!-- Barra de navegação -->
-<nav class="topo-nav" role="navigation" aria-label="Navegação principal">
-  <h1>EstudosIA</h1>
-  <div class="user-menu">
-    <a href="editar_usuario.php" class="user-info" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#4a69bd; font-weight:700; font-size:16px;">
-      <span><?php echo htmlspecialchars($usuario['nome']); ?></span>
-      <img src="<?php echo $usuario['foto'] ? $usuario['foto'] : 'https://i.pinimg.com/236x/ee/c5/cf/eec5cf10cb80af4e4b1c6674445be559.jpg'; ?>" 
-           alt="Foto do usuário" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #4a69bd;" />
-    </a>
-    <a href="logout.php" class="logout" style="font-weight:700; color:#c0392b; text-decoration:none; padding:8px 14px; border-radius:8px;">Sair</a>
-  </div>
-</nav>
-
-<!-- Botão voltar fora da nav -->
-<button id="btn-voltar" onclick="goHome()">⬅️ Voltar</button>
-
+<header>
+  <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+  <nav>
+    <ul>
+        <li><a href="/inicio.php">Voltar à página de Início</a></li>
+    </ul>
+  </nav>
+</header>
   <!-- Flashcards -->
   <div class="container">
     <h1>Flashcards</h1>
