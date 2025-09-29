@@ -57,7 +57,7 @@ function mostrarSemana(semana) {
     const caixas = container.querySelectorAll("textarea");
     const dados = Array.from(caixas).map(caixa => caixa.value);
   
-    fetch('salvar_plano.php', {
+    fetch('salvar_dados.php', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
@@ -140,6 +140,27 @@ function salvarPlano(){
   .then(msg => {
       alert(msg);
       planos[semanaAtual] = itens; // atualiza o JS
+  })
+  .catch(err => alert('Erro ao salvar plano: ' + err));
+}
+
+function salvarPlano() {
+  if (!semanaAtual) return alert('Selecione uma semana.');
+  const container = document.getElementById('conteudo-semanal');
+  const textareas = container.querySelectorAll('textarea.item-plano');
+  const itens = Array.from(textareas).map(t => t.value.trim()).filter(t => t);
+
+  if (itens.length === 0) return alert('Não há itens para salvar.');
+
+  fetch('estudo.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ semana: semanaAtual, itens: itens })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert(msg);
+    planos[semanaAtual] = itens; // atualiza plano local
   })
   .catch(err => alert('Erro ao salvar plano: ' + err));
 }
