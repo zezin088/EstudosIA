@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS plano_estudos (
+CREATE TABLE IF NOT EXISTS estudos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     semana INT NOT NULL,
