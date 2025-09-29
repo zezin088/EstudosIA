@@ -1,23 +1,3 @@
-<?php
-session_start();
-include('conexao.php');
-
-$avatar = 'imagens/usuarios/default.jpg'; // default
-if (isset($_SESSION['usuario_id'])) {
-    $usuario_id = $_SESSION['usuario_id'];
-    $sql = "SELECT nome, foto FROM usuarios WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('i', $usuario_id);
-    $stmt->execute();
-    $stmt->bind_result($nome_usuario, $foto_usuario);
-    $stmt->fetch();
-    $stmt->close();
-
-    if (!empty($foto_usuario) && file_exists($foto_usuario)) {
-        $avatar = $foto_usuario;
-    }
-}
-?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -398,7 +378,7 @@ nav .search-bar button:hover {
 </div>
 
 <!-- Cronômetro -->
-<a href="cronometro.php" class="cronometro-icone" title="Ir para Cronômetro">
+<a href="/Cronometro_Raking/cronometro.php" class="cronometro-icone" title="Ir para Cronômetro">
   <i class="fa-solid fa-stopwatch"></i>
 </a>
 
