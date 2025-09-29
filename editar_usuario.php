@@ -10,6 +10,10 @@ include('conexao.php');
 
 $usuario_id = $_SESSION['usuario_id'];
 
+/*
+  SELECT principal (mantive exatamente como você tinha) - buscamos nome, email, biografia e foto.
+  Depois verificamos se o banco tem colunas opcionais (aniversario, favoritos, bio_foto).
+*/
 $sql = "SELECT nome, email, biografia, foto FROM usuarios WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $usuario_id);
@@ -19,48 +23,162 @@ $stmt->bind_result($nome, $email, $biografia, $foto);
 $stmt->fetch();
 $stmt->close();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// checar existência de colunas opcionais - assim não quebramos se elas não existirem
+$has_aniversario = false;
+$has_favoritos = false;
+$has_bio_foto = false;
+
+$res = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'aniversario'");
+if ($res && $res->num_rows > 0) $has_aniversario = true;
+$res = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'favoritos'");
+if ($res && $res->num_rows > 0) $has_favoritos = true;
+$res = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'bio_foto'");
+if ($res && $res->num_rows > 0) $has_bio_foto = true;
+
+// se alguma dessas colunas existir, buscar seus valores
+$aniversario_db = '';
+$favoritos_db = '';
+$bio_foto_db = '';
+
+if ($has_aniversario || $has_favoritos || $has_bio_foto) {
+    $cols = [];
+    if ($has_aniversario) $cols[] = 'aniversario';
+    if ($has_favoritos) $cols[] = 'favoritos';
+    if ($has_bio_foto) $cols[] = 'bio_foto';
+    $sql2 = "SELECT " . implode(', ', $cols) . " FROM usuarios WHERE id = ?";
+    $stmt2 = $conn->prepare($sql2);
+    $stmt2->bind_param('i', $usuario_id);
+    $stmt2->execute();
+    $stmt2->store_result();
+
+    // bind dinamicamente conforme colunas
+    $bind_names = [];
+    $meta = $stmt2->result_metadata();
+    $fields = [];
+    foreach ($meta->fetch_fields() as $field) {
+        $fields[] = &$row[$field->name];
+        $bind_names[] = &$row[$field->name];
+    }
+    if (!empty($bind_names)) {
+        call_user_func_array(array($stmt2, 'bind_result'), $bind_names);
+        $stmt2->fetch();
+        // atribuir valores às variáveis locais
+        if ($has_aniversario && isset($row['aniversario'])) $aniversario_db = $row['aniversario'];
+        if ($has_favoritos && isset($row['favoritos'])) $favoritos_db = $row['favoritos'];
+        if ($has_bio_foto && isset($row['bio_foto'])) $bio_foto_db = $row['bio_foto'];
+    }
+    $stmt2->close();
+}
+
+// valores fictícios para exibição (se você tiver tabelas reais para contar seguidores, substitua depois)
+$seguidores_count = 121;
+$favoritos_count = 23;
+$fans_count = 106;
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // pegar dados do formulário (mantendo compatibilidade com seu código)
     $nome_usuario = $_POST['nome_usuario'] ?? $nome;
     $email = $_POST['email'] ?? $email;
     $senha = !empty($_POST['senha']) ? password_hash($_POST['senha'], PASSWORD_DEFAULT) : null;
     $biografia = $_POST['biografia'] ?? $biografia;
 
-    // Foto
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
-      $ext = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
-      $novo_nome = uniqid() . '.' . $ext;
-      $destino = 'imagens/usuarios/' . $novo_nome;
-      move_uploaded_file($_FILES['foto']['tmp_name'], $destino);
-      $foto = $destino;
-  } else {
-      // MANTÉM A FOTO ANTIGA
-      $sql_foto = "SELECT foto FROM usuarios WHERE id = ?";
-      $stmt_foto = $conn->prepare($sql_foto);
-      $stmt_foto->bind_param("i", $usuario_id);
-      $stmt_foto->execute();
-      $stmt_foto->bind_result($foto_antiga);
-      $stmt_foto->fetch();
-      $stmt_foto->close();
-      $foto = $foto_antiga;
-  }
+    // campos opcionais do formulário
+    $aniversario = $has_aniversario ? ($_POST['aniversario'] ?? $aniversario_db) : null;
+    $favoritos = $has_favoritos ? ($_POST['favoritos'] ?? $favoritos_db) : null;
 
-    if ($senha) {
-        $sql = "UPDATE usuarios SET nome = ?, email = ?, senha = ?, biografia = ?, foto = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sssssi', $nome_usuario, $email, $senha, $biografia, $foto, $usuario_id);
+    // FOTO VIA CANVAS (foto de perfil recortada)
+    if (!empty($_POST['cropped_image'])) {
+        $image_data = $_POST['cropped_image'];
+        $image_data = str_replace('data:image/png;base64,', '', $image_data);
+        $image_data = str_replace(' ', '+', $image_data);
+        $image_data = base64_decode($image_data);
+        $filename = 'imagens/usuarios/' . uniqid() . '.png';
+
+        if (!is_dir(dirname($filename))) {
+            mkdir(dirname($filename), 0755, true);
+        }
+        file_put_contents($filename, $image_data);
+        $foto = $filename;
     } else {
-        $sql = "UPDATE usuarios SET nome = ?, email = ?, biografia = ?, foto = ? WHERE id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ssssi', $nome_usuario, $email, $biografia, $foto, $usuario_id);
+        // MANTÉM FOTO ANTIGA
+        $sql_foto = "SELECT foto FROM usuarios WHERE id = ?";
+        $stmt_foto = $conn->prepare($sql_foto);
+        $stmt_foto->bind_param("i", $usuario_id);
+        $stmt_foto->execute();
+        $stmt_foto->bind_result($foto_antiga);
+        $stmt_foto->fetch();
+        $stmt_foto->close();
+        $foto = $foto_antiga;
     }
+
+    // UPLOAD da foto da bio (opcional). mesmo que o banco não tenha a coluna, salvamos o arquivo em disco
+    $bio_foto_saved = '';
+    if (isset($_FILES['bio_foto_file']) && $_FILES['bio_foto_file']['error'] === UPLOAD_ERR_OK) {
+        $ext = pathinfo($_FILES['bio_foto_file']['name'], PATHINFO_EXTENSION);
+        $bio_filename = 'imagens/bio/' . uniqid() . '.' . ($ext ? $ext : 'jpg');
+
+        if (!is_dir(dirname($bio_filename))) {
+            mkdir(dirname($bio_filename), 0755, true);
+        }
+        if (move_uploaded_file($_FILES['bio_foto_file']['tmp_name'], $bio_filename)) {
+            $bio_foto_saved = $bio_filename;
+            // se houver coluna no DB, armazenaremos o caminho nela abaixo
+        }
+    }
+
+    // agora montar UPDATE dinâmico com segurança:
+    $fields = [];
+    $types = '';
+    $values = [];
+
+    // campos obrigatórios que existiam antes
+    $fields[] = 'nome'; $types .= 's'; $values[] = $nome_usuario;
+    $fields[] = 'email'; $types .= 's'; $values[] = $email;
+    if ($senha) { $fields[] = 'senha'; $types .= 's'; $values[] = $senha; }
+    $fields[] = 'biografia'; $types .= 's'; $values[] = $biografia;
+    $fields[] = 'foto'; $types .= 's'; $values[] = $foto;
+
+    // campos opcionais (só incluir no UPDATE se existirem no DB)
+    if ($has_aniversario) { $fields[] = 'aniversario'; $types .= 's'; $values[] = $aniversario; }
+    if ($has_favoritos) { $fields[] = 'favoritos'; $types .= 's'; $values[] = $favoritos; }
+    if ($has_bio_foto) {
+        // se fez upload de bio_foto, usar o arquivo salvo; se não, manter valor atual do DB
+        $bio_to_save = $bio_foto_saved ?: $bio_foto_db;
+        $fields[] = 'bio_foto'; $types .= 's'; $values[] = $bio_to_save;
+    }
+
+    // construir SQL
+    $set_sql = implode(' = ?, ', $fields) . ' = ?';
+    $sql_update = "UPDATE usuarios SET $set_sql WHERE id = ?";
+
+    $stmt_upd = $conn->prepare($sql_update);
+    if ($stmt_upd === false) {
+        // erro preparando o statement (não deve acontecer em condições normais)
+        die("Erro ao preparar UPDATE: " . htmlspecialchars($conn->error));
+    }
+
+    // bind dinâmico (bind_param exige referências)
+    $types_with_id = $types . 'i';
+    $params = $values;
+    $params[] = $usuario_id;
+
+    // construir array de referências
+    $bind_names = [];
+    $bind_names[] = &$types_with_id;
+    for ($i = 0; $i < count($params); $i++) {
+        $bind_names[] = &$params[$i];
+    }
+
+    call_user_func_array(array($stmt_upd, 'bind_param'), $bind_names);
+
     $_SESSION['usuario_nome'] = $nome_usuario;
-    $stmt->execute();
-    $stmt->close();
+    $stmt_upd->execute();
+    $stmt_upd->close();
 
     header("Location: editar_usuario.php?sucesso=1");
     exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -68,123 +186,359 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Editar Perfil</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet"/>
   <style>
+    /* font personalizada para o título */
     @font-face {
-      font-family: raesha;
-      src: url('fonts/Raesha.ttf') format('truetype');
+      font-family: 'SimpleHandmade';
+      src: url('/fonts/SimpleHandmade.ttf');
     }
-    @font-face {
-      font-family: Karst;
-      src: url('fonts/Karst-Light.otf') format('truetype');
-    }
+
     body {
-      background-color: rgb(243, 228, 201);
-      font-family: 'Karst';
-      color: rgb(139, 80, 80);
+      background-color: #eaf2f0;
+      font-family: 'Inter', sans-serif;
       padding: 2rem;
-      position: relative;
+      margin: 0;
     }
+
     .container {
-      max-width: 500px;
-      margin: 3rem auto;
-      background: white;
+      max-width: 900px;
+      margin: 2rem auto;
+      background-color: #fff;
       padding: 2rem;
       border-radius: 20px;
-      box-shadow: 0 0 10px #c4a58b;
-      position: relative;
-      z-index: 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 1.5rem;
     }
+
     h1 {
       text-align: center;
-      color: rgb(139, 80, 80);
-      font-family: 'raesha';
+      color: #2c544f;
+      margin-bottom: 1rem;
+      font-family: 'SimpleHandmade', cursive;
+      font-size: 2.0rem;
     }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 1rem;
+
+    /* PREVIEW LATERAL */
+    .preview {
+      text-align: center;
+      border-radius: 12px;
+      padding: 1rem;
+      background: linear-gradient(180deg, #f6fffb 0%, #ffffff 100%);
+      border: 1px solid #e6f2ef;
     }
-    input, textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.3rem;
-      border: 1px solid rgb(192, 98, 98);
-      border-radius: 10px;
+
+    .perfil-foto {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 0.8rem;
     }
-    button {
-      background-color: rgb(192, 98, 98);
-      color: white;
-      border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-    button:hover {
-      background-color: rgb(139, 80, 80);
-    }
-    .foto-preview {
-      display: flex;
-      justify-content: center;
-      margin-top: 1rem;
-    }
-    .foto-preview img {
-      width: 100px;
-      height: 100px;
+
+    .perfil-foto img {
+      width: 140px;
+      height: 140px;
       border-radius: 50%;
+      border: 4px solid #4a766e;
       object-fit: cover;
-      border: 2px solid rgb(192, 98, 98);
+      transition: transform .3s ease, opacity .3s;
     }
+
+    .perfil-foto img.updated {
+      animation: pulse 1s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(.95); opacity: .8; }
+      50% { transform: scale(1.03); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .online-bullet {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 18px;
+      height: 18px;
+      background: #4caf50;
+      border: 2px solid white;
+      border-radius: 50%;
+    }
+
+    .counts {
+      display:flex;
+      justify-content:center;
+      gap: 12px;
+      margin-top: 0.6rem;
+      color: #4a766e;
+      font-weight: 700;
+    }
+
+    .counts .item {
+      background: rgba(74,118,110,0.07);
+      padding: 6px 10px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+    }
+
+    /* FORM */
+    form {
+      display: block;
+    }
+
+    label { font-weight: 600; display:block; margin-top: 1rem; margin-bottom: .3rem; color:#334; }
+    input[type="text"], input[type="email"], input[type="password"], input[type="date"], textarea {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #cfd8dc;
+      border-radius: 12px;
+      font-size: 1rem;
+      background-color: #f9fafa;
+    }
+
+    .foto-preview {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    #preview-img {
+      max-width: 160px;
+      max-height: 160px;
+      border-radius: 50%;
+      border: 3px solid #4a766e;
+      object-fit: cover;
+    }
+
     .botoes {
       display: flex;
-      justify-content: space-between;
-      margin-top: 2rem;
+      justify-content: flex-start;
+      gap: 0.8rem;
+      margin-top: 1rem;
     }
+
+    button {
+      background-color: #4a766e;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
     .botao-voltar {
-      background-color: rgb(243, 228, 201);
-      color: rgb(139, 80, 80);
-      border: 1px solid rgb(139, 80, 80);
+      background-color: #eaf2f0;
+      color: #4a766e;
+      border: 1px solid #4a766e;
     }
+
+    /* Cropper modal */
+    #cropper-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #cropper-modal .content {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 700px;
+      width: 100%;
+    }
+    #image-to-crop { max-width: 100%; max-height: 60vh; display:block; margin: 0 auto; }
+    .modal-buttons { margin-top: 1rem; display:flex; justify-content:center; gap:1rem; }
+
+    /* seção SOBRE MIM (preview lateral) */
+    .about {
+      text-align: left;
+      margin-top: 1rem;
+      padding-top: 0.4rem;
+    }
+    .about h4 { margin: .4rem 0; font-size:1.05rem; color:#2c544f; font-weight:700; }
+    .bio-photo-preview {
+      width: 100%;
+      border-radius: 10px;
+      max-height: 160px;
+      object-fit: cover;
+      display:block;
+      margin-bottom: .6rem;
+    }
+
+    .favoritos-box {
+      background: #e0f2f1;
+      border-radius: 10px;
+      padding: 0.6rem;
+      margin-top: .6rem;
+    }
+
     .alerta {
       position: fixed;
       top: 30px;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgb(192, 98, 98);
+      background-color: #4a766e;
       color: white;
       padding: 0.8rem 1.5rem;
-      border-radius: 20px;
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      z-index: 9999;
+      border-radius: 12px;
+      font-weight: 600;
+      z-index: 10000;
       animation: fadeOut 4s forwards;
     }
-    @keyframes fadeOut {
-      0% { opacity: 1; }
-      85% { opacity: 1; }
-      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    .perfil-banner {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: -70px; /* faz a foto sobrepor o banner */
+}
+
+.perfil-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.perfil-foto {
+  position: relative;
+  display: inline-block;
+}
+
+.edit-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 18px;
+  padding: 6px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.edit-icon.small.left {
+  top: 8px;    /* fica no topo */
+  left: 8px;   /* lado oposto da bolinha verde */
+  right: auto;
+  bottom: auto;
+}
+
+/* novo estilo simples para o botão de selecionar foto da bio (na lateral) */
+.bio-file-label {
+  display: inline-block;
+  padding: 6px 10px;
+  background: #4a766e;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  margin-top: 0.4rem;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+    @keyframes fadeOut { 0% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; transform: translateX(-50%) translateY(-20px); } }
+
+    /* responsividade simples */
+    @media (max-width: 880px) {
+      .container { grid-template-columns: 1fr; }
+      .preview { margin-bottom: 1rem; }
     }
   </style>
 </head>
 <body>
-<form id="form-deletar" action="deletar_conta.php" method="POST" style="display:none;"></form>
-  <?php if (isset($_GET['sucesso'])): ?>
-    <div class="alerta">Alterações salvas com sucesso!</div>
-  <?php endif; ?>
 
-  <div class="container">
-    <h1>Editar Perfil</h1>
-    <form method="POST" enctype="multipart/form-data">
-      <label for="foto">Foto de Perfil</label>
-      <input type="file" name="foto" id="foto">
-<div class="foto-preview">
-  <?php 
-    $foto_usuario = !empty($foto) && file_exists($foto) 
-        ? $foto 
-        : 'imagens/usuarios/default.jpg';
-  ?>
-  <img src="<?php echo $foto_usuario; ?>" alt="Foto do usuário">
+<?php if (isset($_GET['sucesso'])): ?>
+  <div class="alerta">Alterações salvas com sucesso!</div>
+<?php endif; ?>
+
+<div class="container">
+  <!-- PREVIEW LATERAL -->
+<div class="preview">
+  <h1>Editar Perfil</h1>
+
+  <!-- BANNER -->
+  <div class="perfil-banner">
+    <img id="banner-img" src="<?php echo !empty($banner_db) && file_exists($banner_db) ? $banner_db : 'imagens/usuarios/default-banner.jpg'; ?>" alt="Banner">
+    <label for="banner-file" class="edit-icon">✏️</label>
+    <input type="file" name="banner_file" id="banner-file" accept="image/*" style="display:none;">
+  </div>
+
+  <!-- FOTO PERFIL -->
+  <div class="perfil-foto">
+    <img id="preview-img" src="<?php echo !empty($foto) && file_exists($foto) ? $foto : 'imagens/usuarios/default.jpg'; ?>" alt="Preview">
+    <label for="foto" class="edit-icon small left">✏️</label>
+    <input type="file" accept="image/*" id="foto" style="display:none;">
+    <div class="online-bullet" title="Online"></div>
+  </div>
+
+  <div style="margin-top: .5rem; font-weight:700; color:#2c544f;">
+    <?php echo htmlspecialchars($nome); ?> ♡
+  </div>
+
+  <div class="counts" aria-hidden="true">
+    <div class="item"><?php echo $seguidores_count; ?> Seguidores</div>
+    <div class="item"><?php echo $favoritos_count; ?> Favs</div>
+    <div class="item"><?php echo $fans_count; ?> Fans</div>
+  </div>
+
+  <div class="about">
+    <h4>Sobre mim</h4>
+    <?php if (!empty($bio_foto_db) && file_exists($bio_foto_db)): ?>
+      <img class="bio-photo-preview" id="bio-preview-sidebar" src="<?php echo $bio_foto_db; ?>" alt="Foto bio">
+    <?php else: ?>
+      <img class="bio-photo-preview" id="bio-preview-sidebar" src="imagens/bio/default.jpg" alt="Foto bio">
+    <?php endif; ?>
+
+    <!-- aqui vai a seleção de arquivo, agora EMBUTIDA na lateral embaixo da foto -->
+    <label for="bio_foto_file" class="bio-file-label">Alterar foto</label>
+    <input type="file" accept="image/*" name="bio_foto_file" id="bio_foto_file" form="perfil-form" style="display:none;">
+
+    <div style="color:#334; font-size:0.95rem; margin-top:0.6rem;">
+      <?php echo nl2br(htmlspecialchars($biografia)); ?>
+    </div>
+
+    <div style="margin-top:.6rem; font-weight:700;">
+      🎂 Aniversário: 
+      <?php echo ($has_aniversario && !empty($aniversario_db)) ? date('d/m/Y', strtotime($aniversario_db)) : 'Não informado'; ?>
+    </div>
+
+    <div class="favoritos-box">
+      <strong>✨ Favoritos</strong>
+      <ul style="margin: .4rem 0 0 1.1rem; padding:0;">
+        <?php
+          if ($has_favoritos && !empty($favoritos_db)) {
+              $lista = explode(',', $favoritos_db);
+              foreach ($lista as $it) {
+                  echo "<li>" . htmlspecialchars(trim($it)) . "</li>";
+              }
+          } else {
+              echo "<li>Adicione seus favoritos</li>";
+          }
+        ?>
+      </ul>
+    </div>
+  </div>
 </div>
+  <!-- FORM EDITAR -->
+  <div>
+    <form method="POST" enctype="multipart/form-data" id="perfil-form">
+      
+
+      <input type="hidden" name="cropped_image" id="cropped_image">
+
+      <div class="foto-preview">
+        <!-- preview já presente na lateral sincronizado pelo JS -->
+      </div>
+
       <label for="nome_usuario">Nome de Usuário</label>
       <input type="text" name="nome_usuario" id="nome_usuario" value="<?php echo htmlspecialchars($nome); ?>" required>
 
@@ -197,32 +551,166 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <label for="biografia">Biografia</label>
       <textarea name="biografia" id="biografia" rows="4"><?php echo htmlspecialchars($biografia); ?></textarea>
 
-      <div class="botoes">
-  <button type="submit">Salvar Alterações</button>
-  
-  <button type="button" onclick="confirmarExclusao()" style="background-color: rgb(192, 98, 98); color: white; border: none; padding: 0.6rem 1rem; border-radius: 10px; cursor: pointer;">
-    Deletar Conta
-  </button>
+      <?php if ($has_aniversario): ?>
+        <label for="aniversario">Aniversário</label>
+        <input type="date" name="aniversario" id="aniversario" value="<?php echo !empty($aniversario_db) ? htmlspecialchars(date('Y-m-d', strtotime($aniversario_db))) : ''; ?>">
+      <?php else: ?>
+        <!-- se quiser persistir, crie a coluna 'aniversario' no DB (DATE) -->
+      <?php endif; ?>
 
-  <a href="inicio.php">
-    <button type="button" class="botao-voltar">Voltar para o Início</button>
-  </a>
+      <?php if ($has_favoritos): ?>
+        <label for="favoritos">Favoritos (separe por vírgula)</label>
+        <input type="text" name="favoritos" id="favoritos" value="<?php echo htmlspecialchars($favoritos_db); ?>" placeholder="Ex: Taylor Swift, Clairo, Coffee">
+      <?php else: ?>
+        <!-- se quiser persistir, crie a coluna 'favoritos' no DB (TEXT) -->
+      <?php endif; ?>
+
+      <!-- REMOVI AQUI o campo de foto da bio e o texto explicativo; agora o input está na lateral (sobre mim) -->
+      <div class="botoes">
+        <button type="submit">Salvar Alterações</button>
+        <a href="inicio.php"><button type="button" class="botao-voltar">Voltar</button></a>
+      </div>
+    </form>
+  </div>
 </div>
 
-    </form>
-
-    <div id="confirmacao" style="display:none; background-color: #fff3f3; padding: 1rem; border-radius: 15px; border: 1px solid #c98b8b; margin-top: 1rem; text-align: center;">
-      <p>Tem certeza que deseja deletar sua conta?</p>
-      <button onclick="document.getElementById('form-deletar').submit()" style="background-color: rgb(192, 98, 98); color: white; border: none; padding: 0.5rem 1rem; border-radius: 10px;">Sim, quero deletar</button>
-      <button onclick="document.getElementById('confirmacao').style.display='none'" style="background-color: rgb(243, 228, 201); color: rgb(139, 80, 80); border: 1px solid rgb(139, 80, 80); padding: 0.5rem 1rem; border-radius: 10px;">Cancelar</button>
+<!-- Modal de Crop -->
+<div id="cropper-modal">
+  <div class="content" role="dialog" aria-modal="true" aria-label="Recortar imagem">
+    <h3>Recorte sua imagem</h3>
+    <img id="image-to-crop" alt="Imagem para recortar">
+    <div class="modal-buttons">
+      <button id="crop-btn" type="button">Recortar</button>
+      <button id="cancel-btn" type="button" class="botao-voltar">Cancelar</button>
     </div>
   </div>
+</div>
+<!-- dentro da PREVIEW -->
 
-  <script>
-  function confirmarExclusao() {
-    document.getElementById('confirmacao').style.display = 'block';
+<script src="https://unpkg.com/cropperjs@1.5.13/dist/cropper.min.js"></script>
+<script>
+  const input = document.getElementById('foto');
+  const imageToCrop = document.getElementById('image-to-crop');
+  const modal = document.getElementById('cropper-modal');
+  const cropBtn = document.getElementById('crop-btn');
+  const cancelBtn = document.getElementById('cancel-btn');
+  const preview = document.getElementById('preview-img'); // foto principal preview
+  const hiddenCropped = document.getElementById('cropped_image');
+
+  let cropper = null;
+  let originalPreviewSrc = preview.src;
+
+  input.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    originalPreviewSrc = preview.src;
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      imageToCrop.src = event.target.result;
+      modal.style.display = 'flex';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  imageToCrop.addEventListener('load', function () {
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+
+    cropper = new Cropper(imageToCrop, {
+      aspectRatio: 1,
+      viewMode: 1,
+      autoCropArea: 1,
+      responsive: true,
+    });
+  });
+
+  cropBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!cropper) return;
+
+    try {
+      const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 400,
+        imageSmoothingQuality: 'high'
+      });
+
+      const dataUrl = canvas.toDataURL('image/png');
+      preview.src = dataUrl;
+      preview.classList.add('updated');
+      hiddenCropped.value = dataUrl;
+
+      // também atualizar preview sidebar bio (garante sincronia)
+      const sidebarPreview = document.getElementById('bio-preview-sidebar');
+      if (sidebarPreview && !sidebarPreview.src.includes('default')) {
+        // nada — não sobrescrever a foto da bio
+      }
+
+      closeModal(false);
+    } catch (err) {
+      console.error('Erro ao recortar:', err);
+      alert('Ocorreu um erro ao recortar a imagem. Veja o console do navegador.');
+    }
+  });
+
+  cancelBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    closeModal(true);
+  });
+
+  function closeModal(restoreOldPreview = true) {
+    modal.style.display = 'none';
+    if (cropper) {
+      try { cropper.destroy(); } catch (e) {}
+      cropper = null;
+    }
+    if (restoreOldPreview) {
+      preview.src = originalPreviewSrc;
+      hiddenCropped.value = '';
+    }
+    try { input.value = ''; } catch (e) {}
   }
-  </script>
+
+  modal.addEventListener('click', function (ev) {
+    if (ev.target === modal) {
+      closeModal(true);
+    }
+  });
+
+  // preview simples para foto da bio (sem cropper para manter simples)
+  const bioFileInput = document.getElementById('bio_foto_file');
+  if (bioFileInput) {
+    bioFileInput.addEventListener('change', function (e) {
+      const f = e.target.files[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = function (ev) {
+        const sidebarPreview = document.getElementById('bio-preview-sidebar');
+        if (sidebarPreview) sidebarPreview.src = ev.target.result;
+      };
+      r.readAsDataURL(f);
+    });
+  }
+  // Preview do banner
+const bannerInput = document.getElementById('banner-file');
+const bannerImg = document.getElementById('banner-img');
+
+if (bannerInput) {
+  bannerInput.addEventListener('change', function(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = function(ev) {
+      bannerImg.src = ev.target.result;
+    };
+    r.readAsDataURL(f);
+  });
+}
+</script>
 
 </body>
 </html>
