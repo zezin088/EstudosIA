@@ -1,0 +1,102 @@
+[
+  {
+    "pergunta": "Qual é a capital da França?",
+    "alternativas": ["Paris", "Londres", "Berlim", "Roma"],
+    "correta": 0
+  },
+  {
+    "pergunta": "Em qual continente está localizado o deserto do Saara?",
+    "alternativas": ["Ásia", "África", "América", "Oceania"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Quanto é 2/3 × 1/4 × 1/50?",
+    "alternativas": ["1/300", "1/600", "1/120", "1/100"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Quem pintou a obra Mona Lisa?",
+    "alternativas": ["Van Gogh", "Michelangelo", "Leonardo da Vinci", "Picasso"],
+    "correta": 2
+  },
+  {
+    "pergunta": "O que significa a sigla ODS da ONU?",
+    "alternativas": ["Objetivos de Desenvolvimento Sustentável", "Organização dos Direitos Sociais", "Ordem de Desenvolvimento Social", "Objetivos de Direitos Sustentáveis"],
+    "correta": 0
+  },
+  {
+    "pergunta": "Qual destes gases contribui mais para o efeito estufa?",
+    "alternativas": ["Oxigênio", "Metano", "Nitrogênio", "Hélio"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Em que ano ocorreu a Proclamação da República no Brasil?",
+    "alternativas": ["1822", "1889", "1922", "1500"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Qual é a fórmula química da água?",
+    "alternativas": ["H2O", "CO2", "NaCl", "O2"],
+    "correta": 0
+  },
+  {
+    "pergunta": "Em qual camada da Terra encontramos as placas tectônicas?",
+    "alternativas": ["Manto superior", "Crosta", "Núcleo externo", "Astenosfera"],
+    "correta": 3
+  },
+  {
+    "pergunta": "Quem foi o primeiro presidente do Brasil?",
+    "alternativas": ["Dom Pedro II", "Getúlio Vargas", "Deodoro da Fonseca", "Marechal Floriano"],
+    "correta": 2
+  },
+  {
+    "pergunta": "Qual é a principal fonte de energia usada no corpo humano?",
+    "alternativas": ["Proteínas", "Lipídios", "Carboidratos", "Vitaminas"],
+    "correta": 2
+  },
+  {
+    "pergunta": "O que mede a escala Richter?",
+    "alternativas": ["Velocidade dos ventos", "Magnitude dos terremotos", "Intensidade da chuva", "Temperatura atmosférica"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Quem é o autor de 'Dom Casmurro'?",
+    "alternativas": ["José de Alencar", "Machado de Assis", "Carlos Drummond de Andrade", "Graciliano Ramos"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Qual é a função das mitocôndrias na célula?",
+    "alternativas": ["Produção de energia", "Síntese de proteínas", "Armazenamento de água", "Divisão celular"],
+    "correta": 0
+  },
+  {
+    "pergunta": "Qual país sediou a Copa do Mundo de 2014?",
+    "alternativas": ["África do Sul", "Brasil", "Alemanha", "Rússia"],
+    "correta": 1
+  },
+  {
+    "pergunta": "Qual elemento químico tem símbolo Fe?",
+    "alternativas": ["Ferro", "Flúor", "Fósforo", "Frâncio"],
+    "correta": 0
+  },
+  {
+    "pergunta": "A Revolução Francesa começou em qual ano?",
+    "alternativas": ["1492", "1789", "1822", "1917"],
+    "correta": 1
+  },
+  {
+    "pergunta": "O que significa DNA?",
+    "alternativas": ["Ácido Desoxirribonucleico", "Ácido Ribonucleico", "Desoxirribossomo Nuclear", "Dados Nucleares Ativos"],
+    "correta": 0
+  },
+  {
+    "pergunta": "Quem foi Albert Einstein?",
+    "alternativas": ["Físico teórico", "Médico", "Filósofo", "Político"],
+    "correta": 0
+  },
+  {
+    "pergunta": "Qual destes planetas é considerado gasoso?",
+    "alternativas": ["Marte", "Vênus", "Júpiter", "Mercúrio"],
+    "correta": 2
+  }
+]
