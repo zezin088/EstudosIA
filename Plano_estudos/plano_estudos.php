@@ -81,17 +81,156 @@ try {
     <meta charset="UTF-8">
     <title>Plano de Estudos</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { border-collapse: collapse; width: 90%; margin-top: 20px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-        th { background: #eee; }
-        form { margin-top: 20px; }
-        textarea { width: 100%; }
-        input[type="number"] { width: 60px; }
-        .actions a { margin-right: 10px; }
+@font-face {
+  font-family: 'SimpleHandmade';
+  src: url(/fonts/SimpleHandmade.ttf);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #3f7c72ff;
+  font-family: 'Roboto', sans-serif;
+  color: #3f7c72ff;
+  text-align: center;
+  padding: 40px;
+}
+    /* Header */
+    header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+
+    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
+/* Títulos */
+h1 {
+
+  font-family: 'SimpleHandmade';
+  font-size: 50px;
+  color: #ffffff;
+  margin-bottom: 30px;
+}
+
+h2 {
+  font-family: 'SimpleHandmade';
+  font-size: 35px;
+  color: #ffffff;
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+/* Formulários */
+form {
+  background: #bdebe3ff;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 0 auto 40px auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  text-align: left;
+}
+
+form label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  color: #2a5c55;
+}
+
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #2a5c55;
+  margin-bottom: 20px;
+  font-size: 16px;
+  background-color: #f1f6fb;
+}
+
+textarea {
+  resize: none;
+  height: 120px;
+}
+
+button {
+  font-family: 'SimpleHandmade';
+  background-color: #2a5c55;
+  color: #ffffff;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-size: 20px;
+  border: none;
+  cursor: pointer;
+  transition: .3s;
+}
+
+button:hover {
+  background-color: #1e3834ff;
+}
+
+/* Tabela */
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 95%;
+  max-width: 900px;
+  background-color: #bdebe3ff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  font-family: 'SimpleHandmade';
+  border: 1px solid #1e3834ff;
+  padding: 12px;
+  font-size: 20px;
+  text-align: center;
+}
+
+th {
+  background-color: #2a5c55;
+  color: #ffffff;
+}
+
+/* Links de ação */
+.actions a {
+  display: inline-block;
+  background-color: #2a5c55;
+  color: #fff;
+  padding: 8px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  margin: 5px;
+  transition: .3s;
+  font-size: 16px;
+}
+
+.actions a:hover {
+  background-color: #1e3834ff;
+}
     </style>
 </head>
 <body>
+<header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+    <nav>
+      <ul>
+          <li><a href="/anotacoes/index.html">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
     <h1>Plano de Estudos</h1>
 
     <!-- Adicionar Plano -->
