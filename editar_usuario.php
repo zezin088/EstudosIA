@@ -10,10 +10,7 @@ include('conexao.php');
 
 $usuario_id = $_SESSION['usuario_id'];
 
-/*
-  SELECT principal (mantive exatamente como você tinha) - buscamos nome, email, biografia e foto.
-  Depois verificamos se o banco tem colunas opcionais (aniversario, favoritos, bio_foto).
-*/
+// SELECT principal
 $sql = "SELECT nome, email, biografia, foto FROM usuarios WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $usuario_id);
@@ -23,35 +20,30 @@ $stmt->bind_result($nome, $email, $biografia, $foto);
 $stmt->fetch();
 $stmt->close();
 
-// checar existência de colunas opcionais - assim não quebramos se elas não existirem
-$has_aniversario = false;
-$has_favoritos = false;
-$has_bio_foto = false;
+// checar existência de colunas opcionais
+$has_aniversario = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'aniversario'")->num_rows > 0;
+$has_favoritos   = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'favoritos'")->num_rows > 0;
+$has_bio_foto    = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'bio_foto'")->num_rows > 0;
+$has_banner      = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'banner'")->num_rows > 0;
 
-$res = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'aniversario'");
-if ($res && $res->num_rows > 0) $has_aniversario = true;
-$res = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'favoritos'");
-if ($res && $res->num_rows > 0) $has_favoritos = true;
-$res = $conn->query("SHOW COLUMNS FROM usuarios LIKE 'bio_foto'");
-if ($res && $res->num_rows > 0) $has_bio_foto = true;
-
-// se alguma dessas colunas existir, buscar seus valores
 $aniversario_db = '';
-$favoritos_db = '';
-$bio_foto_db = '';
+$favoritos_db   = '';
+$bio_foto_db    = '';
+$banner_db      = '';
 
-if ($has_aniversario || $has_favoritos || $has_bio_foto) {
+if ($has_aniversario || $has_favoritos || $has_bio_foto || $has_banner) {
     $cols = [];
     if ($has_aniversario) $cols[] = 'aniversario';
-    if ($has_favoritos) $cols[] = 'favoritos';
-    if ($has_bio_foto) $cols[] = 'bio_foto';
+    if ($has_favoritos)   $cols[] = 'favoritos';
+    if ($has_bio_foto)    $cols[] = 'bio_foto';
+    if ($has_banner)      $cols[] = 'banner';
+
     $sql2 = "SELECT " . implode(', ', $cols) . " FROM usuarios WHERE id = ?";
     $stmt2 = $conn->prepare($sql2);
     $stmt2->bind_param('i', $usuario_id);
     $stmt2->execute();
     $stmt2->store_result();
 
-    // bind dinamicamente conforme colunas
     $bind_names = [];
     $meta = $stmt2->result_metadata();
     $fields = [];
@@ -62,38 +54,35 @@ if ($has_aniversario || $has_favoritos || $has_bio_foto) {
     if (!empty($bind_names)) {
         call_user_func_array(array($stmt2, 'bind_result'), $bind_names);
         $stmt2->fetch();
-        // atribuir valores às variáveis locais
         if ($has_aniversario && isset($row['aniversario'])) $aniversario_db = $row['aniversario'];
-        if ($has_favoritos && isset($row['favoritos'])) $favoritos_db = $row['favoritos'];
-        if ($has_bio_foto && isset($row['bio_foto'])) $bio_foto_db = $row['bio_foto'];
+        if ($has_favoritos && isset($row['favoritos']))     $favoritos_db   = $row['favoritos'];
+        if ($has_bio_foto && isset($row['bio_foto']))       $bio_foto_db    = $row['bio_foto'];
+        if ($has_banner && isset($row['banner']))           $banner_db      = $row['banner'];
     }
     $stmt2->close();
 }
 
-// valores fictícios para exibição (se você tiver tabelas reais para contar seguidores, substitua depois)
+// valores fictícios para exibição
 $seguidores_count = 121;
-$favoritos_count = 23;
-$fans_count = 106;
-
+$favoritos_count  = 23;
+$fans_count       = 106;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // pegar dados do formulário (mantendo compatibilidade com seu código)
     $nome_usuario = $_POST['nome_usuario'] ?? $nome;
-    $email = $_POST['email'] ?? $email;
-    $senha = !empty($_POST['senha']) ? password_hash($_POST['senha'], PASSWORD_DEFAULT) : null;
-    $biografia = $_POST['biografia'] ?? $biografia;
+    $email        = $_POST['email'] ?? $email;
+    $senha        = !empty($_POST['senha']) ? password_hash($_POST['senha'], PASSWORD_DEFAULT) : null;
+    $biografia    = $_POST['biografia'] ?? $biografia;
 
-    // campos opcionais do formulário
-    $aniversario = $has_aniversario ? ($_POST['aniversario'] ?? $aniversario_db) : null;
-    $favoritos = $has_favoritos ? ($_POST['favoritos'] ?? $favoritos_db) : null;
+    $aniversario  = $has_aniversario ? ($_POST['aniversario'] ?? $aniversario_db) : null;
+    $favoritos    = $has_favoritos ? ($_POST['favoritos'] ?? $favoritos_db) : null;
 
-    // FOTO VIA CANVAS (foto de perfil recortada)
+    // FOTO DE PERFIL VIA CANVAS
     if (!empty($_POST['cropped_image'])) {
         $image_data = $_POST['cropped_image'];
         $image_data = str_replace('data:image/png;base64,', '', $image_data);
         $image_data = str_replace(' ', '+', $image_data);
         $image_data = base64_decode($image_data);
-        $filename = 'imagens/usuarios/' . uniqid() . '.png';
+        $filename = 'imagens/usuarios' . uniqid() . '.png';
 
         if (!is_dir(dirname($filename))) {
             mkdir(dirname($filename), 0755, true);
@@ -101,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         file_put_contents($filename, $image_data);
         $foto = $filename;
     } else {
-        // MANTÉM FOTO ANTIGA
+        // mantém foto antiga
         $sql_foto = "SELECT foto FROM usuarios WHERE id = ?";
         $stmt_foto = $conn->prepare($sql_foto);
         $stmt_foto->bind_param("i", $usuario_id);
@@ -112,58 +101,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $foto = $foto_antiga;
     }
 
-    // UPLOAD da foto da bio (opcional). mesmo que o banco não tenha a coluna, salvamos o arquivo em disco
+    // UPLOAD da foto da bio
     $bio_foto_saved = '';
     if (isset($_FILES['bio_foto_file']) && $_FILES['bio_foto_file']['error'] === UPLOAD_ERR_OK) {
         $ext = pathinfo($_FILES['bio_foto_file']['name'], PATHINFO_EXTENSION);
-        $bio_filename = 'imagens/bio/' . uniqid() . '.' . ($ext ? $ext : 'jpg');
+        $bio_filename = 'imagens/bio/' . uniqid() . '.' . ($ext ?: 'jpg');
 
         if (!is_dir(dirname($bio_filename))) {
             mkdir(dirname($bio_filename), 0755, true);
         }
         if (move_uploaded_file($_FILES['bio_foto_file']['tmp_name'], $bio_filename)) {
             $bio_foto_saved = $bio_filename;
-            // se houver coluna no DB, armazenaremos o caminho nela abaixo
         }
     }
 
-    // agora montar UPDATE dinâmico com segurança:
+    // UPLOAD do banner
+    $banner_saved = '';
+if (isset($_FILES['banner_file']) && $_FILES['banner_file']['error'] === UPLOAD_ERR_OK) {
+    $ext = pathinfo($_FILES['banner_file']['name'], PATHINFO_EXTENSION);
+    $banner_filename = 'imagens/usuarios/' . uniqid() . '.' . ($ext ?: 'jpg');
+
+    if (!is_dir(dirname($banner_filename))) {
+        mkdir(dirname($banner_filename), 0755, true);
+    }
+    if (move_uploaded_file($_FILES['banner_file']['tmp_name'], $banner_filename)) {
+        $banner_saved = $banner_filename;
+    }
+}
+
+    // montar UPDATE dinâmico
     $fields = [];
-    $types = '';
+    $types  = '';
     $values = [];
 
-    // campos obrigatórios que existiam antes
-    $fields[] = 'nome'; $types .= 's'; $values[] = $nome_usuario;
-    $fields[] = 'email'; $types .= 's'; $values[] = $email;
-    if ($senha) { $fields[] = 'senha'; $types .= 's'; $values[] = $senha; }
+    $fields[] = 'nome';      $types .= 's'; $values[] = $nome_usuario;
+    $fields[] = 'email';     $types .= 's'; $values[] = $email;
+    if ($senha) {
+        $fields[] = 'senha'; $types .= 's'; $values[] = $senha;
+    }
     $fields[] = 'biografia'; $types .= 's'; $values[] = $biografia;
-    $fields[] = 'foto'; $types .= 's'; $values[] = $foto;
+    $fields[] = 'foto';      $types .= 's'; $values[] = $foto;
 
-    // campos opcionais (só incluir no UPDATE se existirem no DB)
     if ($has_aniversario) { $fields[] = 'aniversario'; $types .= 's'; $values[] = $aniversario; }
-    if ($has_favoritos) { $fields[] = 'favoritos'; $types .= 's'; $values[] = $favoritos; }
+    if ($has_favoritos)   { $fields[] = 'favoritos';   $types .= 's'; $values[] = $favoritos; }
     if ($has_bio_foto) {
-        // se fez upload de bio_foto, usar o arquivo salvo; se não, manter valor atual do DB
         $bio_to_save = $bio_foto_saved ?: $bio_foto_db;
         $fields[] = 'bio_foto'; $types .= 's'; $values[] = $bio_to_save;
     }
+    if ($has_banner) {
+        $banner_to_save = $banner_saved ?: $banner_db;
+        $fields[] = 'banner'; $types .= 's'; $values[] = $banner_to_save;
+    }
 
-    // construir SQL
     $set_sql = implode(' = ?, ', $fields) . ' = ?';
     $sql_update = "UPDATE usuarios SET $set_sql WHERE id = ?";
 
     $stmt_upd = $conn->prepare($sql_update);
     if ($stmt_upd === false) {
-        // erro preparando o statement (não deve acontecer em condições normais)
         die("Erro ao preparar UPDATE: " . htmlspecialchars($conn->error));
     }
 
-    // bind dinâmico (bind_param exige referências)
     $types_with_id = $types . 'i';
     $params = $values;
     $params[] = $usuario_id;
 
-    // construir array de referências
     $bind_names = [];
     $bind_names[] = &$types_with_id;
     for ($i = 0; $i < count($params); $i++) {
@@ -180,6 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -467,9 +469,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <!-- BANNER -->
   <div class="perfil-banner">
-    <img id="banner-img" src="<?php echo !empty($banner_db) && file_exists($banner_db) ? $banner_db : 'imagens/usuarios/default-banner.jpg'; ?>" alt="Banner">
+  <img id="banner-img" src="<?php echo !empty($banner_db) ? $banner_db : 'imagens/usuarios/default-banner.jpg'; ?>" alt="Banner">
     <label for="banner-file" class="edit-icon">✏️</label>
-    <input type="file" name="banner_file" id="banner-file" accept="image/*" style="display:none;">
+    <input type="file" name="banner_file" id="banner-file" accept="image/*" style="display:none;" form="perfil-form">
   </div>
 
   <!-- FOTO PERFIL -->
@@ -493,10 +495,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="about">
     <h4>Sobre mim</h4>
     <?php if (!empty($bio_foto_db) && file_exists($bio_foto_db)): ?>
-      <img class="bio-photo-preview" id="bio-preview-sidebar" src="<?php echo $bio_foto_db; ?>" alt="Foto bio">
-    <?php else: ?>
-      <img class="bio-photo-preview" id="bio-preview-sidebar" src="imagens/bio/default.jpg" alt="Foto bio">
-    <?php endif; ?>
+  <img class="bio-photo-preview" id="bio-preview-sidebar" src="<?php echo $bio_foto_db; ?>" alt="">
+<?php else: ?>
+  <img class="bio-photo-preview" id="bio-preview-sidebar" src="imagens/bio/default.jpg" alt="">
+<?php endif; ?>
 
     <!-- aqui vai a seleção de arquivo, agora EMBUTIDA na lateral embaixo da foto -->
     <label for="bio_foto_file" class="bio-file-label">Alterar foto</label>
