@@ -19,6 +19,29 @@ $idUsuario = $_SESSION['id'] ?? 1; // teste com 1
 <meta charset="UTF-8">
 <title>Cronômetro com Amizades</title>
 <style>
+    /* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
 /* Fonte */
 @font-face { font-family: 'SimpleHandmade'; src: url(/fonts/SimpleHandmade.ttf); }
 
@@ -100,11 +123,28 @@ button:hover { background: #2a5c55; }
     object-fit: cover;
     border: 2px solid #3f7c72;
 }
+header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+
+    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
 
 </style>
 </head>
 <body>
-
+  <header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+    <nav>
+      <ul>
+          <li><a href="/inicio.php">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
 <!-- Robo dormindo -->
 <div class="robo-container">
     <img src="/videos/Robo_dormindo.gif" alt="Robo Dormindo">

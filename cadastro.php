@@ -1,40 +1,54 @@
 <?php
-include 'conexao.php';
+session_start();
+include 'conexao.php'; // sua conexão
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome  = $_POST['nome'];
-    $email = $_POST['email'];
+    $nome = trim($_POST['nome']);
+    $email = trim($_POST['email']);
     $senha = $_POST['senha'];
+    $senha_confirma = $_POST['senha_confirma'];
 
-    // Verifica se o e-mail já existe
-    $check = $conn->prepare("SELECT id FROM usuarios WHERE email = ?");
-    $check->bind_param("s", $email);
-    $check->execute();
-    $result = $check->get_result();
-
-    if ($result->num_rows > 0) {
-        echo "<script>
-            localStorage.setItem('mensagemLogin', 'Esse e-mail já está cadastrado!');
-            window.location.href = 'index.php';
-        </script>";
+    // Validação básica
+    if ($senha !== $senha_confirma) {
+        echo "As senhas não coincidem!";
         exit;
     }
 
+    if (empty($nome) || empty($email) || empty($senha)) {
+        echo "Preencha todos os campos!";
+        exit;
+    }
+
+    // Criptografia da senha
     $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-    $sql = $conn->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)");
-    $sql->bind_param("sss", $nome, $email, $senha_hash);
+    // Caminho da foto default
+    $foto_default = 'imagens/usuarios/default.jpg';
 
-    if ($sql->execute()) {
-        echo "<script>
-            localStorage.setItem('mensagemLogin', 'Cadastrado com sucesso! Agora faça login.');
-            window.location.href = 'index.php';
-        </script>";
+    // Inserção no banco
+    $sql = "INSERT INTO usuarios (nome, email, senha, foto) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $nome, $email, $senha_hash, $foto_default);
+
+    if ($stmt->execute()) {
+        echo "Cadastro realizado com sucesso!";
+        // Você pode redirecionar para login:
+        // header("Location: login.php");
+        // exit;
     } else {
-        echo "<script>
-            localStorage.setItem('mensagemLogin', 'Erro ao cadastrar!');
-            window.location.href = 'index.php';
-        </script>";
+        echo "Erro ao cadastrar: " . $stmt->error;
     }
+
+    $stmt->close();
 }
+$conn->close();
 ?>
+
+<!-- Formulário HTML simples -->
+<form method="POST" action="">
+    <input type="text" name="nome" placeholder="Nome" required><br>
+    <input type="email" name="email" placeholder="Email" required><br>
+    <input type="password" name="senha" placeholder="Senha" required><br>
+    <input type="password" name="senha_confirma" placeholder="Confirme a senha" required><br>
+    <button type="submit">Cadastrar</button>
+</form>

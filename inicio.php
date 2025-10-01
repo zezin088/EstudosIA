@@ -1,3 +1,38 @@
+<?php
+session_start();
+include 'conexao.php';
+
+// Verifica se o usuário está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$usuario_id = $_SESSION['usuario_id'];
+
+// Buscar dados do usuário
+$sql = "SELECT nome, foto FROM usuarios WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $usuario_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $usuario = $result->fetch_assoc();
+    $nome_usuario = $usuario['nome'];
+
+    // Usa a foto do usuário ou o default se não houver
+    if (!empty($usuario['foto']) && file_exists($usuario['foto'])) {
+        $foto = $usuario['foto'];
+    } else {
+        $foto = 'imagens/usuarios/default.jpg';
+    }
+} else {
+    $nome_usuario = "Usuário";
+    $foto = 'imagens/usuarios/default.jpg';
+}
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -190,7 +225,7 @@ nav .search-bar button:hover {
 }
     /* Cards */
     section{padding:4rem 2rem;margin:0 auto;}
-    section h2{text-align:center;color:#3f7c72;margin-bottom:2rem;font-size:2rem;}
+    section h2{text-align:center;color:#3f7c72;margin-bottom:2rem;font-size:3rem;font-family: 'SimpleHandmade';}
     /* substitua sua regra .cards atual por este bloco */
 .cards {
   display: grid;
@@ -220,55 +255,89 @@ nav .search-bar button:hover {
 
     /* Cronômetro */
     .cronometro-icone{position:fixed;bottom:20px;right:20px;background:#3f7c72;color:white;
-      padding:1rem;border-radius:50%;font-size:1.5rem;display:flex;justify-content:center;align-items:center;
+      padding:1rem;border-radius:50%;font-size:2rem;display:flex;justify-content:center;align-items:center;
       box-shadow:0 4px 10px rgba(0,0,0,0.15);transition:.3s;text-decoration:none;z-index:1000;}
     .cronometro-icone:hover{background:#2a5c55;}
 
-    /* Rede social */
-    /* Rede social */
-/* Rede social - lado esquerdo */
-.social-float{
+/* Botão flutuante da rede social */
+.social-float {
   position: fixed;
   bottom: 20px;
-  left: 20px; /* mudou de right para left */
+  left: 20px;
   z-index: 1000;
 }
 
-    .social-mini{background:#fff;border-radius:12px;padding:20px 30px;display:flex;align-items:center;
-      box-shadow:0 2px 6px rgba(0,0,0,0.2);cursor:pointer;}
-    .social-mini .mini-avatar img{width:40px;height:40px;border-radius:50%;object-fit:cover;margin-right:10px;}
-    .social-mini .title{font-weight:bold;color:#333;font-size:18px;}
-    .social-mini .sub{font-size:15px;color:#666;}
+.social-mini {
+  background: #fff;
+  border-radius: 12px;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
 
-    .social-panel-backdrop{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-      background:rgba(0,0,0,0.6);z-index:2000;}
-    .social-panel {
+.social-mini .mini-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.social-mini .title {
+  font-weight: bold;
+  color: #333;
+  font-size: 18px;
+}
+
+.social-mini .sub {
+  font-size: 15px;
+  color: #666;
+}
+
+/* Backdrop do painel */
+.social-panel-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Painel principal com tudo integrado */
+.social-panel {
   background: #fff;
   width: 90%;
   max-width: 1000px;
   height: 90%;
-  margin: 5% auto;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
-.social-panel header {
+
+/* Título integrado no painel */
+.social-panel .panel-header {
+  background: #3f7c72;
+  color: white;
+  padding: 15px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
-  background: #3f7c72;
-  color: white;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  flex: 0 0 auto; /* não estica */
-  font-size: 1rem;
 }
-.social-panel header .title {
-  font-weight: bold;
-}
-.social-panel header button {
+
+/* Botão de fechar dentro do header */
+.social-panel .panel-header button {
   background: #fff;
   color: #3f7c72;
   border: none;
@@ -279,18 +348,49 @@ nav .search-bar button:hover {
   transition: 0.3s;
 }
 
-.social-panel header button:hover {
+.social-panel .panel-header button:hover {
   background: #e0f5f3;
 }
 
+/* Iframe ocupa todo o painel abaixo do header */
 .social-panel .iframe-wrap {
-  flex: 1 1 auto; /* ocupa o restante do painel */
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
-    .social-panel iframe{width:100%;height:100%;border:none;}
+
+.social-panel iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 
     /* Footer */
     footer{background:#3f7c72;color:white;text-align:center;padding:2rem;margin-top:3rem;}
+    /* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
   </style>
 </head>
 <body>
@@ -314,8 +414,8 @@ nav .search-bar button:hover {
     <ul>
       <li>
         <a href="/editar_usuario.php" class="user-link">
-          <img src="<?php echo $avatar; ?>" alt="Avatar" class="avatar">
-          <p><?php echo isset($nome_usuario) ? htmlspecialchars($nome_usuario) : 'Usuário'; ?></p>
+          <img src="<?php echo htmlspecialchars($foto); ?>" alt="Foto do usuário" class="avatar">
+<p><?php echo htmlspecialchars($nome_usuario); ?></p>
         </a>
       </li>
       <li><a href="/logout.php"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
@@ -355,7 +455,7 @@ nav .search-bar button:hover {
 <div class="social-float">
   <div class="social-mini" id="socialMini" role="button" aria-haspopup="dialog" aria-controls="socialPanel" tabindex="0" title="Abrir Rede Social">
     <div class="mini-avatar" aria-hidden="true">
-      <img src="<?php echo $avatar; ?>" alt="Preview usuário">
+      <img src="/videos/Robo_dormindo.gif" alt="Vídeo usuário" class="avatar-video">
     </div>
     <div class="mini-info">
       <div class="title">Rede Social</div>
@@ -363,20 +463,18 @@ nav .search-bar button:hover {
     </div>
   </div>
 </div>
-<div class="social-panel-backdrop" id="socialBackdrop" aria-hidden="true">
-  <div class="social-panel" role="dialog" aria-modal="true" aria-label="Rede Social" id="socialPanel">
-    <header>
-      <div class="title">Rede Social</div>
-      <div class="spacer"></div>
+
+<div class="social-panel-backdrop" id="socialBackdrop">
+  <div class="social-panel">
+    <div class="panel-header">
+      Rede Social
       <button id="socialClose">Fechar ✕</button>
-    </header>
-    <aside class="sidebar"></aside>
+    </div>
     <div class="iframe-wrap">
       <iframe src="redesocial.php?embed=1" title="Rede Social"></iframe>
     </div>
   </div>
 </div>
-
 <!-- Cronômetro -->
 <a href="/Cronometro_Raking/cronometro.php" class="cronometro-icone" title="Ir para Cronômetro">
   <i class="fa-solid fa-stopwatch"></i>

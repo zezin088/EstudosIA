@@ -121,6 +121,29 @@ button:hover{
   background:#2a5c55;
   transform:scale(1.05);
 }
+/* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
 </style>
 </head>
 <body>
@@ -129,7 +152,7 @@ button:hover{
   <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
   <nav>
     <ul>
-        <li><a href="/inicio.php">Voltar à página de Início</a></li>
+        <li><a href="/inicio.php">Voltar</a></li>
     </ul>
   </nav>
 </header>

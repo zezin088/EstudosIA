@@ -1,25 +1,29 @@
 <?php
-$host = "localhost";
-$user = "root";
-$senha = ""; // sua senha
-$banco = "nome_do_seu_banco"; // coloque o nome do banco
+session_start();
+include 'config.php';
 
-$conn = new mysqli($host, $user, $senha, $banco);
-
-if ($conn->connect_error) {
-    die("Erro na conexão: " . $conn->connect_error);
+if (!isset($_SESSION['usuario_id'])) {
+    die(json_encode([]));
 }
 
-$sql = "SELECT * FROM eventos";
+$usuario_id = $_SESSION['usuario_id'];
+
+$sql = "SELECT * FROM eventos WHERE usuario_id = $usuario_id ORDER BY data_evento, hora_inicio";
 $result = $conn->query($sql);
 
-$eventos = [];
-
-while ($row = $result->fetch_assoc()) {
-    $eventos[] = $row;
+$events = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $events[] = [
+            'id' => $row['id'],
+            'titulo' => $row['titulo'],
+            'data_evento' => $row['data_evento'],
+            'hora_inicio' => $row['hora_inicio'],
+            'hora_fim' => $row['hora_fim']
+        ];
+    }
 }
 
-echo json_encode($eventos);
-
+echo json_encode($events);
 $conn->close();
 ?>

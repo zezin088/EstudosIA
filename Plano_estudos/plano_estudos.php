@@ -113,11 +113,11 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
 
 /* Títulos */
 h1 {
-
+  margin-top: 70px;
   font-family: 'SimpleHandmade';
   font-size: 50px;
   color: #ffffff;
-  margin-bottom: 30px;
+  margin-bottom: 50px;
 }
 
 h2 {
@@ -220,6 +220,29 @@ th {
 .actions a:hover {
   background-color: #1e3834ff;
 }
+/* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
     </style>
 </head>
 <body>
@@ -227,7 +250,7 @@ th {
     <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
     <nav>
       <ul>
-          <li><a href="/anotacoes/index.html">Voltar</a></li>
+          <li><a href="/inicio.php">Voltar</a></li>
       </ul>
     </nav>
   </header>

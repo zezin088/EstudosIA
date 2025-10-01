@@ -1,349 +1,419 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="calendario.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calendário</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* Reset */
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* Body */
+body{
+    background:#3f7c72ff;
+    font-family:Roboto,Arial,sans-serif;
+    color:#3f7c72ff;
+    padding:40px;
+    text-align:center;
+}
+
+/* Header */
+h1{font-family:'SimpleHandmade',sans-serif;color:#fff;font-size:50px;margin-top:65px}
+
+/* Calendar container */
+.calendar{
+    margin:30px auto;
+    width:95%;
+    max-width:900px;
+    background:#bdebe3ff;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+/* Month header */
+.month{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#2a5c55;
+    color:#fff;
+    padding:15px 20px;
+    border-radius:10px;
+    font-family:'SimpleHandmade',sans-serif;
+    font-size:28px;
+}
+.month i{cursor:pointer;font-size:22px}
+
+/* Weekdays row */
+.weekdays{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:5px;
+    margin:10px 0;
+}
+.weekdays div{
+    font-family:'SimpleHandmade',sans-serif;
+    color:#2a5c55;
+    font-weight:bold;
+    font-size:20px;
+    padding:10px 0;
+}
+
+/* Days grid */
+.days{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:5px;
+    margin-top:10px;
+}
+
+/* Each day */
+.day{
+    padding:15px 0;
+    background:#f1f6fb;
+    border-radius:8px;
+    cursor:pointer;
+    font-family:'SimpleHandmade',sans-serif;
+    transition:0.2s;
+}
+.day:hover{
+    background:#96d2c7;
+    color:#fff;
+}
+.today{
+    background:#2a5c55;
+    color:#fff;
+    font-weight:bold;
+}
+.active{
+    border:2px solid #1e3834ff;
+}
+
+/* Add event button */
+.add-event{
+    margin-top:25px;
+    background:#2a5c55;
+    color:#fff;
+    padding:12px 25px;
+    border-radius:10px;
+    font-size:22px;
+    border:none;
+    cursor:pointer;
+    font-family:'SimpleHandmade',sans-serif;
+}
+.add-event:hover{background:#1e3834ff}
+
+/* Event list */
+.event-list{
+    margin-top:20px;
+    text-align:left;
+}
+.event{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px;
+    margin-bottom:8px;
+    background:#bdebe3ff;
+    border-radius:6px;
+    font-size:16px;
+}
+.event button{
+    background:transparent;
+    border:none;
+    color:#c00;
+    cursor:pointer;
+    opacity:0;
+    transition:0.15s;
+}
+.event:hover button{opacity:1}
+
+/* No event text */
+.no-event{color:#777;font-style:italic;padding:10px}
+
+/* Modal */
+#modal{
+    display:none;
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    background:#fff;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 6px 24px rgba(0,0,0,.3);
+    width:90%;
+    max-width:420px;
+    z-index:3000;
+    text-align:left;
+}
+#modal input[type="text"], #modal input[type="time"]{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #2a5c55;
+    margin:8px 0;
+    font-size:16px;
+}
+#modal .btn{
+    background:#2a5c55;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+}
+#modal .btn-cancel{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 16px;
+    font-size:15px;
+    font-weight:600;
+    color:#2a5c55;
+    background:linear-gradient(#f7fbf9,#ecf6f2);
+    border:2px solid #2a5c55;
+    border-radius:10px;
+    cursor:pointer;
+    transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, color 150ms ease;
+    box-shadow:0 2px 8px rgba(42,92,85,0.08);
+    line-height:1;
+}
+#modal .btn-cancel:hover{
+    background:#2a5c55;
+    color:#fff;
+    transform:translateY(-3px);
+    box-shadow:0 8px 20px rgba(42,92,85,0.18);
+}
+
+/* Notificação estilo banner abaixo do header */
+#notification {
+    position: fixed;
+    top: 80px; /* logo abaixo do header */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2a5c55;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-family: 'SimpleHandmade', sans-serif;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 2000;
+}
+#notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+}
+    /* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
+    /* Header */
+header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+
+    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="left">
-      <div class="calendar">
-        <div class="month">
-          <i class="fas fa-angle-left prev"></i>
-          <div class="date">december 2015</div>
-          <i class="fas fa-angle-right next"></i>
-        </div>
-        <div class="weekdays">
-          <div>Sun</div>
-          <div>Mon</div>
-          <div>Tue</div>
-          <div>Wed</div>
-          <div>Thu</div>
-          <div>Fri</div>
-          <div>Sat</div>
-        </div>
-        <div class="days"></div>
-        <div class="goto-today">
-          <div class="goto">
-            <input type="text" placeholder="mm/yyyy" class="date-input" />
-            <button class="goto-btn">Go</button>
-          </div>
-          <button class="today-btn">Today</button>
-        </div>
-      </div>
-    </div>
-    <div class="right">
-      <div class="today-date">
-        <div class="event-day">wed</div>
-        <div class="event-date">12th december 2022</div>
-      </div>
-      <div class="events"></div>
-      <div class="add-event-wrapper">
-        <div class="add-event-header">
-          <div class="title">Add Event</div>
-          <i class="fas fa-times close"></i>
-        </div>
-        <div class="add-event-body">
-          <div class="add-event-input">
-            <input type="text" placeholder="Event Name" class="event-name" />
-          </div>
-          <div class="add-event-input">
-            <input
-              type="text"
-              placeholder="Event Time From"
-              class="event-time-from"
-            />
-          </div>
-          <div class="add-event-input">
-            <input
-              type="text"
-              placeholder="Event Time To"
-              class="event-time-to"
-            />
-          </div>
-        </div>
-        <div class="add-event-footer">
-          <button class="add-event-btn">Add Event</button>
-        </div>
-      </div>
-    </div>
-    <button class="add-event" title="Adicionar anotação">
-      <i class="fas fa-plus"></i>
-    </button>
-  </div>
+  <header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+    <nav>
+      <ul>
+          <li><a href="/inicio.php">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
+<h1>Calendário</h1>
 
-  <div class="credits">
+<div class="calendar">
+  <div class="month">
+    <i class="fas fa-angle-left prev"></i>
+    <div class="date"></div>
+    <i class="fas fa-angle-right next"></i>
   </div>
-  <script>
-  const calendar = document.querySelector(".calendar"),
-    date = document.querySelector(".date"),
-    daysContainer = document.querySelector(".days"),
-    prev = document.querySelector(".prev"),
-    next = document.querySelector(".next"),
-    todayBtn = document.querySelector(".today-btn"),
-    gotoBtn = document.querySelector(".goto-btn"),
-    dateInput = document.querySelector(".date-input"),
-    eventDay = document.querySelector(".event-day"),
-    eventDate = document.querySelector(".event-date"),
-    eventsContainer = document.querySelector(".events"),
-    addEventBtn = document.querySelector(".add-event"),
-    addEventWrapper = document.querySelector(".add-event-wrapper"),
-    addEventCloseBtn = document.querySelector(".close"),
-    addEventTitle = document.querySelector(".event-name"),
-    addEventFrom = document.querySelector(".event-time-from"),
-    addEventTo = document.querySelector(".event-time-to"),
-    addEventSubmit = document.querySelector(".add-event-btn");
+  <div class="weekdays">
+    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+  </div>
+  <div class="days"></div>
+  <div class="event-list"></div>
+</div>
+
+<button class="add-event">+ Adicionar Evento</button>
+
+<!-- Modal -->
+<div id="modal">
+    <h3>Adicionar Evento</h3>
+    <input type="text" id="title" placeholder="Título do evento">
+    <input type="time" id="from"> até <input type="time" id="to"><br><br>
+    <button class="btn" id="saveBtn">Salvar</button>
+    <button class="btn-cancel" onclick="document.getElementById('modal').style.display='none'">Cancelar</button>
+</div>
+
+<!-- Notificação -->
+<div id="notification"></div>
+
+<script>
+const dateEl = document.querySelector('.date');
+const daysContainer = document.querySelector('.days');
+const prevBtn = document.querySelector('.prev');
+const nextBtn = document.querySelector('.next');
+const eventsContainer = document.querySelector('.event-list');
+const addBtn = document.querySelector('.add-event');
 
 let today = new Date();
-let activeDay;
 let month = today.getMonth();
 let year = today.getFullYear();
+let selectedDate = null;
 
-const months = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
+const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 
-let eventsArr = [];
+function renderCalendar(){
+    const firstDay = new Date(year,month,1);
+    const lastDay = new Date(year,month+1,0);
+    const lastDate = lastDay.getDate();
+    const startDayOfWeek = firstDay.getDay();
 
-getEvents();
-initCalendar();
+    dateEl.textContent = `${months[month]} ${year}`;
 
-function getEvents() {
-  const stored = localStorage.getItem("calendarEvents");
-  if (stored) {
-    eventsArr = JSON.parse(stored);
-  }
-}
+    let daysHTML = '';
+    for(let i=0;i<startDayOfWeek;i++){daysHTML+='<div></div>'}
+    for(let i=1;i<=lastDate;i++){
+        daysHTML+=`<div class="day">${i}</div>`;
+    }
+    daysContainer.innerHTML = daysHTML;
 
-function saveEvents() {
-  localStorage.setItem("calendarEvents", JSON.stringify(eventsArr));
-}
-
-function initCalendar() {
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-  const prevLastDay = new Date(year, month, 0);
-  const prevDays = prevLastDay.getDate();
-  const lastDate = lastDay.getDate();
-  const day = firstDay.getDay();
-  const nextDays = 7 - lastDay.getDay() - 1;
-
-  date.innerHTML = months[month] + " " + year;
-  let days = "";
-
-  for (let x = day; x > 0; x--) {
-    days += `<div class="day prev-date">${prevDays - x + 1}</div>`;
-  }
-
-  for (let i = 1; i <= lastDate; i++) {
-    let event = false;
-    eventsArr.forEach((eventObj) => {
-      if (eventObj.day === i && eventObj.month === month + 1 && eventObj.year === year) {
-        event = true;
-      }
+    document.querySelectorAll('.day').forEach(div=>{
+        const dayNum = Number(div.textContent);
+        if(dayNum===today.getDate() && month===today.getMonth() && year===today.getFullYear()){
+            div.classList.add('today');
+        }
+        div.onclick = ()=>{
+            selectedDate = `${year}-${String(month+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`;
+            document.getElementById('modal').style.display='block';
+            loadEvents();
+            document.querySelectorAll('.day').forEach(d=>d.classList.remove('active'));
+            div.classList.add('active');
+        };
     });
+}
 
-    if (
-      i === new Date().getDate() &&
-      year === new Date().getFullYear() &&
-      month === new Date().getMonth()
-    ) {
-      activeDay = i;
-      getActiveDay(i);
-      updateEvents(i);
-      days += `<div class="day today active${event ? " event" : ""}">${i}</div>`;
-    } else {
-      days += `<div class="day${event ? " event" : ""}">${i}</div>`;
+prevBtn.onclick = ()=>{
+    month--;
+    if(month<0){month=11;year--;}
+    renderCalendar();
+};
+nextBtn.onclick = ()=>{
+    month++;
+    if(month>11){month=0;year++;}
+    renderCalendar();
+};
+
+addBtn.onclick = ()=>{
+    if(!selectedDate) return showNotification('⚠️ Selecione um dia primeiro!');
+    document.getElementById('modal').style.display='block';
+};
+
+async function loadEvents(){
+    const res = await fetch('buscar_eventos.php');
+    const data = await res.json();
+    const html = data.filter(ev=>ev.data_evento===selectedDate)
+        .map(ev=>`<div class="event">${ev.hora_inicio} - ${ev.hora_fim} | ${ev.titulo} <button onclick="deleteEvent(${ev.id})">🗑️</button></div>`).join('');
+    eventsContainer.innerHTML = html || '<div class="no-event">Nenhum evento neste dia.</div>';
+}
+
+function showNotification(msg){
+    const notif = document.getElementById('notification');
+    notif.textContent = msg;
+    notif.classList.add('show');
+    setTimeout(()=>notif.classList.remove('show'),3000);
+}
+
+document.getElementById('saveBtn').onclick = async ()=>{
+    const title = document.getElementById('title').value.trim();
+    const from = document.getElementById('from').value.trim();
+    const to = document.getElementById('to').value.trim();
+    if(!title||!from||!to) return showNotification('⚠️ Preencha todos os campos!');
+    const form = new FormData();
+    form.append('titulo', title);
+    form.append('data_evento', selectedDate);
+    form.append('hora_inicio', from);
+    form.append('hora_fim', to);
+
+    try{
+        const res = await fetch('salvar_evento.php',{method:'POST',body:form});
+        const text = await res.text();
+        if(text.trim()=='ok'){
+            document.getElementById('modal').style.display='none';
+            document.getElementById('title').value='';
+            document.getElementById('from').value='';
+            document.getElementById('to').value='';
+            loadEvents();
+            showNotification('🎉 Evento salvo com sucesso!');
+        }else{
+            showNotification('⚠️ Erro ao salvar evento!');
+        }
+    }catch(e){
+        showNotification('⚠️ Erro ao salvar evento!');
+        console.error(e);
     }
-  }
+};
 
-  for (let j = 1; j <= nextDays; j++) {
-    days += `<div class="day next-date">${j}</div>`;
-  }
-
-  daysContainer.innerHTML = days;
-  addListner();
-}
-
-function prevMonth() {
-  month--;
-  if (month < 0) {
-    month = 11;
-    year--;
-  }
-  initCalendar();
-}
-
-function nextMonth() {
-  month++;
-  if (month > 11) {
-    month = 0;
-    year++;
-  }
-  initCalendar();
-}
-
-prev.addEventListener("click", prevMonth);
-next.addEventListener("click", nextMonth);
-
-function addListner() {
-  const days = document.querySelectorAll(".day");
-  days.forEach((day) => {
-    day.addEventListener("click", (e) => {
-      const dayNum = Number(e.target.innerHTML);
-      activeDay = dayNum;
-      getActiveDay(dayNum);
-      updateEvents(dayNum);
-      days.forEach((d) => d.classList.remove("active"));
-      e.target.classList.add("active");
-
-      if (e.target.classList.contains("prev-date")) {
-        prevMonth();
-      } else if (e.target.classList.contains("next-date")) {
-        nextMonth();
-      }
-    });
-  });
-}
-
-function getActiveDay(dateNum) {
-  const day = new Date(year, month, dateNum);
-  const dayName = day.toString().split(" ")[0];
-  eventDay.innerHTML = dayName;
-  eventDate.innerHTML = `${dateNum} ${months[month]} ${year}`;
-}
-
-function updateEvents(dateNum) {
-  let events = "";
-  eventsArr.forEach((eventObj) => {
-    if (eventObj.day === dateNum && eventObj.month === month + 1 && eventObj.year === year) {
-      eventObj.events.forEach((ev) => {
-        events += `<div class="event">
-            <div class="title">
-              <i class="fas fa-circle"></i>
-              <h3 class="event-title">${ev.title}</h3>
-            </div>
-            <div class="event-time">
-              <span class="event-time">${ev.time}</span>
-            </div>
-          </div>`;
-      });
+async function deleteEvent(id){
+    const form = new FormData();
+    form.append('id',id);
+    try{
+        const res = await fetch('excluir_evento.php',{method:'POST',body:form});
+        const text = await res.text();
+        if(text.trim()=='ok'){
+            loadEvents();
+            showNotification('🗑️ Evento excluído!');
+        }else{
+            showNotification('⚠️ Erro ao excluir evento!');
+        }
+    }catch(e){
+        showNotification('⚠️ Erro ao excluir evento!');
+        console.error(e);
     }
-  });
-  eventsContainer.innerHTML = events || `<div class="no-event"><h3>No Events</h3></div>`;
 }
 
-todayBtn.addEventListener("click", () => {
-  today = new Date();
-  month = today.getMonth();
-  year = today.getFullYear();
-  initCalendar();
-});
+// Inicializa
+renderCalendar();
+</script>
 
-gotoBtn.addEventListener("click", () => {
-  const dateArr = dateInput.value.split("/");
-  if (dateArr.length === 2) {
-    if (dateArr[0] > 0 && dateArr[0] < 13 && dateArr[1].length === 4) {
-      month = dateArr[0] - 1;
-      year = +dateArr[1];
-      initCalendar();
-      return;
-    }
-  }
-  alert("Invalid Date");
-});
-
-addEventBtn.addEventListener("click", () => {
-  addEventWrapper.classList.toggle("active");
-});
-
-addEventCloseBtn.addEventListener("click", () => {
-  addEventWrapper.classList.remove("active");
-});
-
-document.addEventListener("click", (e) => {
-  if (e.target !== addEventBtn && !addEventWrapper.contains(e.target)) {
-    addEventWrapper.classList.remove("active");
-  }
-});
-
-addEventTitle.addEventListener("input", () => {
-  addEventTitle.value = addEventTitle.value.slice(0, 60);
-});
-
-addEventFrom.addEventListener("input", formatTimeInput);
-addEventTo.addEventListener("input", formatTimeInput);
-
-function formatTimeInput(e) {
-  e.target.value = e.target.value.replace(/[^0-9:]/g, "");
-  if (e.target.value.length === 2) {
-    e.target.value += ":";
-  }
-  if (e.target.value.length > 5) {
-    e.target.value = e.target.value.slice(0, 5);
-  }
-}
-
-addEventSubmit.addEventListener("click", () => {
-  const eventTitle = addEventTitle.value;
-  const eventTimeFrom = addEventFrom.value;
-  const eventTimeTo = addEventTo.value;
-
-  if (!eventTitle || !eventTimeFrom || !eventTimeTo) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  const [fromH, fromM] = eventTimeFrom.split(":").map(Number);
-  const [toH, toM] = eventTimeTo.split(":").map(Number);
-  if (
-    fromH > 23 || fromM > 59 || toH > 23 || toM > 59 ||
-    isNaN(fromH) || isNaN(fromM) || isNaN(toH) || isNaN(toM)
-  ) {
-    alert("Invalid time format");
-    return;
-  }
-
-  const newEvent = {
-    title: eventTitle,
-    time: `${convertTime(eventTimeFrom)} - ${convertTime(eventTimeTo)}`
-  };
-
-  let added = false;
-  eventsArr.forEach((ev) => {
-    if (ev.day === activeDay && ev.month === month + 1 && ev.year === year) {
-      ev.events.push(newEvent);
-      added = true;
-    }
-  });
-
-  if (!added) {
-    eventsArr.push({
-      day: activeDay,
-      month: month + 1,
-      year,
-      events: [newEvent]
-    });
-  }
-
-  saveEvents();
-  updateEvents(activeDay);
-  addEventWrapper.classList.remove("active");
-  addEventTitle.value = "";
-  addEventFrom.value = "";
-  addEventTo.value = "";
-});
-
-function convertTime(time) {
-  const [h, m] = time.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${m.toString().padStart(2, "0")} ${period}`;
-}
-  </script>
 </body>
 </html>
