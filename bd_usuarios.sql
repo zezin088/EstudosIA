@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 22/08/2025 às 15:44
+-- Tempo de geração: 03/10/2025 às 15:41
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -31,62 +31,44 @@ CREATE TABLE `amizades` (
   `id` int(11) NOT NULL,
   `id_usuario1` int(11) NOT NULL,
   `id_usuario2` int(11) NOT NULL,
-  `status` enum('pendente','aceito') DEFAULT 'pendente'
+  `tipo` enum('amizade','sugestao') NOT NULL,
+  `status` enum('pendente','aceito') DEFAULT 'pendente',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `amizades`
+--
+
+INSERT INTO `amizades` (`id`, `id_usuario1`, `id_usuario2`, `tipo`, `status`, `criado_em`) VALUES
+(5, 14, 13, 'amizade', 'aceito', '2025-10-03 13:40:56');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `relacoes`
+--
+
+CREATE TABLE `relacoes` (
+  `id` int(11) NOT NULL,
+  `id_usuario1` int(11) NOT NULL,
+  `id_usuario2` int(11) NOT NULL,
+  `tipo` enum('amizade','sugestao') NOT NULL,
+  `status` enum('pendente','aceito') DEFAULT 'pendente',
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `comentarios`
+-- Estrutura para tabela `tempos`
 --
 
-CREATE TABLE `comentarios` (
+CREATE TABLE `tempos` (
   `id` int(11) NOT NULL,
-  `id_post` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
-  `conteudo` text NOT NULL,
-  `data_comentario` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `curtidas`
---
-
-CREATE TABLE `curtidas` (
-  `id` int(11) NOT NULL,
-  `id_post` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `mensagens`
---
-
-CREATE TABLE `mensagens` (
-  `id` int(11) NOT NULL,
-  `id_remetente` int(11) NOT NULL,
-  `id_destinatario` int(11) NOT NULL,
-  `conteudo` text NOT NULL,
-  `data_envio` datetime DEFAULT current_timestamp(),
-  `lida` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `posts`
---
-
-CREATE TABLE `posts` (
-  `id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
-  `conteudo` text NOT NULL,
-  `imagem` varchar(255) DEFAULT NULL,
-  `data_postagem` timestamp NOT NULL DEFAULT current_timestamp()
+  `tempo` varchar(20) NOT NULL,
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -103,15 +85,35 @@ CREATE TABLE `usuarios` (
   `biografia` text DEFAULT NULL,
   `foto` varchar(255) DEFAULT NULL,
   `arvore_escolhida` int(11) DEFAULT NULL,
-  `ultimo_login` datetime DEFAULT current_timestamp()
+  `ultimo_login` datetime DEFAULT current_timestamp(),
+  `token` varchar(255) DEFAULT NULL,
+  `expira_token` datetime DEFAULT NULL,
+  `codigo_verificacao` varchar(10) DEFAULT NULL,
+  `verificado` tinyint(4) DEFAULT 0,
+  `username` varchar(50) DEFAULT NULL,
+  `apelido` varchar(50) DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
+  `escola` varchar(100) DEFAULT NULL,
+  `foto_pessoal` varchar(255) DEFAULT NULL,
+  `preferencias` text DEFAULT NULL,
+  `tags` varchar(255) DEFAULT NULL,
+  `favoritos` text DEFAULT NULL,
+  `data_criacao` datetime DEFAULT current_timestamp(),
+  `bio_foto` varchar(255) DEFAULT NULL,
+  `banner` varchar(255) DEFAULT NULL,
+  `aniversario` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `arvore_escolhida`, `ultimo_login`) VALUES
-(1, 'Ana Beatriz Marques', 'ana@gmail.com', '$2y$10$fITCS37v21q8WjL4R8tNX.2y6sJww2zH5kF4y95gdlFuaixprfVxy', NULL, NULL, NULL, '2025-08-22 09:40:52');
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `arvore_escolhida`, `ultimo_login`, `token`, `expira_token`, `codigo_verificacao`, `verificado`, `username`, `apelido`, `data_nascimento`, `escola`, `foto_pessoal`, `preferencias`, `tags`, `favoritos`, `data_criacao`, `bio_foto`, `banner`, `aniversario`) VALUES
+(4, 'Bia Soares', 'beatriz@gmail.com', '$2y$10$27rg7J1YQ9hSdb59AhTUle94ITQWOuvS6ILvpl7d0MODLB/ExkXbu', 'Study vlogs ', 'imagens/usuarios/68da98eb13394.png', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'meu namorado lindo, peixes, capivara,sobrenatural', '2025-09-24 11:33:45', 'imagens/bio/68da98eb13749.jfif', NULL, '2008-03-17'),
+(13, 'Marques', 'ana@gmail.com', '$2y$10$qK9NpLu6OL0OxxbpLGug9e28WLqGG5QFGpgvpxJBXoy4Gfoa51FJS', '', 'imagens/usuarios/68d8225203d96.jpg', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, '', NULL, NULL, NULL, NULL, NULL, 'Culinária,Programação', '', '2025-09-24 11:33:45', NULL, NULL, NULL),
+(14, 'wenderson', 'wenderson.souza@gmail.com', '$2y$10$JTjk3KlPbsViCn9Yd9gjCOoDmmLkOp/TEA3pK2q4XkcTusKZxEzN.', '', 'imagens/usuarios/68d2ab46456c1.jpg', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-24 11:33:45', NULL, NULL, NULL),
+(89, 'Usuário Teste 1', 'teste1@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL),
+(90, 'Usuário Teste 2', 'teste2@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL);
 
 --
 -- Índices para tabelas despejadas
@@ -122,48 +124,28 @@ INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `ar
 --
 ALTER TABLE `amizades`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `amizade_unica` (`id_usuario1`,`id_usuario2`),
-  ADD KEY `id_usuario1` (`id_usuario1`),
-  ADD KEY `id_usuario2` (`id_usuario2`);
+  ADD KEY `fk_relacao_usuario1` (`id_usuario1`),
+  ADD KEY `fk_relacao_usuario2` (`id_usuario2`);
 
 --
--- Índices de tabela `comentarios`
+-- Índices de tabela `relacoes`
 --
-ALTER TABLE `comentarios`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_post` (`id_post`),
-  ADD KEY `id_usuario` (`id_usuario`);
+ALTER TABLE `relacoes`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `curtidas`
+-- Índices de tabela `tempos`
 --
-ALTER TABLE `curtidas`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unica_curtida` (`id_post`,`id_usuario`),
-  ADD KEY `id_post` (`id_post`),
-  ADD KEY `id_usuario` (`id_usuario`);
-
---
--- Índices de tabela `mensagens`
---
-ALTER TABLE `mensagens`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_remetente` (`id_remetente`),
-  ADD KEY `id_destinatario` (`id_destinatario`);
-
---
--- Índices de tabela `posts`
---
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`);
+ALTER TABLE `tempos`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
@@ -173,37 +155,19 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `amizades`
 --
 ALTER TABLE `amizades`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de tabela `relacoes`
+--
+ALTER TABLE `relacoes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `comentarios`
+-- AUTO_INCREMENT de tabela `tempos`
 --
-ALTER TABLE `comentarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `curtidas`
---
-ALTER TABLE `curtidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `mensagens`
---
-ALTER TABLE `mensagens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `posts`
---
-ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `usuarios`
---
-ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `tempos`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restrições para tabelas despejadas
@@ -213,35 +177,8 @@ ALTER TABLE `usuarios`
 -- Restrições para tabelas `amizades`
 --
 ALTER TABLE `amizades`
-  ADD CONSTRAINT `amizades_ibfk_1` FOREIGN KEY (`id_usuario1`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `amizades_ibfk_2` FOREIGN KEY (`id_usuario2`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `comentarios`
---
-ALTER TABLE `comentarios`
-  ADD CONSTRAINT `comentarios_ibfk_1` FOREIGN KEY (`id_post`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `comentarios_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `curtidas`
---
-ALTER TABLE `curtidas`
-  ADD CONSTRAINT `curtidas_ibfk_1` FOREIGN KEY (`id_post`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `curtidas_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `mensagens`
---
-ALTER TABLE `mensagens`
-  ADD CONSTRAINT `mensagens_ibfk_1` FOREIGN KEY (`id_remetente`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `mensagens_ibfk_2` FOREIGN KEY (`id_destinatario`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `posts`
---
-ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_relacao_usuario1` FOREIGN KEY (`id_usuario1`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_relacao_usuario2` FOREIGN KEY (`id_usuario2`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
