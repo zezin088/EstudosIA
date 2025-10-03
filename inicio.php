@@ -287,7 +287,7 @@ nav .search-bar button:hover {
 
 .social-mini .title {
   font-weight: bold;
-  color: #333;
+  color: #2a5c55;
   font-size: 18px;
 }
 
@@ -450,10 +450,9 @@ nav .search-bar button:hover {
     <a href="questoes.php" class="card"><i class="fa-solid fa-question-circle"></i><h3>Questões Diárias</h3><p>Pratique com desafios novos todos os dias.</p></a>
   </div>
 </section>
-
 <!-- Rede Social -->
 <div class="social-float">
-  <div class="social-mini" id="socialMini" role="button" aria-haspopup="dialog" aria-controls="socialPanel" tabindex="0" title="Abrir Rede Social">
+  <button class="social-mini" onclick="window.location.href='redesocial.php'" title="Abrir Rede Social">
     <div class="mini-avatar" aria-hidden="true">
       <img src="/videos/Robo_dormindo.gif" alt="Vídeo usuário" class="avatar-video">
     </div>
@@ -461,9 +460,8 @@ nav .search-bar button:hover {
       <div class="title">Rede Social</div>
       <div class="sub">Ver publicações e interagir</div>
     </div>
-  </div>
+  </button>
 </div>
-
 <!-- Cronômetro -->
 <a href="/Cronometro_Raking/cronometro.php" class="cronometro-icone" title="Ir para Cronômetro">
   <i class="fa-solid fa-stopwatch"></i>
