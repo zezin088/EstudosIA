@@ -150,7 +150,7 @@ button { background:#4a766e; color:white; padding:8px 12px; border:none; border-
 
 <script>
 function abrirModal(usuarioId){
-    fetch('redesocial.php?perfil_usuario_id=' + usuarioId)
+    fetch('perfil_ajax.php?perfil_usuario_id=' + usuarioId)
         .then(res => res.text())
         .then(data => {
             document.getElementById('info-usuario').innerHTML = data;
