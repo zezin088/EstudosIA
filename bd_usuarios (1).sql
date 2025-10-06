@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 06/10/2025 às 15:43
+-- Tempo de geração: 06/10/2025 às 15:53
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -120,7 +120,8 @@ CREATE TABLE `curtidas` (
 
 INSERT INTO `curtidas` (`id`, `id_post`, `id_usuario`, `data_criacao`) VALUES
 (1, 25, 13, '2025-10-06 11:10:23'),
-(2, 25, 4, '2025-10-06 11:33:09');
+(2, 25, 4, '2025-10-06 11:33:09'),
+(3, 29, 4, '2025-10-06 13:47:49');
 
 -- --------------------------------------------------------
 
@@ -253,7 +254,9 @@ INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `data_criacao`, `
 (20, 13, 'oi', 'imagens/posts/68dfd38fd3868.jpg', '2025-10-03 13:45:51', '2025-10-03 10:45:51'),
 (21, 13, 'qafs, que ódio', '', '2025-10-06 10:44:35', '2025-10-06 07:44:35'),
 (24, 13, 'dsasda', '', '2025-10-06 11:03:46', '2025-10-06 08:03:46'),
-(25, 13, 'y', 'imagens/posts/68e3a39c30c11.jfif', '2025-10-06 11:10:20', '2025-10-06 08:10:20');
+(25, 13, 'y', 'imagens/posts/68e3a39c30c11.jfif', '2025-10-06 11:10:20', '2025-10-06 08:10:20'),
+(29, 4, 'Uma tarde do hora com a best. #capiamigas', 'imagens/posts/68e3c87f3d01e.webp', '2025-10-06 13:47:43', '2025-10-06 10:47:43'),
+(30, 4, 'Eu e minha bebezona da boca inchada querida. #airmandadedasanabeatrizes', 'imagens/posts/68e3c92381944.webp', '2025-10-06 13:50:27', '2025-10-06 10:50:27');
 
 -- --------------------------------------------------------
 
@@ -320,7 +323,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `arvore_escolhida`, `ultimo_login`, `token`, `expira_token`, `codigo_verificacao`, `verificado`, `username`, `apelido`, `data_nascimento`, `escola`, `foto_pessoal`, `preferencias`, `tags`, `favoritos`, `data_criacao`, `bio_foto`, `banner`, `aniversario`, `avatar`, `online`) VALUES
-(4, 'Bia Soares', 'beatriz@gmail.com', '$2y$10$27rg7J1YQ9hSdb59AhTUle94ITQWOuvS6ILvpl7d0MODLB/ExkXbu', 'Study vlogs ', 'imagens/usuarios/68da98eb13394.png', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'meu namorado lindo, peixes, capivara,sobrenatural', '2025-09-24 11:33:45', 'imagens/bio/68da98eb13749.jfif', NULL, '2008-03-17', 'default.png', 0),
+(4, 'Bia Soares', 'beatriz@gmail.com', '$2y$10$27rg7J1YQ9hSdb59AhTUle94ITQWOuvS6ILvpl7d0MODLB/ExkXbu', 'Study vlogs ', 'imagens/usuarios68e3c84b1e642.png', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'meu namorado lindo, peixes, capivara,sobrenatural', '2025-09-24 11:33:45', 'imagens/bio/68e3c84b1ea07.png', 'imagens/usuarios/68e3c84b1ebca.webp', '2008-03-17', 'default.png', 0),
 (13, 'Marques', 'ana@gmail.com', '$2y$10$qK9NpLu6OL0OxxbpLGug9e28WLqGG5QFGpgvpxJBXoy4Gfoa51FJS', 'AnaBanana', 'imagens/usuarios/68d8225203d96.jpg', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, '', NULL, NULL, NULL, NULL, NULL, 'Culinária,Programação', 'Gatos, Stardew Valley, Café, Uva Verde', '2025-09-24 11:33:45', 'imagens/bio/68e3a32fb59ab.jfif', 'imagens/usuarios/68e3a32fb5b51.jfif', '2007-10-10', 'default.png', 0),
 (14, 'wenderson', 'wenderson.souza@gmail.com', '$2y$10$JTjk3KlPbsViCn9Yd9gjCOoDmmLkOp/TEA3pK2q4XkcTusKZxEzN.', '', 'imagens/usuarios/68d2ab46456c1.jpg', NULL, '2025-10-06 08:46:56', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-24 11:33:45', NULL, NULL, NULL, 'default.png', 0),
 (89, 'Usuário Teste 1', 'teste1@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 'default.png', 0),
@@ -451,7 +454,7 @@ ALTER TABLE `conteudos`
 -- AUTO_INCREMENT de tabela `curtidas`
 --
 ALTER TABLE `curtidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `eventos`
@@ -481,7 +484,7 @@ ALTER TABLE `planos`
 -- AUTO_INCREMENT de tabela `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de tabela `solicitacoes_amizade`
