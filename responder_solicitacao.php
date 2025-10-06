@@ -37,21 +37,24 @@ if ($sol['id_destinatario'] != $usuario_id) {
 }
 
 if ($resposta === 'aceita') {
-    // Cria amizade
-    $stmt = $conn->prepare("INSERT INTO amizades (id_usuario1, id_usuario2) VALUES (?, ?)");
-    $stmt->bind_param("ii", $sol['id_remetente'], $sol['id_destinatario']);
+    // Cria amizade (garantindo que a amizade não exista)
+    $stmt = $conn->prepare("SELECT id FROM amizades WHERE (id_usuario1 = ? AND id_usuario2 = ?) OR (id_usuario1 = ? AND id_usuario2 = ?)");
+    $stmt->bind_param("iiii", $sol['id_remetente'], $sol['id_destinatario'], $sol['id_destinatario'], $sol['id_remetente']);
     $stmt->execute();
+    $res = $stmt->get_result();
+    $existe = $res->num_rows > 0;
     $stmt->close();
+
+    if (!$existe) {
+        $stmt = $conn->prepare("INSERT INTO amizades (id_usuario1, id_usuario2) VALUES (?, ?)");
+        $stmt->bind_param("ii", $sol['id_remetente'], $sol['id_destinatario']);
+        $stmt->execute();
+        $stmt->close();
+    }
 
     // Remove solicitação
     $stmt = $conn->prepare("DELETE FROM solicitacoes_amizade WHERE id = ?");
     $stmt->bind_param("i", $id_solicitacao);
-    $stmt->execute();
-    $stmt->close();
-
-    // Remove a notificação relacionada
-    $stmt = $conn->prepare("DELETE FROM notificacoes WHERE referencia_id = ? AND usuario_id = ?");
-    $stmt->bind_param("ii", $id_solicitacao, $usuario_id);
     $stmt->execute();
     $stmt->close();
 
@@ -63,17 +66,9 @@ if ($resposta === 'aceita') {
     ]);
 
 } elseif ($resposta === 'recusada') {
-    // Remove solicitação (se existir)
-    if ($sol['id']) {
-        $stmt = $conn->prepare("DELETE FROM solicitacoes_amizade WHERE id = ?");
-        $stmt->bind_param("i", $id_solicitacao);
-        $stmt->execute();
-        $stmt->close();
-    }
-
-    // Remove a notificação
-    $stmt = $conn->prepare("DELETE FROM notificacoes WHERE referencia_id = ? AND usuario_id = ?");
-    $stmt->bind_param("ii", $id_solicitacao, $usuario_id);
+    // Apenas remove solicitação
+    $stmt = $conn->prepare("DELETE FROM solicitacoes_amizade WHERE id = ?");
+    $stmt->bind_param("i", $id_solicitacao);
     $stmt->execute();
     $stmt->close();
 
@@ -82,8 +77,7 @@ if ($resposta === 'aceita') {
         'mensagem'=>'Solicitação recusada',
         'notif_id'=>$id_solicitacao
     ]);
+
 } else {
     echo json_encode(['status'=>'erro','mensagem'=>'Resposta inválida']);
 }
-
-?>
