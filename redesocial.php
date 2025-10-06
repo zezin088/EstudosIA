@@ -258,27 +258,6 @@ header a{color:var(--dark); text-decoration:none; font-weight:700;}
 </div>
 
 <script>
-    function atualizarPosts(){
-  fetch('feed_ao_vivo.php')
-    .then(r => r.text())
-    .then(html => {
-      document.querySelector('.feed').innerHTML = html;
-    });
-}
-
-// Atualiza a cada 10 segundos
-setInterval(atualizarPosts, 10000);
-    // Atualiza o last_online a cada 30 segundos
-setInterval(()=>{
-  fetch('atualiza_online.php'); // só acessa, não precisa retornar nada
-}, 30000);
-function abrirModal(usuarioId){
-  fetch('perfil_ajax.php?perfil_usuario_id=' + usuarioId)
-    .then(r=>r.text()).then(html=>{
-      document.getElementById('info-usuario').innerHTML = html;
-      document.getElementById('modal').style.display = 'flex';
-    });
-}
 function fecharModal(){ document.getElementById('modal').style.display = 'none'; }
 
 function curtirPost(postId){
@@ -346,38 +325,6 @@ function responderSolicitacao(id,resposta){
       }
     });
 }
-
-// Atualiza amigos online
-function atualizarAmigosOnline(){
-  fetch('amigos_online.php')
-    .then(r=>r.text()).then(html=>{
-      document.getElementById('amigos-online').innerHTML = html || '<div>Nenhum amigo online</div>';
-    });
-}
-setInterval(atualizarAmigosOnline,10000);
-// Atualiza posts ao vivo a cada 10s
-setInterval(()=>{
-  fetch('feed_ao_vivo.php')
-    .then(r=>r.text())
-    .then(html=>{
-      document.querySelector('.feed').innerHTML = html;
-    });
-}, 10000);
-
-// Atualiza last_online a cada 30s
-setInterval(()=>{ fetch('atualiza_online.php'); }, 30000);
-
-// Atualiza amigos online a cada 10s
-function atualizarAmigosOnline(){
-  fetch('amigos_online.php')
-    .then(r=>r.text())
-    .then(html=>{
-      document.getElementById('amigos-online').innerHTML = html;
-    });
-}
-atualizarAmigosOnline();
-setInterval(atualizarAmigosOnline,10000);
-// helper
 function escapeHtml(text){return text.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 </script>
 </body>
