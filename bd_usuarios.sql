@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 03/10/2025 às 15:48
+-- Tempo de geração: 06/10/2025 às 15:43
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -31,8 +31,16 @@ CREATE TABLE `amizades` (
   `id` int(11) NOT NULL,
   `id_usuario1` int(11) NOT NULL,
   `id_usuario2` int(11) NOT NULL,
-  `status` enum('pendente','aceito') DEFAULT 'pendente'
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `amizades`
+--
+
+INSERT INTO `amizades` (`id`, `id_usuario1`, `id_usuario2`, `data_criacao`) VALUES
+(1, 4, 13, '2025-10-06 11:12:37'),
+(3, 13, 14, '2025-10-06 13:41:15');
 
 -- --------------------------------------------------------
 
@@ -59,8 +67,16 @@ CREATE TABLE `comentarios` (
   `id_post` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `conteudo` text NOT NULL,
-  `data_comentario` timestamp NOT NULL DEFAULT current_timestamp()
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `comentarios`
+--
+
+INSERT INTO `comentarios` (`id`, `id_post`, `id_usuario`, `conteudo`, `data_criacao`) VALUES
+(1, 25, 13, 'oii', '2025-10-06 11:10:26'),
+(2, 25, 4, 'Você está linda minha ebezona da boca inchada', '2025-10-06 11:33:40');
 
 -- --------------------------------------------------------
 
@@ -95,8 +111,16 @@ CREATE TABLE `curtidas` (
   `id` int(11) NOT NULL,
   `id_post` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
-  `data_curtida` datetime DEFAULT current_timestamp()
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `curtidas`
+--
+
+INSERT INTO `curtidas` (`id`, `id_post`, `id_usuario`, `data_criacao`) VALUES
+(1, 25, 13, '2025-10-06 11:10:23'),
+(2, 25, 4, '2025-10-06 11:33:09');
 
 -- --------------------------------------------------------
 
@@ -159,8 +183,20 @@ CREATE TABLE `notificacoes` (
   `usuario_id` int(11) NOT NULL,
   `mensagem` varchar(255) NOT NULL,
   `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
-  `lida` tinyint(1) DEFAULT 0
+  `lida` tinyint(1) DEFAULT 0,
+  `tipo` varchar(50) DEFAULT 'geral',
+  `referencia_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `notificacoes`
+--
+
+INSERT INTO `notificacoes` (`id`, `usuario_id`, `mensagem`, `data_criacao`, `lida`, `tipo`, `referencia_id`) VALUES
+(1, 4, 'Marques enviou uma solicitação de amizade', '2025-10-06 11:12:17', 1, 'amizade', 1),
+(2, 13, 'Bia Soares comentou no seu post', '2025-10-06 11:33:41', 0, 'comentario', 25),
+(3, 14, 'Bia Soares enviou uma solicitação de amizade', '2025-10-06 11:34:48', 0, 'amizade', 2),
+(4, 4, 'enviou uma solicitação de amizade', '2025-10-06 12:31:32', 0, 'amizade', 3);
 
 -- --------------------------------------------------------
 
@@ -214,7 +250,23 @@ INSERT INTO `posts` (`id`, `usuario_id`, `conteudo`, `imagem`, `data_criacao`, `
 (17, 13, 'asdsa', '', '2025-10-03 13:39:41', '2025-10-03 10:39:41'),
 (18, 13, 'd', 'imagens/posts/68dfd224aaf58.jpg', '2025-10-03 13:39:48', '2025-10-03 10:39:48'),
 (19, 13, 'oiii', '', '2025-10-03 13:45:47', '2025-10-03 10:45:47'),
-(20, 13, 'oi', 'imagens/posts/68dfd38fd3868.jpg', '2025-10-03 13:45:51', '2025-10-03 10:45:51');
+(20, 13, 'oi', 'imagens/posts/68dfd38fd3868.jpg', '2025-10-03 13:45:51', '2025-10-03 10:45:51'),
+(21, 13, 'qafs, que ódio', '', '2025-10-06 10:44:35', '2025-10-06 07:44:35'),
+(24, 13, 'dsasda', '', '2025-10-06 11:03:46', '2025-10-06 08:03:46'),
+(25, 13, 'y', 'imagens/posts/68e3a39c30c11.jfif', '2025-10-06 11:10:20', '2025-10-06 08:10:20');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `solicitacoes_amizade`
+--
+
+CREATE TABLE `solicitacoes_amizade` (
+  `id` int(11) NOT NULL,
+  `id_remetente` int(11) NOT NULL,
+  `id_destinatario` int(11) NOT NULL,
+  `data_criacao` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -259,19 +311,20 @@ CREATE TABLE `usuarios` (
   `bio_foto` varchar(255) DEFAULT NULL,
   `banner` varchar(255) DEFAULT NULL,
   `aniversario` date DEFAULT NULL,
-  `avatar` varchar(255) DEFAULT 'default.png'
+  `avatar` varchar(255) DEFAULT 'default.png',
+  `online` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `arvore_escolhida`, `ultimo_login`, `token`, `expira_token`, `codigo_verificacao`, `verificado`, `username`, `apelido`, `data_nascimento`, `escola`, `foto_pessoal`, `preferencias`, `tags`, `favoritos`, `data_criacao`, `bio_foto`, `banner`, `aniversario`, `avatar`) VALUES
-(4, 'Bia Soares', 'beatriz@gmail.com', '$2y$10$27rg7J1YQ9hSdb59AhTUle94ITQWOuvS6ILvpl7d0MODLB/ExkXbu', 'Study vlogs ', 'imagens/usuarios/68da98eb13394.png', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'meu namorado lindo, peixes, capivara,sobrenatural', '2025-09-24 11:33:45', 'imagens/bio/68da98eb13749.jfif', NULL, '2008-03-17', 'default.png'),
-(13, 'Marques', 'ana@gmail.com', '$2y$10$qK9NpLu6OL0OxxbpLGug9e28WLqGG5QFGpgvpxJBXoy4Gfoa51FJS', '', 'imagens/usuarios/68d8225203d96.jpg', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, '', NULL, NULL, NULL, NULL, NULL, 'Culinária,Programação', '', '2025-09-24 11:33:45', NULL, NULL, NULL, 'default.png'),
-(14, 'wenderson', 'wenderson.souza@gmail.com', '$2y$10$JTjk3KlPbsViCn9Yd9gjCOoDmmLkOp/TEA3pK2q4XkcTusKZxEzN.', '', 'imagens/usuarios/68d2ab46456c1.jpg', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-24 11:33:45', NULL, NULL, NULL, 'default.png'),
-(89, 'Usuário Teste 1', 'teste1@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 'default.png'),
-(90, 'Usuário Teste 2', 'teste2@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 'default.png');
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `arvore_escolhida`, `ultimo_login`, `token`, `expira_token`, `codigo_verificacao`, `verificado`, `username`, `apelido`, `data_nascimento`, `escola`, `foto_pessoal`, `preferencias`, `tags`, `favoritos`, `data_criacao`, `bio_foto`, `banner`, `aniversario`, `avatar`, `online`) VALUES
+(4, 'Bia Soares', 'beatriz@gmail.com', '$2y$10$27rg7J1YQ9hSdb59AhTUle94ITQWOuvS6ILvpl7d0MODLB/ExkXbu', 'Study vlogs ', 'imagens/usuarios/68da98eb13394.png', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'meu namorado lindo, peixes, capivara,sobrenatural', '2025-09-24 11:33:45', 'imagens/bio/68da98eb13749.jfif', NULL, '2008-03-17', 'default.png', 0),
+(13, 'Marques', 'ana@gmail.com', '$2y$10$qK9NpLu6OL0OxxbpLGug9e28WLqGG5QFGpgvpxJBXoy4Gfoa51FJS', 'AnaBanana', 'imagens/usuarios/68d8225203d96.jpg', NULL, '2025-08-18 09:19:03', NULL, NULL, NULL, 0, '', NULL, NULL, NULL, NULL, NULL, 'Culinária,Programação', 'Gatos, Stardew Valley, Café, Uva Verde', '2025-09-24 11:33:45', 'imagens/bio/68e3a32fb59ab.jfif', 'imagens/usuarios/68e3a32fb5b51.jfif', '2007-10-10', 'default.png', 0),
+(14, 'wenderson', 'wenderson.souza@gmail.com', '$2y$10$JTjk3KlPbsViCn9Yd9gjCOoDmmLkOp/TEA3pK2q4XkcTusKZxEzN.', '', 'imagens/usuarios/68d2ab46456c1.jpg', NULL, '2025-10-06 08:46:56', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-24 11:33:45', NULL, NULL, NULL, 'default.png', 0),
+(89, 'Usuário Teste 1', 'teste1@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 'default.png', 0),
+(90, 'Usuário Teste 2', 'teste2@email.com', '123456', NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-27 21:37:23', NULL, NULL, NULL, 'default.png', 0);
 
 --
 -- Índices para tabelas despejadas
@@ -282,8 +335,7 @@ INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `biografia`, `foto`, `ar
 --
 ALTER TABLE `amizades`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_usuario1` (`id_usuario1`),
-  ADD KEY `fk_usuario2` (`id_usuario2`);
+  ADD UNIQUE KEY `uniq_pair` (`id_usuario1`,`id_usuario2`);
 
 --
 -- Índices de tabela `arquivos`
@@ -295,9 +347,7 @@ ALTER TABLE `arquivos`
 -- Índices de tabela `comentarios`
 --
 ALTER TABLE `comentarios`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_post` (`id_post`),
-  ADD KEY `id_usuario` (`id_usuario`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Índices de tabela `conteudos`
@@ -310,8 +360,7 @@ ALTER TABLE `conteudos`
 --
 ALTER TABLE `curtidas`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `id_post` (`id_post`),
-  ADD KEY `id_usuario` (`id_usuario`);
+  ADD UNIQUE KEY `uniq_curtida` (`id_post`,`id_usuario`);
 
 --
 -- Índices de tabela `eventos`
@@ -349,6 +398,12 @@ ALTER TABLE `posts`
   ADD KEY `usuario_id` (`usuario_id`);
 
 --
+-- Índices de tabela `solicitacoes_amizade`
+--
+ALTER TABLE `solicitacoes_amizade`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Índices de tabela `sugestoes_amizade`
 --
 ALTER TABLE `sugestoes_amizade`
@@ -372,7 +427,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `amizades`
 --
 ALTER TABLE `amizades`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `arquivos`
@@ -384,7 +439,7 @@ ALTER TABLE `arquivos`
 -- AUTO_INCREMENT de tabela `comentarios`
 --
 ALTER TABLE `comentarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `conteudos`
@@ -396,7 +451,7 @@ ALTER TABLE `conteudos`
 -- AUTO_INCREMENT de tabela `curtidas`
 --
 ALTER TABLE `curtidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `eventos`
@@ -414,7 +469,7 @@ ALTER TABLE `mensagens`
 -- AUTO_INCREMENT de tabela `notificacoes`
 --
 ALTER TABLE `notificacoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `planos`
@@ -426,7 +481,13 @@ ALTER TABLE `planos`
 -- AUTO_INCREMENT de tabela `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
+-- AUTO_INCREMENT de tabela `solicitacoes_amizade`
+--
+ALTER TABLE `solicitacoes_amizade`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `sugestoes_amizade`
@@ -437,13 +498,6 @@ ALTER TABLE `sugestoes_amizade`
 --
 -- Restrições para tabelas despejadas
 --
-
---
--- Restrições para tabelas `amizades`
---
-ALTER TABLE `amizades`
-  ADD CONSTRAINT `fk_usuario1` FOREIGN KEY (`id_usuario1`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_usuario2` FOREIGN KEY (`id_usuario2`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `notificacoes`
