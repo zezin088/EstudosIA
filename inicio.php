@@ -1,4 +1,13 @@
 <?php
+$usuario_id = intval($_SESSION['usuario_id'] ?? 0);
+if($usuario_id){
+    $stmt = $conn->prepare("UPDATE usuarios SET last_online = NOW() WHERE id = ?");
+    $stmt->bind_param("i", $usuario_id);
+    $stmt->execute();
+    $stmt->close();
+}
+?>
+<?php
 session_start();
 include 'conexao.php';
 
