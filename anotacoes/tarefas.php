@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tarefas</title>
+  <style>
+    /* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
+            @font-face {
+      font-family: 'SimpleHandmade';
+      src: url(/fonts/SimpleHandmade.ttf);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #3f7c72ff;
+      font-family:'Roboto',sans-serif;
+      background-color: #3f7c72ff;
+      text-align: center;
+      padding: 0;
+    }
+
+    /* Header */
+    header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
+    h1 {
+      margin-top: 95px;
+      font-family: 'SimpleHandmade';
+      font-size: 50px;
+      color: #ffffff;
+    }
+
+    .lista-tarefas {
+      background-color: #bdebe3ff;
+      width: 90%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 30px;
+      border: 1px solid #1e3834ff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .tarefa {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .tarefa input[type="checkbox"] {
+      margin-right: 15px;
+      transform: scale(1.4);
+      accent-color: #2a5c55;
+    }
+
+    .tarefa input[type="text"] {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #2a5c55;
+      background-color: #f1f4f9;
+    }
+
+    .btn {
+      cursor: pointer;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: none;
+      margin: 10px 5px;
+      font-weight: bold;
+      color: white;
+      background-color: #2a5c55;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #1e3834ff;
+    }
+
+    .btn-excluir {
+      background-color: #bd4a69;
+      margin-left: 10px;
+      font-size: 14px;
+      padding: 6px 12px;
+    }
+
+    .btn-excluir:hover {
+      background-color: #e26b88;
+    }
+
+    .btn-adicionar-tarefa {
+      background-color: #2a5c55;
+      margin-left: 10px;
+      font-size: 14px;
+      padding: 6px 12px;
+    }
+
+    .btn-adicionar-tarefa:hover {
+      background-color: #2a5c55;
+    }
+
+    .btn-salvar {
+      display: block;
+      margin: 40px auto 0;
+      padding: 12px 30px;
+      font-size: 18px;
+      background-color: #2a5c55;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      transition: background 0.3s;
+    }
+
+    .btn-salvar:hover {
+      background-color: #1e3834ff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+    <nav>
+      <ul>
+          <li><a href="/anotacoes/index.html">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
+  <h1>Tarefas do Dia</h1>
+
+  <div class="lista-tarefas" id="lista-tarefas">
+    <!-- Tarefas iniciais -->
+    <div class="tarefa">
+      <input type="checkbox" />
+      <td><textarea placeholder="O que vou fazer?"></textarea></td>
+      <button class="btn-excluir">❌</button>
+      <button class="btn-adicionar-tarefa">➕</button>
+    </div>
+    <div class="tarefa">
+      <input type="checkbox" />
+      <td><textarea placeholder="O que vou fazer?"></textarea></td>
+      <button class="btn-excluir">❌</button>
+      <button class="btn-adicionar-tarefa">➕</button>
+    </div>
+    <div class="tarefa">
+      <input type="checkbox" />
+      <input type="text" placeholder="Ex: Organizar materiais" />
+      <button class="btn-excluir">❌</button>
+      <button class="btn-adicionar-tarefa">➕</button>
+    </div>
+  </div>
+
+  <button class="btn-salvar" id="btn-salvar">💾 Salvar</button>
+
+  <script>
+    const lista = document.getElementById('lista-tarefas');
+    const btnSalvar = document.getElementById('btn-salvar');
+
+    function criarTarefa(text = '', checked = false) {
+      const tarefaDiv = document.createElement('div');
+      tarefaDiv.classList.add('tarefa');
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = checked;
+
+      const inputTexto = document.createElement('input');
+      inputTexto.type = 'text';
+      inputTexto.placeholder = 'Nova tarefa...';
+      inputTexto.value = text;
+
+      const btnExcluir = document.createElement('button');
+      btnExcluir.textContent = '❌';
+      btnExcluir.classList.add('btn-excluir');
+      btnExcluir.onclick = () => tarefaDiv.remove();
+
+      const btnAdicionarTarefa = document.createElement('button');
+      btnAdicionarTarefa.textContent = '➕';
+      btnAdicionarTarefa.classList.add('btn-adicionar-tarefa');
+      btnAdicionarTarefa.onclick = () => {
+        const novaTarefa = criarTarefa();
+        tarefaDiv.insertAdjacentElement('afterend', novaTarefa);
+        novaTarefa.querySelector('input[type="text"]').focus();
+      };
+
+      tarefaDiv.appendChild(checkbox);
+      tarefaDiv.appendChild(inputTexto);
+      tarefaDiv.appendChild(btnExcluir);
+      tarefaDiv.appendChild(btnAdicionarTarefa);
+
+      return tarefaDiv;
+    }
+
+    // Carregar tarefas salvas ao iniciar a página
+    window.addEventListener('load', () => {
+      const tarefasSalvas = JSON.parse(localStorage.getItem('minhasTarefas'));
+      lista.innerHTML = '';
+
+      if (tarefasSalvas && tarefasSalvas.length) {
+        tarefasSalvas.forEach(tarefa => {
+          lista.appendChild(criarTarefa(tarefa.texto, tarefa.marcada));
+        });
+      } else {
+        lista.appendChild(criarTarefa('Estudar matemática'));
+        lista.appendChild(criarTarefa('Fazer trabalho de história'));
+        lista.appendChild(criarTarefa('Organizar materiais'));
+      }
+    });
+
+    // Salvar tarefas no localStorage
+    btnSalvar.addEventListener('click', () => {
+      const tarefas = [];
+      document.querySelectorAll('.lista-tarefas .tarefa').forEach(tarefaDiv => {
+        const texto = tarefaDiv.querySelector('input[type="text"]').value;
+        const marcada = tarefaDiv.querySelector('input[type="checkbox"]').checked;
+        tarefas.push({ texto, marcada });
+      });
+      localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
+      alert('Tarefas salvas com sucesso! 💾');
+    });
+  </script>
+
+</body>
+</html>

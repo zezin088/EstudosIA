@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Finanças</title>
+  <style>
+    /* Barra toda */
+::-webkit-scrollbar {
+  width: 12px; /* largura da barra vertical */
+  height: 12px; /* altura da barra horizontal */
+}
+
+/* Fundo da barra */
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* cor do fundo da barra */
+  border-radius: 10px;
+}
+
+/* Parte que se move (thumb) */
+::-webkit-scrollbar-thumb {
+  background: #3f7c72; /* cor do "polegar" */
+  border-radius: 10px;
+  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
+}
+
+/* Thumb ao passar o mouse */
+::-webkit-scrollbar-thumb:hover {
+  background: #2a5c55;
+}
+        @font-face {
+      font-family: 'SimpleHandmade';
+      src: url(/fonts/SimpleHandmade.ttf);
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #3f7c72ff; /* Fundo geral */
+      font-family:'Roboto',sans-serif;
+      text-align: center;
+      color: #ffffff; /* Títulos e textos principais */
+      padding: 40px;
+    }
+        /* Header */
+header {
+  position: fixed; top:0; left:0; width:100%; height:70px;
+  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
+  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
+}
+    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
+
+
+    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
+nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+
+    h1 {
+      font-family: 'SimpleHandmade';
+      font-size: 50px;
+    }
+    h3{
+      font-family: 'SimpleHandmade';
+      font-size: 30px;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+      background-color: #bdebe3ff; /* Fundo dos blocos */
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      font-family: 'SimpleHandmade';
+      border: 1px solid #1e3834ff;
+      padding: 12px;
+      font-size: 25px;
+    }
+
+    th {
+      background-color: #1e3834ff; /* Fundo do topo/títulos */
+    }
+
+    textarea {
+      width: 90%;
+      height: 80px;
+      border-radius: 10px;
+      border: 2px solid #2a5c55;
+      padding: 10px;
+      background-color: #bdebe3ff;
+    }
+
+    .btn {
+      font-family: 'SimpleHandmade';
+      background-color: #2a5c55; /* Botões principais */
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      margin: 10px 5px;
+      border: none;
+      cursor: pointer;
+      font-size: 22px;
+    }
+
+    .btn:hover {
+      background-color: #1e3834ff; /* Hover escuro para destaque */
+    }
+
+    .btn-excluir {
+      background-color: #c0392b; /* Botão de exclusão */
+    }
+
+    .btn-excluir:hover {
+      background-color: #a93226; /* Tom mais escuro no hover */
+    }
+
+input[type="text"],input[type="date"], select,
+    input[type="number"] {
+      width: 90%;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #2a5c55;
+      background-color: #f1f6fb;
+      color: #000000;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
+    <nav>
+      <ul>
+          <li><a href="/anotacoes/index.html">Voltar</a></li>
+      </ul>
+    </nav>
+  </header>
+  <h1>Finanças</h1>
+
+  <table id="tabela-financas">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Valor (R$)</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Ex: Compra de livro"></td>
+        <td><input type="number" step="0.01"></td>
+        <td>
+          <select >
+            <option>Entrada</option>
+            <option>Saída</option>
+          </select>
+        </td>
+        <td><button class="btn btn-excluir" onclick="removerLinha(this)">⌫</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button class="btn" onclick="adicionarLinha()">➕ Adicionar</button>
+  <button class="btn" onclick="salvarTudo()">💾 Salvar</button>
+
+  <h3>Notas sobre gastos</h3>
+  <textarea placeholder="Ex: Gastos do mês, metas de economia..."></textarea>
+
+  <br><br>
+  <script>
+    function adicionarLinha() {
+      const tabela = document.getElementById('tabela-financas').getElementsByTagName('tbody')[0];
+      const novaLinha = tabela.insertRow();
+
+      novaLinha.innerHTML = `
+        <td><input type="date"></td>
+        <td><input type="text" placeholder="Ex: Compra de livro"></td>
+        <td><input type="number" step="0.01"></td>
+        <td>
+          <select>
+            <option>Entrada</option>
+            <option>Saída</option>
+          </select>
+        </td>
+        <td><button class="btn btn-excluir" onclick="removerLinha(this)">⌫</button></td>
+      `;
+    }
+
+    function removerLinha(botao) {
+      const linha = botao.parentNode.parentNode;
+      linha.remove();
+    }
+
+    function salvarTudo() {
+      const linhas = document.querySelectorAll('#tabela-financas tbody tr');
+      const dados = [];
+
+      linhas.forEach(linha => {
+        const inputs = linha.querySelectorAll('input, select');
+        dados.push({
+          data: inputs[0].value,
+          descricao: inputs[1].value,
+          valor: parseFloat(inputs[2].value),
+          tipo: inputs[3].value
+        });
+      });
+
+      console.log("Dados salvos:", dados);
+      alert("Dados salvos no console!");
+    }
+  </script>
+
+</body>
+</html>
