@@ -270,7 +270,29 @@ function curtirPost(postId){
       } else alert('Erro ao curtir');
     });
 }
+function abrirPerfil(usuarioId) {
+  fetch('perfil_ajax.php?id=' + usuarioId)
+    .then(res => res.text())
+    .then(html => {
+      const modal = document.createElement('div');
+      modal.className = 'modal-perfil';
+      modal.innerHTML = html;
+      document.body.appendChild(modal);
 
+      modal.addEventListener('click', e => {
+        if (e.target.classList.contains('modal-perfil')) modal.remove();
+      });
+    })
+    .catch(err => console.error('Erro ao carregar perfil:', err));
+}
+
+// Listener para quando clicarem em um avatar de comentário
+document.addEventListener('click', e => {
+  const avatar = e.target.closest('.avatar-comentario');
+  if (avatar && avatar.dataset.usuarioId) {
+    abrirPerfil(avatar.dataset.usuarioId);
+  }
+});
 function toggleComentarioBox(postId){
   const box = document.getElementById('comentario-box-'+postId);
   box.style.display = box.style.display==='none'?'flex':'none';
@@ -326,6 +348,26 @@ function responderSolicitacao(id,resposta){
     });
 }
 function escapeHtml(text){return text.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+</script>
+<script>
+function abrirModal(usuarioId) {
+  const modal = document.getElementById('modal');
+  const info = document.getElementById('info-usuario');
+
+  modal.style.display = 'flex';
+  info.innerHTML = 'Carregando...';
+
+  // Faz a requisição AJAX para pegar o perfil
+  fetch('perfil_ajax.php?perfil_usuario_id=' + usuarioId)
+    .then(response => response.text())
+    .then(html => {
+      info.innerHTML = html;
+    })
+    .catch(err => {
+      info.innerHTML = '<p style="color:red;">Erro ao carregar perfil.</p>';
+      console.error(err);
+    });
+}
 </script>
 </body>
 </html>
