@@ -243,54 +243,109 @@ body{font-family:Arial,sans-serif;background:#f4fdfb;margin:0;padding:20px;text-
 
 /* Painel de melhores tempos do usuário */
 .painel-tempos {
-    position: fixed;        /* fixo na tela */
-    right: 120px;            /* distância da borda esquerda da tela */
-    top: 25%;               /* centraliza verticalmente com foco no meio do lado esquerdo */
-    transform: translateY(-50%);
-    
-    width: 260px;
-    max-height: 80vh;
-    overflow: auto;
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-    border: 1px solid #e6f3ef;
-    text-align: left;
-    z-index: 10;
+  position: fixed;
+  right: 120px;
+  top: 25%;
+  transform: translateY(-50%);
+  width: 260px;
+  max-height: 80vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e6f3ef;
+  text-align: left;
+  z-index: 10;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Título do painel de tempos */
+/* Título do painel */
 .painel-tempos h4 {
-    margin: 6px 0;
-    font-size: 1rem;
-    color: #3f7c72;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 4px;
+  margin: 6px 0 10px 0;
+  font-size: 1rem;
+  color: #3f7c72;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 6px;
 }
 
-/* Lista de tempos */
-.lista-tempos {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+/* Tabela de tempos */
+#tabelaTempos {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
 }
 
-/* Cada tempo na lista */
-.tempo-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin: 6px 0;
-    font-size: 0.95rem;
-    color: #555;
-    padding: 4px 6px;
-    border-bottom: 1px solid #eee;
+#tabelaTempos th,
+#tabelaTempos td {
+  padding: 6px 4px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
 }
 
-.tempo-item:last-child {
-    border-bottom: none;
+#tabelaTempos th {
+  color: #3f7c72;
+  font-weight: 600;
+  background: #f4fdfa;
 }
+
+#tabelaTempos tr:hover {
+  background: #f8fffc;
+}
+
+/* Botão Excluir individual */
+.excluirBtn {
+  background: #3f7c72;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.excluirBtn:hover {
+  background: #2a5c55;
+  transform: scale(1.05);
+}
+
+/* Botão Excluir Todos */
+#excluirTodosBtn {
+  margin-top: 10px;
+  width: 100%;
+  background: #2a5c55;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#excluirTodosBtn:hover {
+  background: #2a5c55;
+  transform: scale(1.03);
+}
+
+#verRankingBtn {
+  background-color: #3f7c72;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  width: 100%;
+  margin-top: 8px;
+}
+
+#verRankingBtn:hover {
+  background-color: #2d5e56;
+}
+
 
 </style>
 </head>
@@ -351,89 +406,135 @@ body{font-family:Arial,sans-serif;background:#f4fdfb;margin:0;padding:20px;text-
     </thead>
     <tbody>
       <?php
-      // Buscar os tempos do usuário
-      $res = $mysqli->query("SELECT id, tempo, criado_em FROM tempos WHERE id_usuario=$usuario_id ORDER BY criado_em DESC LIMIT 10");
+      $res = $mysqli->query("SELECT id, tempo, DATE_FORMAT(criado_em, '%d/%m/%y') AS data_simplificada 
+                              FROM tempos 
+                              WHERE id_usuario=$usuario_id 
+                              ORDER BY criado_em DESC LIMIT 10");
       while($row = $res->fetch_assoc()):
       ?>
-        <tr data-id="<?= $row['id'] ?>">
-          <td><?= htmlspecialchars($row['tempo']) ?></td>
-          <td><?= $row['criado_em'] ?></td>
-          <td><button class="excluirBtn">Excluir</button></td>
-        </tr>
+      <tr data-id="<?= $row['id'] ?>">
+        <td><?= htmlspecialchars($row['tempo']) ?></td>
+        <td><?= $row['data_simplificada'] ?></td>
+        <td><button class="excluirBtn">Excluir</button></td>
+      </tr>
       <?php endwhile; ?>
     </tbody>
   </table>
   <button id="excluirTodosBtn">Excluir Todos</button>
+  <button onclick="location.href= 'Raking.php'" id="verRankingBtn">Modo Ranking</button>
 </div>
 
+
 <script>
-let seg=0, timer=null;
-const tempo=document.getElementById('tempo');
+let seg = 0, timer = null;
+const tempo = document.getElementById('tempo');
 
 // Formatar tempo HH:MM:SS
 function fmt(s) {
-    let h = Math.floor(s / 3600);
-    let m = Math.floor((s % 3600) / 60);
-    let ss = s % 60;
-    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  let h = Math.floor(s / 3600);
+  let m = Math.floor((s % 3600) / 60);
+  let ss = s % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
 }
 
-// Incrementa tempo
-function tick(){ seg++; tempo.textContent=fmt(seg); }
-
-// Start, Stop e Reset
-document.getElementById('startBtn').onclick = ()=>{ if(!timer) timer=setInterval(tick, 500); }
-document.getElementById('stopBtn').onclick = ()=>{ clearInterval(timer); timer=null; }
-document.getElementById('resetBtn').onclick = ()=>{ clearInterval(timer); timer=null; seg=0; tempo.textContent=fmt(seg); }
-
-// Botão Salvar Tempo
-document.getElementById('salvarBtn').onclick = async ()=>{
-    const fd=new FormData();
-    fd.append('action','salvar_tempo');
-    fd.append('tempo', tempo.textContent);
-    const r=await fetch(location.href,{method:'POST', body:fd});
-    const d=await r.json();
-    if(d.ok) alert("Tempo salvo com sucesso!");
-    else alert("Erro ao salvar tempo");
+// Atualização do cronômetro
+function tick() {
+  seg++;
+  tempo.textContent = fmt(seg);
 }
 
-// Excluir tempo individual
-document.querySelectorAll('.excluirBtn').forEach(btn=>{
-  btn.onclick = async ()=>{
-    const tr = btn.closest('tr');
-    const id = tr.dataset.id;
-    const fd = new FormData();
-    fd.append('action','excluir_tempo');
-    fd.append('id',id);
-    const r = await fetch(location.href,{method:'POST',body:fd});
-    const d = await r.json();
-    if(d.ok) tr.remove();
-  }
-});
+// Botões principais
+document.getElementById('startBtn').onclick = () => {
+  if (!timer) timer = setInterval(tick, 1000); // velocidade 2x mais rápida
+};
+document.getElementById('stopBtn').onclick = () => {
+  clearInterval(timer);
+  timer = null;
+};
+document.getElementById('resetBtn').onclick = () => {
+  clearInterval(timer);
+  timer = null;
+  seg = 0;
+  tempo.textContent = fmt(seg);
+};
 
-// Excluir todos os tempos
-document.getElementById('excluirTodosBtn').onclick = async ()=>{
-  if(!confirm("Deseja realmente excluir todos os tempos?")) return;
+// ---- SALVAR TEMPO ----
+document.getElementById('salvarBtn').onclick = async () => {
   const fd = new FormData();
-  fd.append('action','excluir_todos');
-  const r = await fetch(location.href,{method:'POST',body:fd});
+  fd.append('action', 'salvar_tempo');
+  fd.append('tempo', tempo.textContent);
+
+  const r = await fetch(location.href, { method: 'POST', body: fd });
   const d = await r.json();
-  if(d.ok) document.querySelectorAll('#tabelaTempos tbody tr').forEach(tr=>tr.remove());
+
+  if (d.ok) {
+    const tabela = document.querySelector('#tabelaTempos tbody');
+    const agora = new Date();
+    const dia = String(agora.getDate()).padStart(2, '0');
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const ano = String(agora.getFullYear()).slice(2);
+
+    const novaLinha = document.createElement('tr');
+    novaLinha.dataset.id = d.id;
+    novaLinha.innerHTML = `
+      <td>${tempo.textContent}</td>
+      <td>${dia}/${mes}/${ano}</td>
+      <td><button class="excluirBtn">Excluir</button></td>
+    `;
+    tabela.prepend(novaLinha);
+
+    // Ativa botão de exclusão do novo tempo
+    novaLinha.querySelector('.excluirBtn').onclick = () => excluirTempo(d.id, novaLinha);
+  }
+};
+
+// ---- EXCLUIR TEMPO ----
+async function excluirTempo(id, linha) {
+  const fd = new FormData();
+  fd.append('action', 'excluir_tempo');
+  fd.append('id', id);
+  const r = await fetch(location.href, { method: 'POST', body: fd });
+  const d = await r.json();
+  if (d.ok && linha) linha.remove();
 }
 
-// Aceitar amizade
-document.querySelectorAll('.aceitarBtn').forEach(btn=>{
-    btn.onclick=async()=>{
-        const id=btn.dataset.id;
-        btn.disabled=true; btn.textContent='...';
-        const fd=new FormData(); fd.append('action','aceitar'); fd.append('id',id);
-        const r=await fetch(location.href,{method:'POST',body:fd}); const d=await r.json();
-        if(d.ok){
-            const li=btn.closest('.usuario'); btn.remove();
-            document.getElementById('lista-amigos').appendChild(li);
-        }else{alert(d.msg); btn.disabled=false; btn.textContent='Aceitar';}
+// ---- EXCLUIR TODOS OS TEMPOS ----
+document.getElementById('excluirTodosBtn').onclick = async () => {
+  const fd = new FormData();
+  fd.append('action', 'excluir_todos');
+  const r = await fetch(location.href, { method: 'POST', body: fd });
+  const d = await r.json();
+  if (d.ok) document.querySelectorAll('#tabelaTempos tbody tr').forEach(tr => tr.remove());
+};
+
+// ---- ACEITAR AMIZADE ----
+document.querySelectorAll('.aceitarBtn').forEach(btn => {
+  btn.onclick = async () => {
+    const id = btn.dataset.id;
+    btn.disabled = true;
+    btn.textContent = '...';
+    const fd = new FormData();
+    fd.append('action', 'aceitar');
+    fd.append('id', id);
+    const r = await fetch(location.href, { method: 'POST', body: fd });
+    const d = await r.json();
+    if (d.ok) {
+      const li = btn.closest('.usuario');
+      btn.remove();
+      document.getElementById('lista-amigos').appendChild(li);
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Aceitar';
     }
+    // Botão para ir ao ranking
+document.getElementById('verRankingBtn').onclick = () => {
+  window.location.href = '/Cronometro_Raking/Raking.php'; // 🔗 redireciona para a página desejada
+};
+
+
+  };
 });
+
 </script>
 </body>
 </html>
