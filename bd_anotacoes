@@ -1,0 +1,5 @@
+CREATE TABLE anotacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    conteudo LONGTEXT,
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

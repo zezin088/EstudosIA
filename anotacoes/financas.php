@@ -1,71 +1,175 @@
-<!DOCTYPE html>
+<?php
+// ===================== CONEXÃO COM O BANCO =====================
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "bd_usuarios";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+  die("Erro na conexão com o banco: " . $conn->connect_error);
+}
+
+// ===================== SALVAR DADOS =====================
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Apagar registros antigos antes de salvar novos
+  $conn->query("DELETE FROM financas");
+
+  // Recebe os dados das tabelas (arrays)
+  $datas = $_POST["data"] ?? [];
+  $descricoes = $_POST["descricao"] ?? [];
+  $valores = $_POST["valor"] ?? [];
+  $tipos = $_POST["tipo"] ?? [];
+  $notas = $_POST["notas"] ?? "";
+
+  // Insere cada linha
+  for ($i = 0; $i < count($datas); $i++) {
+    $data = $datas[$i];
+    $descricao = $descricoes[$i];
+    $valor = $valores[$i];
+    $tipo = $tipos[$i];
+
+    if (!empty($data) || !empty($descricao) || !empty($valor)) {
+      $stmt = $conn->prepare("INSERT INTO financas (data, descricao, valor, tipo) VALUES (?, ?, ?, ?)");
+      $stmt->bind_param("ssds", $data, $descricao, $valor, $tipo);
+      $stmt->execute();
+      $stmt->close();
+    }
+  }
+
+  // Salvar nota geral
+  if (!empty($notas)) {
+    $stmt = $conn->prepare("INSERT INTO financas (data, descricao, valor, tipo, notas) VALUES (NULL, NULL, NULL, NULL, ?)");
+    $stmt->bind_param("s", $notas);
+    $stmt->execute();
+    $stmt->close();
+  }
+
+  echo "<script>alert('💾 Finanças salvas com sucesso!');</script>";
+}
+
+// ===================== CARREGAR DADOS =====================
+$financas = [];
+$result = $conn->query("SELECT * FROM financas WHERE data IS NOT NULL");
+while ($row = $result->fetch_assoc()) {
+  $financas[] = $row;
+}
+
+$notaSalva = "";
+$resNota = $conn->query("SELECT notas FROM financas WHERE notas IS NOT NULL LIMIT 1");
+if ($resNota && $resNota->num_rows > 0) {
+  $notaSalva = $resNota->fetch_assoc()["notas"];
+}
+
+$conn->close();
+?><!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Finanças</title>
   <style>
-    /* Barra toda */
-::-webkit-scrollbar {
-  width: 12px; /* largura da barra vertical */
-  height: 12px; /* altura da barra horizontal */
-}
+    /* Barra de rolagem personalizada */
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
 
-/* Fundo da barra */
-::-webkit-scrollbar-track {
-  background: #f0f0f0; /* cor do fundo da barra */
-  border-radius: 10px;
-}
+    ::-webkit-scrollbar-track {
+      background: #f0f0f0;
+      border-radius: 10px;
+    }
 
-/* Parte que se move (thumb) */
-::-webkit-scrollbar-thumb {
-  background: #3f7c72; /* cor do "polegar" */
-  border-radius: 10px;
-  border: 3px solid #f0f0f0; /* dá efeito de espaçamento */
-}
+    ::-webkit-scrollbar-thumb {
+      background: #3f7c72;
+      border-radius: 10px;
+      border: 3px solid #f0f0f0;
+    }
 
-/* Thumb ao passar o mouse */
-::-webkit-scrollbar-thumb:hover {
-  background: #2a5c55;
-}
-        @font-face {
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2a5c55;
+    }
+
+    /* Fonte personalizada */
+    @font-face {
       font-family: 'SimpleHandmade';
       src: url(/fonts/SimpleHandmade.ttf);
     }
+
     * {
       box-sizing: border-box;
     }
+
     body {
-      background-color: #3f7c72ff; /* Fundo geral */
-      font-family:'Roboto',sans-serif;
+      background-color: #3f7c72ff;
+      font-family: 'Roboto', sans-serif;
       text-align: center;
-      color: #ffffff; /* Títulos e textos principais */
+      color: #ffffff;
       padding: 40px;
+      margin-top: 100px; /* espaço para o header fixo */
     }
-        /* Header */
-header {
-  position: fixed; top:0; left:0; width:100%; height:70px;
-  background:#ffffffcc; display:flex; justify-content:space-between; align-items:center;
-  padding:0 2rem; box-shadow:0 2px 5px rgba(0,0,0,0.1); z-index:1000;
-}
-    header .logo img{height:450px;width:auto;display:block; margin-left: -85px;}
 
+    /* Header fixo */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      background: #ffffffcc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
 
-    nav ul{list-style:none; display:flex; align-items:center; gap:20px; margin:0;}
-nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius:8px; transition:.3s;}
+    header .logo img {
+      height: 450px;
+      width: auto;
+      display: block;
+      margin-left: -85px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: black;
+      padding: 5px 10px;
+      border-radius: 8px;
+      transition: .3s;
+      font-size: 18px;
+    }
+
+    nav ul li a:hover {
+      background-color: #bdebe3;
+    }
 
     h1 {
       font-family: 'SimpleHandmade';
       font-size: 50px;
+      margin-top: 20px;
     }
-    h3{
+
+    h3 {
       font-family: 'SimpleHandmade';
       font-size: 30px;
     }
+
+    /* Tabela */
     table {
       margin: 20px auto;
       border-collapse: collapse;
       width: 90%;
-      background-color: #bdebe3ff; /* Fundo dos blocos */
+      background-color: #bdebe3ff;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
@@ -75,12 +179,15 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
       border: 1px solid #1e3834ff;
       padding: 12px;
       font-size: 25px;
+      color: #000;
     }
 
     th {
-      background-color: #1e3834ff; /* Fundo do topo/títulos */
+      background-color: #1e3834ff;
+      color: white;
     }
 
+    /* Área de notas */
     textarea {
       width: 90%;
       height: 80px;
@@ -88,11 +195,15 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
       border: 2px solid #2a5c55;
       padding: 10px;
       background-color: #bdebe3ff;
+      font-size: 18px;
+      font-family: 'SimpleHandmade';
+      color: #000;
     }
 
+    /* Botões */
     .btn {
       font-family: 'SimpleHandmade';
-      background-color: #2a5c55; /* Botões principais */
+      background-color: #2a5c55;
       color: white;
       padding: 10px 20px;
       border-radius: 10px;
@@ -101,21 +212,25 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
       border: none;
       cursor: pointer;
       font-size: 22px;
+      transition: 0.3s;
     }
 
     .btn:hover {
-      background-color: #1e3834ff; /* Hover escuro para destaque */
+      background-color: #1e3834ff;
     }
 
     .btn-excluir {
-      background-color: #c0392b; /* Botão de exclusão */
+      background-color: #c0392b;
     }
 
     .btn-excluir:hover {
-      background-color: #a93226; /* Tom mais escuro no hover */
+      background-color: #a93226;
     }
 
-input[type="text"],input[type="date"], select,
+    /* Inputs */
+    input[type="text"],
+    input[type="date"],
+    select,
     input[type="number"] {
       width: 90%;
       padding: 8px;
@@ -132,10 +247,11 @@ input[type="text"],input[type="date"], select,
     <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
     <nav>
       <ul>
-          <li><a href="/anotacoes/index.html">Voltar</a></li>
+        <li><a href="/anotacoes/index.php">Voltar</a></li>
       </ul>
     </nav>
   </header>
+
   <h1>Finanças</h1>
 
   <table id="tabela-financas">
@@ -154,7 +270,7 @@ input[type="text"],input[type="date"], select,
         <td><input type="text" placeholder="Ex: Compra de livro"></td>
         <td><input type="number" step="0.01"></td>
         <td>
-          <select >
+          <select>
             <option>Entrada</option>
             <option>Saída</option>
           </select>
@@ -171,11 +287,11 @@ input[type="text"],input[type="date"], select,
   <textarea placeholder="Ex: Gastos do mês, metas de economia..."></textarea>
 
   <br><br>
+
   <script>
     function adicionarLinha() {
       const tabela = document.getElementById('tabela-financas').getElementsByTagName('tbody')[0];
       const novaLinha = tabela.insertRow();
-
       novaLinha.innerHTML = `
         <td><input type="date"></td>
         <td><input type="text" placeholder="Ex: Compra de livro"></td>

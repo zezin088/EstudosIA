@@ -514,8 +514,8 @@ nav .search-bar button:hover {
 <script>
   // Rotas do site (palavra -> página)
   const paginas = {
-    "anotações": "/anotacoes/anotacoes.php",
-    "anotacoes": "/anotacoes/anotacoes.php",
+    "anotações": "/anotacoes/index.php",
+    "anotacoes": "/anotacoes/index.php",
     "flashcards": "/flashcard/index.html",
     "plano": "/Plano_estudos/plano_estudos.php",
     "plano de estudos": "/Plano_estudos/plano_estudos.php",

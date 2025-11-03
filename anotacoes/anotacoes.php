@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -159,51 +160,67 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
   </style>
 </head>
 <body>
-  <header>
+<header>
     <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
     <nav>
       <ul>
-          <li><a href="/anotacoes/index.html">Voltar</a></li>
+        <li><a href="/anotacoes/index.php">Voltar</a></li>
       </ul>
     </nav>
   </header>
+
   <h1>Caderno de Anotações</h1>
 
-  <!-- TOOLS -->
-  <div class="toolbar">
-    <button onclick="document.execCommand('bold')"><b>Negrito</b></button>
+<div class="toolbar">
+  <button onclick="document.execCommand('bold')"><b>Negrito</b></button>
+  <select onchange="document.execCommand('fontSize', false, this.value)">
+    <option value="">Tamanho</option>
+    <option value="2">Pequeno</option>
+    <option value="3">Normal</option>
+    <option value="5">Grande</option>
+    <option value="7">Gigante</option>
+  </select>
+  <input type="color" onchange="document.execCommand('foreColor', false, this.value)">
+</div>
 
-    <select onchange="document.execCommand('fontSize', false, this.value)">
-      <option value="">Tamanho</option>
-      <option value="2">Pequeno</option>
-      <option value="3">Normal</option>
-      <option value="5">Grande</option>
-      <option value="7">Gigante</option>
-    </select>
+<div class="caderno">
+  <div id="placeholder" class="placeholder-text">Escreva suas ideias, lembretes, pensamentos fofos aqui...</div>
+  <div class="editor" contenteditable="true" id="editor"><?php echo $conteudoSalvo; ?></div>
+</div>
 
-    <input type="color" onchange="document.execCommand('foreColor', false, this.value)">
-  </div>
+<button class="btn-salvar" onclick="salvarAnotacoes()">💾 Salvar</button>
 
-  <!-- BLOCO DE ANOTAÇÃO -->
-  <div class="caderno" style="position: relative;">
-    <div id="placeholder" class="placeholder-text">Escreva suas ideias, lembretes, pensamentos fofos aqui...</div>
-    <div class="editor" contenteditable="true" id="editor"></div>
-  </div>
+<script>
+const editor = document.getElementById("editor");
+const placeholder = document.getElementById("placeholder");
 
-  <button class="btn-salvar" onclick="salvarAnotacoes()">💾 Salvar</button>
+function atualizarPlaceholder() {
+  placeholder.style.display = editor.innerText.trim().length === 0 ? "block" : "none";
+}
 
-  <script>
-    function salvarAnotacoes() {
-      const conteudo = document.getElementById('editor').innerHTML;
-      console.log("Conteúdo salvo:", conteudo);
-      alert("Anotações salvas no console!");
-    }
-  </script>
+editor.addEventListener("input", atualizarPlaceholder);
+editor.addEventListener("focus", atualizarPlaceholder);
+editor.addEventListener("blur", atualizarPlaceholder);
+atualizarPlaceholder();
+
+function salvarAnotacoes() {
+  const conteudo = editor.innerHTML;
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.style.display = 'none';
+  const input = document.createElement('input');
+  input.name = 'conteudo';
+  input.value = conteudo;
+  form.appendChild(input);
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
 
 </body>
 <script>
-  const editor = document.getElementById("editor");
-  const placeholder = document.getElementById("placeholder");
+const editor = document.getElementById("editor");
+const placeholder = document.getElementById("placeholder");
 
   function atualizarPlaceholder() {
     if (editor.innerText.trim().length === 0) {
@@ -213,11 +230,9 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
     }
   }
 
-  editor.addEventListener("input", atualizarPlaceholder);
-  editor.addEventListener("focus", atualizarPlaceholder);
-  editor.addEventListener("blur", atualizarPlaceholder);
-
-  // Mostrar ou esconder ao carregar a página
-  atualizarPlaceholder();
+editor.addEventListener("input", atualizarPlaceholder);
+editor.addEventListener("focus", atualizarPlaceholder);
+editor.addEventListener("blur", atualizarPlaceholder);
+atualizarPlaceholder();
 </script>
 </html>

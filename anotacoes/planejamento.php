@@ -1,3 +1,46 @@
+<?php
+// ===================== CONEXÃO COM O BANCO =====================
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "bd_usuarios";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+  die("Erro na conexão com o banco: " . $conn->connect_error);
+}
+
+// ===================== SALVAR PLANEJAMENTO =====================
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Apaga o planejamento antigo
+  $conn->query("DELETE FROM planejamento");
+
+  // Recebe os dados do formulário
+  $dias = $_POST["dia"] ?? [];
+  $textos = $_POST["texto"] ?? [];
+
+  for ($i = 0; $i < count($dias); $i++) {
+    $dia = $dias[$i];
+    $texto = $textos[$i];
+    if (!empty($texto)) {
+      $stmt = $conn->prepare("INSERT INTO planejamento (dia, texto) VALUES (?, ?)");
+      $stmt->bind_param("ss", $dia, $texto);
+      $stmt->execute();
+      $stmt->close();
+    }
+  }
+
+  echo "<script>alert('💾 Planejamento salvo com sucesso!');</script>";
+}
+
+// ===================== CARREGAR PLANEJAMENTO =====================
+$planejamento = [];
+$result = $conn->query("SELECT * FROM planejamento");
+while ($row = $result->fetch_assoc()) {
+  $planejamento[$row['dia']] = $row['texto'];
+}
+$conn->close();
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -91,16 +134,16 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
     }
 
     td textarea {
-      width: 95%;
-      height: 60px;
-      border-radius: 8px;
-      padding: 8px;
-      border: 1px solid #2a5c55;
-      background-color: #f1f6fb;
-      resize: vertical;
-      color: #ffffff;
-      font-size: 14px;
-    }
+    width: 95%;
+    height: 60px;
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #2a5c55;
+    background-color: #f1f6fb;
+    resize: vertical;
+    color: #000000; /* COR ESCURA PARA TEXTO VISÍVEL */
+    font-size: 14px;
+}
 
     .btn {
       background-color: #2a5c55;
@@ -126,11 +169,27 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
     <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
     <nav>
       <ul>
-          <li><a href="/anotacoes/index.html">Voltar</a></li>
+          <li><a href="/anotacoes/index.php">Voltar</a></li>
       </ul>
     </nav>
   </header>
   <h1>Planejamento Semanal</h1>
+  
+  <form method="POST">
+    <table id="tabela-planejamento">
+      <tr><th>Dia</th><th>Planejamento</th></tr>
+      <?php
+        $dias = ['Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado','Domingo'];
+        foreach ($dias as $dia) {
+          $texto = $planejamento[$dia] ?? '';
+          echo "
+            <tr>
+              <td><input type='hidden' name='dia[]' value='$dia'>$dia</td>
+              <td><textarea name='texto[]' placeholder='O que vou fazer?'>$texto</textarea></td>
+            </tr>
+          ";
+        }
+      ?>
 
   <table id="tabela-planejamento">
     <tr>

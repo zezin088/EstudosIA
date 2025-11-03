@@ -202,10 +202,11 @@ nav ul li a{ text-decoration:none; color:black;  padding:5px 10px; border-radius
   <div class="logo"><img src="/imagens/logoatual.png" alt="Logo"></div>
   <nav>
     <ul>
-        <li><a href="/inicio.php">Voltar à página de Início</a></li>
+        <li><a href="inicio.php">Voltar à página de Início</a></li>
     </ul>
   </nav>
 </header>
+
   <h1>Armário dos Cadernos</h1>
 
   <div class="cadernos-container">
