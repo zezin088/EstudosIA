@@ -276,49 +276,42 @@ nav .search-bar button:hover {
   z-index: 1000;
 }
 
-.social-mini {
-  background: #fff;
-  border-radius: 12px;
-  padding: 8px 18px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  cursor: pointer;
-}
+    .social-mini {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(180deg, #fff, #f7fffb);
+      border-radius: 14px;
+      padding: 8px 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      border: 1px solid rgba(63,124,114,0.06);
+      transition: transform .16s ease, box-shadow .16s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .social-mini:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(0,0,0,0.16); }
 
-.social-mini .mini-avatar img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 10px;
-}
+    .social-mini .mini-avatar {
+      width: 56px; height:56px; border-radius:10px; overflow:hidden; flex:0 0 56px; display:block;
+      border: 2px solid rgba(63,124,114,0.08);
+    }
+    .social-mini .mini-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
 
-.social-mini .title {
-  font-weight: bold;
-  color: #2a5c55;
-  font-size: 18px;
-}
+    .social-mini .mini-info { display:flex; flex-direction:column; gap:4px; }
+    .social-mini .mini-info .title { font-weight:700; color:#3f7c72; font-size:14px; }
+    .social-mini .mini-info .sub { font-size:13px; color:#6b7280; }
 
-.social-mini .sub {
-  font-size: 15px;
-  color: #666;
-}
-
-/* Backdrop do painel */
-.social-panel-backdrop {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  z-index: 2000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    .social-panel-backdrop {
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.28);
+      z-index: 1490;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
 
 /* Painel principal com tudo integrado */
 .social-panel {
@@ -458,18 +451,33 @@ nav .search-bar button:hover {
     <a href="calendario.html" class="card"><i class="fa-solid fa-calendar"></i><h3>Calendário</h3><p>Acompanhe compromissos e provas.</p></a>
     <a href="questoes.php" class="card"><i class="fa-solid fa-question-circle"></i><h3>Questões Diárias</h3><p>Pratique com desafios novos todos os dias.</p></a>
   </div>
-</section>
-<!-- Rede Social -->
-<div class="social-float">
-  <button class="social-mini" onclick="window.location.href='redesocial.php'" title="Abrir Rede Social">
-    <div class="mini-avatar" aria-hidden="true">
-      <img src="/videos/Robo_dormindo.gif" alt="Vídeo usuário" class="avatar-video">
+
+  <!-- ===== New Social Mini + Panel (replaces previous float) ===== -->
+  <div class="social-float">
+    <div class="social-mini" id="socialMini" role="button" aria-haspopup="dialog" aria-controls="socialPanel" tabindex="0" title="Abrir Rede Social">
+      <div class="mini-avatar" aria-hidden="true">
+        <img src="<?php echo $foto_usuario; ?>" alt="Preview usuário">
+      </div>
+      <div class="mini-info">
+        <div class="title">Rede Social</div>
+        <div class="sub">Ver publicações e interagir</div>
+      </div>
     </div>
-    <div class="mini-info">
-      <div class="title">Rede Social</div>
-      <div class="sub">Ver publicações e interagir</div>
-    </div>
-  </button>
+  </div>
+
+  <div class="social-panel-backdrop" id="socialBackdrop" aria-hidden="true">
+    <div class="social-panel" role="dialog" aria-modal="true" aria-label="Rede Social" id="socialPanel">
+      <header>
+        <div class="title">Rede Social</div>
+        <div class="spacer" aria-hidden="true"></div>
+        <button id="socialClose" aria-label="Fechar rede social">Fechar ✕</button>
+      </header>
+
+<aside class="sidebar" aria-hidden="false" style="margin-top:0;padding-top:8px">
+</aside>
+
+<div class="iframe-wrap" style="flex:1;">
+  <iframe src="redesocial.php?embed=1" title="Rede Social" aria-label="Conteúdo da rede social"></iframe>
 </div>
 <!-- Cronômetro -->
 <a href="/Cronometro_Raking/cronometro.php" class="cronometro-icone" title="Ir para Cronômetro">
