@@ -561,7 +561,7 @@ document.querySelectorAll('.aceitarBtn').forEach(btn => {
     }
     // Botão para ir ao ranking
 document.getElementById('verRankingBtn').onclick = () => {
-  window.location.href = '/Cronometro_Raking/Raking.php'; // 🔗 redireciona para a página desejada
+  window.location.href = '/Cronometro_Raking/Raking.php'; // 🔗 redireciona para a página desejada.
 };
 
 
